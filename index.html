@@ -21,18 +21,27 @@
     </select>
   </div>
 
-  <div class="control">
-    <label for="year-filter">Year</label>
-    <select id="year-filter">
-      <option value="all">All years</option>
-    </select>
+  <div class="filter-pair">
+    <div class="control" id="year-control">
+      <label for="year-filter">Year</label>
+      <select id="year-filter">
+        <option value="all">All years</option>
+      </select>
+    </div>
+
+    <div class="control" id="decade-control">
+      <label for="decade-filter">Decade</label>
+      <select id="decade-filter">
+        <option value="all">All decades</option>
+      </select>
+    </div>
   </div>
 
   <div class="control">
     <label for="sort-order">Sort</label>
     <select id="sort-order">
-      <option value="asc">Year: oldest first</option>
       <option value="desc">Year: newest first</option>
+      <option value="asc">Year: oldest first</option>
     </select>
   </div>
 
@@ -46,7 +55,8 @@
 <main id="grid"></main>
 
 <footer>
-  <p>Logo images &copy; their respective leagues/events. Sourced for reference only.</p>
+  <p>Logo images &copy; their respective leagues/events, sourced from <a href="https://sportslogos.net/">SportsLogos.net</a>.</p>
+  <p>This is just a site for the love of logos. Not affiliated with any league or event.</p>
 </footer>
 
 <script src="data.js"></script>
