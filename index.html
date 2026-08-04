@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logo Nerd</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <h1>Logo Nerd</h1>
+  <p class="subtitle">A browsable archive of championship event logos.</p>
+</header>
+
+<section id="controls">
+  <div class="control">
+    <label for="event-filter">Event</label>
+    <select id="event-filter">
+      <option value="all">All events</option>
+    </select>
+  </div>
+
+  <div class="control">
+    <label for="year-filter">Year</label>
+    <select id="year-filter">
+      <option value="all">All years</option>
+    </select>
+  </div>
+
+  <div class="control">
+    <label for="sort-order">Sort</label>
+    <select id="sort-order">
+      <option value="asc">Year: oldest first</option>
+      <option value="desc">Year: newest first</option>
+    </select>
+  </div>
+
+  <button id="reset-filters" type="button">Reset</button>
+
+  <div class="control result-count">
+    <span id="result-count"></span>
+  </div>
+</section>
+
+<main id="grid"></main>
+
+<footer>
+  <p>Logo images &copy; their respective leagues/events. Sourced for reference only.</p>
+</footer>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
