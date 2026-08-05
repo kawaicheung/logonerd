@@ -1,13 +1,23 @@
+:root {
+  --years-width: 60px;
+  --decades-width: 34px;
+}
+
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  padding: 0 1.5rem 3rem;
+  padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   color: #1a1a1a;
   background: #fff;
+}
+
+#page-content {
+  margin-left: calc(var(--years-width) + var(--decades-width));
+  padding: 0 1.5rem 3rem;
 }
 
 header {
@@ -46,21 +56,6 @@ h1 {
   gap: 0.25rem;
 }
 
-.filter-pair {
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-}
-
-.filter-pair .control {
-  border: 1px solid transparent;
-  padding: 0.35rem 0.5rem;
-}
-
-.filter-pair .control.filter-active {
-  border-color: #1a1a1a;
-}
-
 .control label {
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -76,6 +71,40 @@ h1 {
   background: #fff;
   color: #1a1a1a;
   min-width: 160px;
+}
+
+.select-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.clear-btn {
+  display: none;
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  width: 16px;
+  height: 16px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #666;
+  font-size: 0.7rem;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+}
+
+.clear-btn.visible {
+  display: flex;
+}
+
+.clear-btn:hover {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #fff;
 }
 
 #reset-filters {
@@ -100,6 +129,113 @@ h1 {
 #result-count {
   font-size: 0.85rem;
   color: #666;
+}
+
+#timeline-filters {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 1rem;
+  border-right: 1px solid #ddd;
+  background: #fff;
+  z-index: 10;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+#timeline-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.years-rail {
+  width: var(--years-width);
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1rem 0.3rem;
+}
+
+.decades-rail {
+  width: var(--decades-width);
+  flex: 0 0 auto;
+  position: relative;
+  border: 1px solid #eee;
+}
+
+.scroll-item {
+  flex: 0 0 auto;
+  font-family: inherit;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.25rem;
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #1a1a1a;
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.scroll-item:hover {
+  background: #f0f0f0;
+}
+
+.scroll-item.active {
+  border-color: #1a1a1a;
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.scroll-item:disabled {
+  color: #ccc;
+  border-color: #eee;
+  background: #fafafa;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Decade blocks (and the decades rail's own "All" item) are positioned
+   absolutely, sized in JS to span the years they cover. */
+.decades-rail > * {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-top: 1px solid #eee;
+  font-family: inherit;
+  font-size: 0.7rem;
+  background: #fff;
+  color: #1a1a1a;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.decades-rail > *:hover {
+  background: #f0f0f0;
+}
+
+.decades-rail > *.active {
+  border-color: #1a1a1a;
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.decade-item .decade-label {
+  display: inline-block;
+  transform: rotate(-90deg);
+  white-space: nowrap;
 }
 
 main#grid {

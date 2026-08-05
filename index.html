@@ -8,6 +8,13 @@
 </head>
 <body>
 
+<nav id="timeline-filters">
+  <div id="year-scroll" class="years-rail"></div>
+  <div id="decade-scroll" class="decades-rail"></div>
+</nav>
+
+<div id="page-content">
+
 <header>
   <h1>Logo Nerd</h1>
   <p class="subtitle">A browsable archive of championship event logos.</p>
@@ -16,24 +23,11 @@
 <section id="controls">
   <div class="control">
     <label for="event-filter">Event</label>
-    <select id="event-filter">
-      <option value="all">All events</option>
-    </select>
-  </div>
-
-  <div class="filter-pair">
-    <div class="control" id="year-control">
-      <label for="year-filter">Year</label>
-      <select id="year-filter">
-        <option value="all">All years</option>
+    <div class="select-wrap">
+      <select id="event-filter">
+        <option value="all">All events</option>
       </select>
-    </div>
-
-    <div class="control" id="decade-control">
-      <label for="decade-filter">Decade</label>
-      <select id="decade-filter">
-        <option value="all">All decades</option>
-      </select>
+      <button id="event-clear" class="clear-btn" type="button" aria-label="Clear event filter">&times;</button>
     </div>
   </div>
 
@@ -59,7 +53,9 @@
   <p>This is just a site for the love of logos. Not affiliated with any league or event!</p>
 </footer>
 
-<script src="data.js?v=20260804"></script>
-<script src="script.js?v=20260804"></script>
+</div>
+
+<script src="data.js?v=20260805"></script>
+<script src="script.js?v=20260805"></script>
 </body>
 </html>

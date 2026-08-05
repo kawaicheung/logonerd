@@ -1,17 +1,33 @@
 (function () {
   const grid = document.getElementById("grid");
   const eventFilter = document.getElementById("event-filter");
-  const yearFilter = document.getElementById("year-filter");
-  const decadeFilter = document.getElementById("decade-filter");
-  const yearControl = document.getElementById("year-control");
-  const decadeControl = document.getElementById("decade-control");
+  const yearScroll = document.getElementById("year-scroll");
+  const decadeScroll = document.getElementById("decade-scroll");
   const sortOrder = document.getElementById("sort-order");
   const resultCount = document.getElementById("result-count");
   const resetFilters = document.getElementById("reset-filters");
+  const eventClear = document.getElementById("event-clear");
+
+  let selectedYear = "all";
+  let selectedDecade = "all";
 
   function populateFilters(data) {
     const events = [...new Set(data.map((d) => d.event_type))].sort();
-    const years = [...new Set(data.map((d) => d.year))].sort((a, b) => a - b);
+    const presentYears = new Set(data.map((d) => d.year));
+    const minYear = Math.min(...presentYears);
+    const maxYear = Math.max(...presentYears);
+
+    const years = [];
+    for (let year = maxYear; year >= minYear; year--) years.push(year);
+
+    const decades = [];
+    for (
+      let decade = Math.floor(maxYear / 10) * 10;
+      decade >= Math.floor(minYear / 10) * 10;
+      decade -= 10
+    ) {
+      decades.push(decade);
+    }
 
     events.forEach((event) => {
       const opt = document.createElement("option");
@@ -20,32 +36,106 @@
       eventFilter.appendChild(opt);
     });
 
+    yearScroll.appendChild(makeScrollItem("all", "All", selectYear));
     years.forEach((year) => {
-      const opt = document.createElement("option");
-      opt.value = year;
-      opt.textContent = year;
-      yearFilter.appendChild(opt);
+      const btn = makeScrollItem(String(year), String(year), selectYear);
+      if (!presentYears.has(year)) btn.disabled = true;
+      yearScroll.appendChild(btn);
     });
-
-    const decades = [...new Set(years.map((year) => Math.floor(year / 10) * 10))].sort(
-      (a, b) => a - b
-    );
 
     decades.forEach((decade) => {
-      const opt = document.createElement("option");
-      opt.value = decade;
-      opt.textContent = `${decade}s`;
-      decadeFilter.appendChild(opt);
+      decadeScroll.appendChild(
+        makeDecadeItem(String(decade), `The ${decade}s`, selectDecade)
+      );
     });
+
+    layoutDecadeItems();
   }
 
-  function setActiveControl(active) {
-    yearControl.classList.toggle("filter-active", active === "year");
-    decadeControl.classList.toggle("filter-active", active === "decade");
+  function makeScrollItem(value, label, onSelect) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "scroll-item";
+    btn.dataset.value = value;
+    btn.textContent = label;
+    btn.addEventListener("click", () => onSelect(value));
+    return btn;
+  }
+
+  function makeDecadeItem(value, label, onSelect) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "decade-item";
+    btn.dataset.value = value;
+    const span = document.createElement("span");
+    span.className = "decade-label";
+    span.textContent = label;
+    btn.appendChild(span);
+    btn.addEventListener("click", () => onSelect(value));
+    return btn;
+  }
+
+  // Sizes/positions each decades-rail item to exactly span the years-rail
+  // items it corresponds to, so the two rails read as one aligned timeline.
+  function layoutDecadeItems() {
+    const yearItems = [...yearScroll.children].slice(1); // skip the "All" year button
+    const decadeItems = [...decadeScroll.children];
+    const railTop = yearScroll.getBoundingClientRect().top;
+
+    let yi = 0;
+    decadeItems.forEach((decadeBtn) => {
+      const decadeValue = Number(decadeBtn.dataset.value);
+      let runLength = 0;
+      while (
+        yi + runLength < yearItems.length &&
+        Math.floor(Number(yearItems[yi + runLength].dataset.value) / 10) * 10 ===
+          decadeValue
+      ) {
+        runLength++;
+      }
+
+      const firstRect = yearItems[yi].getBoundingClientRect();
+      const lastRect = yearItems[yi + runLength - 1].getBoundingClientRect();
+      decadeBtn.style.top = `${firstRect.top - railTop}px`;
+      decadeBtn.style.height = `${lastRect.bottom - firstRect.top}px`;
+
+      yi += runLength;
+    });
+
+    decadeScroll.style.height = `${yearScroll.scrollHeight}px`;
+  }
+
+  function selectYear(value) {
+    selectedYear = value;
+    if (value !== "all") selectedDecade = "all";
+    updateActiveButtons();
+    render();
+  }
+
+  function selectDecade(value) {
+    selectedDecade = value;
+    if (value !== "all") selectedYear = "all";
+    updateActiveButtons();
+    render();
+  }
+
+  function updateActiveButtons() {
+    [...yearScroll.children].forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.value === selectedYear);
+    });
+    [...decadeScroll.children].forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.value === selectedDecade);
+    });
   }
 
   function hasOption(select, value) {
     return [...select.options].some((opt) => opt.value === value);
+  }
+
+  function hasScrollItem(container, value) {
+    return [...container.children].some(
+      (btn) => btn.dataset.value === value && !btn.disabled
+    );
   }
 
   function applyFiltersFromURL() {
@@ -59,13 +149,12 @@
       eventFilter.value = event;
     }
 
-    if (decade && hasOption(decadeFilter, decade)) {
-      decadeFilter.value = decade;
-      setActiveControl("decade");
-    } else if (year && hasOption(yearFilter, year)) {
-      yearFilter.value = year;
-      setActiveControl("year");
+    if (decade && hasScrollItem(decadeScroll, decade)) {
+      selectedDecade = decade;
+    } else if (year && hasScrollItem(yearScroll, year)) {
+      selectedYear = year;
     }
+    updateActiveButtons();
 
     if (sort === "asc") {
       sortOrder.value = "asc";
@@ -75,10 +164,10 @@
   function syncURL() {
     const params = new URLSearchParams();
     if (eventFilter.value !== "all") params.set("event", eventFilter.value);
-    if (decadeFilter.value !== "all") {
-      params.set("decade", decadeFilter.value);
-    } else if (yearFilter.value !== "all") {
-      params.set("year", yearFilter.value);
+    if (selectedDecade !== "all") {
+      params.set("decade", selectedDecade);
+    } else if (selectedYear !== "all") {
+      params.set("year", selectedYear);
     }
     if (sortOrder.value !== "desc") params.set("sort", sortOrder.value);
 
@@ -91,18 +180,16 @@
 
   function render() {
     const eventValue = eventFilter.value;
-    const yearValue = yearFilter.value;
-    const decadeValue = decadeFilter.value;
     const order = sortOrder.value;
 
     let items = LOGO_DATA.filter((item) => {
       const eventMatch = eventValue === "all" || item.event_type === eventValue;
       let yearMatch;
-      if (decadeValue !== "all") {
-        const decadeStart = Number(decadeValue);
+      if (selectedDecade !== "all") {
+        const decadeStart = Number(selectedDecade);
         yearMatch = item.year >= decadeStart && item.year < decadeStart + 10;
       } else {
-        yearMatch = yearValue === "all" || String(item.year) === yearValue;
+        yearMatch = selectedYear === "all" || String(item.year) === selectedYear;
       }
       return eventMatch && yearMatch;
     });
@@ -132,37 +219,24 @@
 
     resultCount.textContent = `${items.length} logo${items.length === 1 ? "" : "s"}`;
 
+    eventClear.classList.toggle("visible", eventValue !== "all");
+
     syncURL();
   }
 
   [eventFilter, sortOrder].forEach((el) => el.addEventListener("change", render));
 
-  yearFilter.addEventListener("change", () => {
-    if (yearFilter.value !== "all") {
-      decadeFilter.value = "all";
-      setActiveControl("year");
-    } else {
-      setActiveControl(null);
-    }
-    render();
-  });
-
-  decadeFilter.addEventListener("change", () => {
-    if (decadeFilter.value !== "all") {
-      yearFilter.value = "all";
-      setActiveControl("decade");
-    } else {
-      setActiveControl(null);
-    }
+  eventClear.addEventListener("click", () => {
+    eventFilter.value = "all";
     render();
   });
 
   resetFilters.addEventListener("click", () => {
     eventFilter.value = "all";
-    yearFilter.value = "all";
-    decadeFilter.value = "all";
+    selectedYear = "all";
+    selectedDecade = "all";
     sortOrder.value = "desc";
-    setActiveControl(null);
+    updateActiveButtons();
     render();
   });
 
