@@ -198,17 +198,16 @@ h1 {
 }
 
 .event-item.all-events {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   font-size: 1.8rem;
-  border-bottom: none;
+  border-bottom: solid 1px var(--color-text);
 }
 
 .event-item.event-group-label {
   font-size: 1.4rem;
   padding-left: 0.3rem;
-}
-
-.event-item.all-events + .event-item.event-group-label {
-  border-top: solid 1px var(--color-text);
 }
 
 #timeline-list {
@@ -219,7 +218,6 @@ h1 {
 .decade-group {
   display: flex;
   flex-direction: row;
-  border-top: solid 1px var(--color-text);
 }
 
 .years-col {
@@ -240,6 +238,17 @@ h1 {
   cursor: pointer;
   white-space: nowrap;
   text-align: center;
+}
+
+#timeline-list > .year-item:first-child {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border-bottom: solid 1px var(--color-text);
+}
+
+.years-col .year-item:not(:last-child) {
+  border-bottom: solid 1px var(--color-border-light);
 }
 
 .year-item:hover {
