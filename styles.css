@@ -1,7 +1,8 @@
 :root {
   --years-width: 60px;
   --decades-width: 46px;
-  --events-width: 190px;
+  --events-width: 140px;
+  --edge-offset: 1rem;
 
   --color-text: #1a1a1a;
   --color-bg: #fff;
@@ -11,6 +12,8 @@
   --color-border-light: #ddd;
   --color-hover: #f0f0f0;
   --color-accent: #ffb347;
+
+  --font-league-gothic: "League Gothic", sans-serif;
 }
 
 * {
@@ -28,7 +31,7 @@ body {
 }
 
 #page-content {
-  margin-left: calc(var(--years-width) + var(--decades-width) + var(--events-width));
+  margin-left: calc(var(--edge-offset) + var(--years-width) + var(--decades-width) + var(--events-width));
   padding: 0 1.5rem 3rem;
 }
 
@@ -122,21 +125,27 @@ h1 {
   display: none;
 }
 
-#timeline-filters {
+#sidebar {
   position: fixed;
   top: 0;
-  left: var(--events-width);
-  width: calc(var(--years-width) + var(--decades-width));
+  left: var(--edge-offset);
+  display: flex;
+  flex-direction: row;
   height: 100vh;
+  z-index: 10;
+  border-left: solid 1px var(--color-text);
+  border-right: solid 1px var(--color-text);
+}
+
+#timeline-filters {
+  width: calc(var(--years-width) + var(--decades-width));
+  height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  border-right: 1px solid var(--color-border-light);
   background: var(--color-bg);
-  z-index: 10;
   scrollbar-width: none;
   -ms-overflow-style: none;
-
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 8px;
+  border-left: solid 1px var(--color-text);
 }
 
 #timeline-filters::-webkit-scrollbar {
@@ -144,20 +153,13 @@ h1 {
 }
 
 #events-filter {
-  position: fixed;
-  top: 0;
-  left: 0;
   width: var(--events-width);
-  height: 100vh;
+  height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  border-right: 1px solid var(--color-border-light);
   background: var(--color-bg);
-  z-index: 10;
   scrollbar-width: none;
   -ms-overflow-style: none;
-
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 8px;
 }
 
 #events-filter::-webkit-scrollbar {
@@ -167,26 +169,11 @@ h1 {
 #events-list {
   display: flex;
   flex-direction: column;
-  padding: 1rem 0.75rem;
-}
-
-.event-group-label-static {
-  margin: 1rem 0 0.25rem;
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--color-muted);
-}
-
-.event-group-label-static:first-child {
-  margin-top: 0;
 }
 
 .event-item {
   flex: 0 0 auto;
-  font-family: inherit;
-  font-size: 0.85rem;
-  padding: 0.3rem 0.4rem;
+  font-size: 1.2rem;
   border: none;
   background: var(--color-bg);
   color: var(--color-text);
@@ -195,6 +182,10 @@ h1 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-family: var(--font-league-gothic);
+  padding: 0.35rem 0.5rem;
+  margin: 0;
+  border-bottom: solid 1px var(--color-border-light);
 }
 
 .event-item:hover {
@@ -207,25 +198,28 @@ h1 {
 }
 
 .event-item.all-events {
-  font-weight: 600;
+  font-size: 1.8rem;
+  border-bottom: none;
 }
 
 .event-item.event-group-label {
-  margin-top: 1rem;
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-size: 1.4rem;
+  padding-left: 0.3rem;
+}
+
+.event-item.all-events + .event-item.event-group-label {
+  border-top: solid 1px var(--color-text);
 }
 
 #timeline-list {
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  padding: 1rem 0.3rem;
 }
 
 .decade-group {
   display: flex;
   flex-direction: row;
+  border-top: solid 1px var(--color-text);
 }
 
 .years-col {
@@ -235,9 +229,9 @@ h1 {
   flex-direction: column;
 }
 
-.scroll-item {
+.year-item {
   flex: 0 0 auto;
-  font-family: "League Gothic", sans-serif;
+  font-family: var(--font-league-gothic);
   font-size: 1.8rem;
   padding: 0.35rem 0.25rem;
   border: none;
@@ -248,23 +242,23 @@ h1 {
   text-align: center;
 }
 
-.scroll-item:hover {
+.year-item:hover {
   background: var(--color-hover);
 }
 
-.scroll-item.active {
+.year-item.active {
   background: var(--color-text);
   color: var(--color-bg);
 }
 
-.scroll-item:disabled {
+.year-item:disabled {
   color: var(--color-border);
   background: #fafafa;
   cursor: not-allowed;
   pointer-events: none;
 }
 
-.decade-group:has(.decade-item.active) .scroll-item:not(:disabled) {
+.decade-group:has(.decade-item.active) .year-item:not(:disabled) {
   background-color: var(--color-text);
   color: var(--color-bg);
 }
@@ -277,14 +271,14 @@ h1 {
   overflow: hidden;
   padding: 0 0.4rem;
   margin: 0;
-  border: solid 1px var(--color-text);
-  border-left: none;
-  font-family: "League Gothic", sans-serif;
+  border: none;
+  font-family: var(--font-league-gothic);
   font-size: 1.4rem;
   background: var(--color-bg);
   color: var(--color-text);
   cursor: pointer;
   white-space: nowrap;
+  border-left: solid 1px var(--color-border-light);
 }
 
 .decade-item:hover {

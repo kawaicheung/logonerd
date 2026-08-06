@@ -42,14 +42,23 @@
   let selectedEvent = "all";
 
   const LEAGUES = {
-    MLB: ["MLB All-Star Game", "MLB Spring Training", "World Series"],
-    NFL: ["NFL Draft", "Super Bowl"],
+    MLB: ["World Series", "MLB All-Star Game", "MLB Spring Training"],
+    NFL: ["Super Bowl", "NFL Draft"],
     NHL: ["NHL All-Star Game"],
-    NBA: ["NBA All-Star Game", "NBA Finals"],
-    WNBA: ["WNBA All-Star Game", "WNBA Finals"],
+    NBA: ["NBA Finals", "NBA All-Star Game"],
+    WNBA: ["WNBA Finals", "WNBA All-Star Game"],
     Olympics: ["Summer Olympics", "Winter Olympics"],
   };
   const GROUP_PREFIX = "group:";
+  const OTHER_LABEL = "Other";
+
+  // Event types that don't belong to any league in LEAGUES, filled in by
+  // populateFilters once the data's actual event types are known.
+  let otherEvents = [];
+
+  function eventsForGroup(league) {
+    return league === OTHER_LABEL ? otherEvents : LEAGUES[league] || [];
+  }
 
   function populateFilters(data) {
     const events = [...new Set(data.map((d) => d.event_type))].sort();
@@ -79,19 +88,23 @@
     });
 
     if (remainingEvents.size > 0) {
-      const heading = document.createElement("div");
-      heading.className = "event-group-label-static";
-      heading.textContent = "Other";
-      eventsList.appendChild(heading);
+      otherEvents = events.filter((event) => remainingEvents.has(event));
 
-      events
-        .filter((event) => remainingEvents.has(event))
-        .forEach((event) => {
-          eventsList.appendChild(makeEventItem(event, event, selectEvent));
-        });
+      eventsList.appendChild(
+        makeEventItem(
+          GROUP_PREFIX + OTHER_LABEL,
+          OTHER_LABEL,
+          selectEvent,
+          "event-group-label"
+        )
+      );
+
+      otherEvents.forEach((event) => {
+        eventsList.appendChild(makeEventItem(event, event, selectEvent));
+      });
     }
 
-    timelineList.appendChild(makeScrollItem("all", "All", selectYear));
+    timelineList.appendChild(makeScrollItem("all", "All-Time", selectYear));
 
     for (
       let decade = Math.floor(maxYear / 10) * 10;
@@ -122,7 +135,7 @@
   function makeScrollItem(value, label, onSelect) {
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.className = "scroll-item";
+    btn.className = "year-item";
     btn.dataset.value = value;
     btn.textContent = label;
     btn.addEventListener("click", () => onSelect(value));
@@ -188,7 +201,7 @@
   }
 
   function updateActiveButtons() {
-    timelineList.querySelectorAll(".scroll-item").forEach((btn) => {
+    timelineList.querySelectorAll(".year-item").forEach((btn) => {
       const active =
         btn.dataset.value === "all"
           ? selectedYear === "all" && selectedDecade === "all"
@@ -199,7 +212,12 @@
       btn.classList.toggle("active", btn.dataset.value === selectedDecade);
     });
     eventsList.querySelectorAll(".event-item").forEach((btn) => {
-      btn.classList.toggle("active", btn.dataset.value === selectedEvent);
+      let active = btn.dataset.value === selectedEvent;
+      if (!active && selectedEvent.startsWith(GROUP_PREFIX)) {
+        const league = selectedEvent.slice(GROUP_PREFIX.length);
+        active = eventsForGroup(league).includes(btn.dataset.value);
+      }
+      btn.classList.toggle("active", active);
     });
   }
 
@@ -236,7 +254,7 @@
 
     if (decade && hasItem(timelineList, ".decade-item", decade)) {
       selectedDecade = decade;
-    } else if (year && hasItem(timelineList, ".scroll-item", year)) {
+    } else if (year && hasItem(timelineList, ".year-item", year)) {
       selectedYear = year;
     }
     updateActiveButtons();
@@ -288,7 +306,7 @@
           eventMatch = true;
         } else if (eventValue.startsWith(GROUP_PREFIX)) {
           const league = eventValue.slice(GROUP_PREFIX.length);
-          eventMatch = (LEAGUES[league] || []).includes(item.event_type);
+          eventMatch = eventsForGroup(league).includes(item.event_type);
         } else {
           eventMatch = item.event_type === eventValue;
         }
