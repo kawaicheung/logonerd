@@ -7,6 +7,26 @@
   const resetFilters = document.getElementById("reset-filters");
   const eventClear = document.getElementById("event-clear");
   const metaToggle = document.getElementById("meta-toggle-input");
+  const favoritesToggle = document.getElementById("favorites-toggle-input");
+
+  const FAVORITES_KEY = "logonerd:favorites";
+  const STAR_ICON =
+    '<svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.26 6.6.6-5 4.53 1.5 6.7L12 16.9l-6 3.7 1.5-6.7-5-4.53 6.6-.6z"/></svg>';
+
+  function loadFavorites() {
+    try {
+      const raw = localStorage.getItem(FAVORITES_KEY);
+      return new Set(raw ? JSON.parse(raw) : []);
+    } catch (e) {
+      return new Set();
+    }
+  }
+
+  function saveFavorites() {
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify([...favorites]));
+  }
+
+  const favorites = loadFavorites();
 
   let selectedYear = "all";
   let selectedDecade = "all";
@@ -149,6 +169,7 @@
   }
 
   function selectYear(value) {
+    favoritesToggle.checked = false;
     selectedYear = value;
     if (value !== "all") selectedDecade = "all";
     updateActiveButtons();
@@ -156,6 +177,7 @@
   }
 
   function selectDecade(value) {
+    favoritesToggle.checked = false;
     selectedDecade = value;
     if (value !== "all") selectedYear = "all";
     updateActiveButtons();
@@ -222,28 +244,34 @@
   }
 
   function render() {
+    const favoritesOnly = favoritesToggle.checked;
     const eventValue = eventFilter.value;
     const order = sortOrder.value;
 
-    let items = LOGO_DATA.filter((item) => {
-      let eventMatch;
-      if (eventValue === "all") {
-        eventMatch = true;
-      } else if (eventValue.startsWith(GROUP_PREFIX)) {
-        const league = eventValue.slice(GROUP_PREFIX.length);
-        eventMatch = (LEAGUES[league] || []).includes(item.event_type);
-      } else {
-        eventMatch = item.event_type === eventValue;
-      }
-      let yearMatch;
-      if (selectedDecade !== "all") {
-        const decadeStart = Number(selectedDecade);
-        yearMatch = item.year >= decadeStart && item.year < decadeStart + 10;
-      } else {
-        yearMatch = selectedYear === "all" || String(item.year) === selectedYear;
-      }
-      return eventMatch && yearMatch;
-    });
+    let items;
+    if (favoritesOnly) {
+      items = LOGO_DATA.filter((item) => favorites.has(item.url));
+    } else {
+      items = LOGO_DATA.filter((item) => {
+        let eventMatch;
+        if (eventValue === "all") {
+          eventMatch = true;
+        } else if (eventValue.startsWith(GROUP_PREFIX)) {
+          const league = eventValue.slice(GROUP_PREFIX.length);
+          eventMatch = (LEAGUES[league] || []).includes(item.event_type);
+        } else {
+          eventMatch = item.event_type === eventValue;
+        }
+        let yearMatch;
+        if (selectedDecade !== "all") {
+          const decadeStart = Number(selectedDecade);
+          yearMatch = item.year >= decadeStart && item.year < decadeStart + 10;
+        } else {
+          yearMatch = selectedYear === "all" || String(item.year) === selectedYear;
+        }
+        return eventMatch && yearMatch;
+      });
+    }
 
     items.sort((a, b) => (order === "asc" ? a.year - b.year : b.year - a.year));
 
@@ -252,13 +280,17 @@
     if (items.length === 0) {
       const empty = document.createElement("div");
       empty.className = "empty-state";
-      empty.textContent = "No logos match those filters.";
+      empty.textContent = favoritesOnly
+        ? "No favorites yet. Click the star on a logo to save it."
+        : "No logos match those filters.";
       grid.appendChild(empty);
     } else {
       items.forEach((item) => {
         const card = document.createElement("div");
         card.className = "card";
+        const isFavorited = favorites.has(item.url);
         card.innerHTML = `
+          <button class="favorite-btn${isFavorited ? " favorited" : ""}" type="button" data-url="${item.url}" aria-label="Toggle favorite">${STAR_ICON}</button>
           <div class="logo-wrap">
             <img src="${item.url}" alt="${item.label}" loading="lazy">
           </div>
@@ -273,14 +305,48 @@
     syncURL();
   }
 
-  [eventFilter, sortOrder].forEach((el) => el.addEventListener("change", render));
+  [eventFilter, sortOrder].forEach((el) =>
+    el.addEventListener("change", () => {
+      favoritesToggle.checked = false;
+      render();
+    })
+  );
 
   metaToggle.addEventListener("change", () => {
     grid.classList.toggle("hide-meta", !metaToggle.checked);
   });
 
+  favoritesToggle.addEventListener("change", () => {
+    if (favoritesToggle.checked) {
+      eventFilter.value = "all";
+      selectedYear = "all";
+      selectedDecade = "all";
+      sortOrder.value = "desc";
+      updateActiveButtons();
+    }
+    render();
+  });
+
+  grid.addEventListener("click", (e) => {
+    const btn = e.target.closest(".favorite-btn");
+    if (!btn) return;
+    const url = btn.dataset.url;
+    if (favorites.has(url)) {
+      favorites.delete(url);
+    } else {
+      favorites.add(url);
+    }
+    saveFavorites();
+    if (favoritesToggle.checked) {
+      render();
+    } else {
+      btn.classList.toggle("favorited", favorites.has(url));
+    }
+  });
+
   eventClear.addEventListener("click", () => {
     eventFilter.value = "all";
+    favoritesToggle.checked = false;
     render();
   });
 
@@ -290,6 +356,7 @@
     selectedDecade = "all";
     sortOrder.value = "desc";
     metaToggle.checked = true;
+    favoritesToggle.checked = false;
     grid.classList.remove("hide-meta");
     updateActiveButtons();
     render();
