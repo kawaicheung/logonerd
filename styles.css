@@ -120,14 +120,26 @@ h1 {
   background: #f0f0f0;
 }
 
-.result-count {
+.meta-toggle {
   margin-left: auto;
   justify-content: center;
 }
 
-#result-count {
+.meta-toggle label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   font-size: 0.85rem;
-  color: #666;
+  color: #1a1a1a;
+  cursor: pointer;
+}
+
+.meta-toggle input[type="checkbox"] {
+  cursor: pointer;
+}
+
+#grid.hide-meta .card .meta {
+  display: none;
 }
 
 #timeline-filters {
@@ -243,19 +255,22 @@ main#grid {
   max-width: 1200px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 0.4rem;
 }
 
 .card {
   background: #fff;
-  padding: 1rem;
+  padding: 0.6rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 1rem;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 8px;
+  gap: 1.2rem;
+  border-bottom: solid 1px #ccc;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  box-shadow: rgba(0, 0, 0, 0.05) 2px 6px 4px;
 }
 
 .card .logo-wrap {
@@ -274,10 +289,10 @@ main#grid {
 
 .card .meta {
   font-size: 0.85rem;
-  font-weight: 500;
+  font-family: serif;
+  font-weight: 400;
+  letter-spacing: -0.01rem;
 }
-
-
 
 .empty-state {
   grid-column: 1 / -1;

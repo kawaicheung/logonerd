@@ -4,12 +4,21 @@
   const yearScroll = document.getElementById("year-scroll");
   const decadeScroll = document.getElementById("decade-scroll");
   const sortOrder = document.getElementById("sort-order");
-  const resultCount = document.getElementById("result-count");
   const resetFilters = document.getElementById("reset-filters");
   const eventClear = document.getElementById("event-clear");
+  const metaToggle = document.getElementById("meta-toggle-input");
 
   let selectedYear = "all";
   let selectedDecade = "all";
+
+  const LEAGUES = {
+    MLB: ["MLB All-Star Game", "MLB Spring Training", "World Series"],
+    NFL: ["NFL Draft", "Super Bowl"],
+    NHL: ["NHL All-Star Game"],
+    NBA: ["NBA All-Star Game", "NBA Finals"],
+    WNBA: ["WNBA All-Star Game", "WNBA Finals"],
+  };
+  const GROUP_PREFIX = "group:";
 
   function populateFilters(data) {
     const events = [...new Set(data.map((d) => d.event_type))].sort();
@@ -29,12 +38,46 @@
       decades.push(decade);
     }
 
-    events.forEach((event) => {
-      const opt = document.createElement("option");
-      opt.value = event;
-      opt.textContent = event;
-      eventFilter.appendChild(opt);
+    const remainingEvents = new Set(events);
+
+    Object.keys(LEAGUES).forEach((league) => {
+      const leagueEvents = LEAGUES[league].filter((event) =>
+        remainingEvents.has(event)
+      );
+      if (leagueEvents.length === 0) return;
+      leagueEvents.forEach((event) => remainingEvents.delete(event));
+
+      const group = document.createElement("optgroup");
+      group.label = league;
+
+      const allOpt = document.createElement("option");
+      allOpt.value = GROUP_PREFIX + league;
+      allOpt.textContent = `All ${league}`;
+      group.appendChild(allOpt);
+
+      leagueEvents.forEach((event) => {
+        const opt = document.createElement("option");
+        opt.value = event;
+        opt.textContent = event;
+        group.appendChild(opt);
+      });
+
+      eventFilter.appendChild(group);
     });
+
+    if (remainingEvents.size > 0) {
+      const group = document.createElement("optgroup");
+      group.label = "Other";
+      events
+        .filter((event) => remainingEvents.has(event))
+        .forEach((event) => {
+          const opt = document.createElement("option");
+          opt.value = event;
+          opt.textContent = event;
+          group.appendChild(opt);
+        });
+      eventFilter.appendChild(group);
+    }
 
     yearScroll.appendChild(makeScrollItem("all", "All", selectYear));
     years.forEach((year) => {
@@ -183,7 +226,15 @@
     const order = sortOrder.value;
 
     let items = LOGO_DATA.filter((item) => {
-      const eventMatch = eventValue === "all" || item.event_type === eventValue;
+      let eventMatch;
+      if (eventValue === "all") {
+        eventMatch = true;
+      } else if (eventValue.startsWith(GROUP_PREFIX)) {
+        const league = eventValue.slice(GROUP_PREFIX.length);
+        eventMatch = (LEAGUES[league] || []).includes(item.event_type);
+      } else {
+        eventMatch = item.event_type === eventValue;
+      }
       let yearMatch;
       if (selectedDecade !== "all") {
         const decadeStart = Number(selectedDecade);
@@ -217,14 +268,16 @@
       });
     }
 
-    resultCount.textContent = `${items.length} logo${items.length === 1 ? "" : "s"}`;
-
     eventClear.classList.toggle("visible", eventValue !== "all");
 
     syncURL();
   }
 
   [eventFilter, sortOrder].forEach((el) => el.addEventListener("change", render));
+
+  metaToggle.addEventListener("change", () => {
+    grid.classList.toggle("hide-meta", !metaToggle.checked);
+  });
 
   eventClear.addEventListener("click", () => {
     eventFilter.value = "all";
@@ -236,6 +289,8 @@
     selectedYear = "all";
     selectedDecade = "all";
     sortOrder.value = "desc";
+    metaToggle.checked = true;
+    grid.classList.remove("hide-meta");
     updateActiveButtons();
     render();
   });
