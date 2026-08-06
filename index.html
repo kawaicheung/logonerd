@@ -11,6 +11,10 @@
 </head>
 <body>
 
+<nav id="events-filter">
+  <div id="events-list"></div>
+</nav>
+
 <nav id="timeline-filters">
   <div id="timeline-list"></div>
 </nav>
@@ -23,16 +27,6 @@
 </header>
 
 <section id="controls">
-  <div class="control">
-    <label for="event-filter">Event</label>
-    <div class="select-wrap">
-      <select id="event-filter">
-        <option value="all">All events</option>
-      </select>
-      <button id="event-clear" class="clear-btn" type="button" aria-label="Clear event filter">&times;</button>
-    </div>
-  </div>
-
   <div class="control">
     <label for="sort-order">Sort</label>
     <select id="sort-order">
@@ -57,6 +51,10 @@
 
 <main id="grid"></main>
 
+<p id="share-favorites">
+  <a id="share-favorites-link" href="#">Link to share your favorites</a>
+</p>
+
 <footer>
   <p>Logo images &copy; their respective leagues/events, sourced from <a href="https://sportslogos.net/">SportsLogos.net</a>.</p>
   <p>This is just a site for the love of logos. Not affiliated with any league or event!</p>
@@ -64,7 +62,7 @@
 
 </div>
 
-<script src="data.js?v=20260806f"></script>
-<script src="script.js?v=20260806f"></script>
+<script src="data.js?v=20260806m"></script>
+<script src="script.js?v=20260806m"></script>
 </body>
 </html>

@@ -1,12 +1,13 @@
 (function () {
   const grid = document.getElementById("grid");
-  const eventFilter = document.getElementById("event-filter");
+  const eventsList = document.getElementById("events-list");
   const timelineList = document.getElementById("timeline-list");
   const sortOrder = document.getElementById("sort-order");
   const resetFilters = document.getElementById("reset-filters");
-  const eventClear = document.getElementById("event-clear");
   const metaToggle = document.getElementById("meta-toggle-input");
   const favoritesToggle = document.getElementById("favorites-toggle-input");
+  const shareFavorites = document.getElementById("share-favorites");
+  const shareFavoritesLink = document.getElementById("share-favorites-link");
 
   const FAVORITES_KEY = "logonerd:favorites";
   const STAR_ICON =
@@ -38,6 +39,7 @@
 
   let selectedYear = "all";
   let selectedDecade = "all";
+  let selectedEvent = "all";
 
   const LEAGUES = {
     MLB: ["MLB All-Star Game", "MLB Spring Training", "World Series"],
@@ -45,6 +47,7 @@
     NHL: ["NHL All-Star Game"],
     NBA: ["NBA All-Star Game", "NBA Finals"],
     WNBA: ["WNBA All-Star Game", "WNBA Finals"],
+    Olympics: ["Summer Olympics", "Winter Olympics"],
   };
   const GROUP_PREFIX = "group:";
 
@@ -56,6 +59,10 @@
 
     const remainingEvents = new Set(events);
 
+    eventsList.appendChild(
+      makeEventItem("all", "All events", selectEvent, "all-events")
+    );
+
     Object.keys(LEAGUES).forEach((league) => {
       const leagueEvents = LEAGUES[league].filter((event) =>
         remainingEvents.has(event)
@@ -63,36 +70,25 @@
       if (leagueEvents.length === 0) return;
       leagueEvents.forEach((event) => remainingEvents.delete(event));
 
-      const group = document.createElement("optgroup");
-      group.label = league;
-
-      const allOpt = document.createElement("option");
-      allOpt.value = GROUP_PREFIX + league;
-      allOpt.textContent = `All ${league}`;
-      group.appendChild(allOpt);
-
+      eventsList.appendChild(
+        makeEventItem(GROUP_PREFIX + league, league, selectEvent, "event-group-label")
+      );
       leagueEvents.forEach((event) => {
-        const opt = document.createElement("option");
-        opt.value = event;
-        opt.textContent = event;
-        group.appendChild(opt);
+        eventsList.appendChild(makeEventItem(event, event, selectEvent));
       });
-
-      eventFilter.appendChild(group);
     });
 
     if (remainingEvents.size > 0) {
-      const group = document.createElement("optgroup");
-      group.label = "Other";
+      const heading = document.createElement("div");
+      heading.className = "event-group-label-static";
+      heading.textContent = "Other";
+      eventsList.appendChild(heading);
+
       events
         .filter((event) => remainingEvents.has(event))
         .forEach((event) => {
-          const opt = document.createElement("option");
-          opt.value = event;
-          opt.textContent = event;
-          group.appendChild(opt);
+          eventsList.appendChild(makeEventItem(event, event, selectEvent));
         });
-      eventFilter.appendChild(group);
     }
 
     timelineList.appendChild(makeScrollItem("all", "All", selectYear));
@@ -133,6 +129,16 @@
     return btn;
   }
 
+  function makeEventItem(value, label, onSelect, extraClass) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = extraClass ? `event-item ${extraClass}` : "event-item";
+    btn.dataset.value = value;
+    btn.textContent = label;
+    btn.addEventListener("click", () => onSelect(value));
+    return btn;
+  }
+
   function makeDecadeItem(value, label, onSelect) {
     const btn = document.createElement("button");
     btn.type = "button";
@@ -146,20 +152,28 @@
     return btn;
   }
 
-  function currentFavoriteIds() {
-    if (pinnedFavoriteIds) return pinnedFavoriteIds;
-    return new Set(
-      [...favorites]
-        .map((url) => urlToId.get(url))
-        .filter((id) => id !== undefined)
-    );
+  // The current browser's own favorites, as sorted ids -- used only to
+  // build the "Share this set" link, never to decide what's on screen.
+  function favoriteIdsFromLocal() {
+    return [...favorites]
+      .map((url) => urlToId.get(url))
+      .filter((id) => id !== undefined)
+      .sort((a, b) => a - b);
+  }
+
+  function selectEvent(value) {
+    favoritesToggle.checked = false;
+    pinnedFavoriteIds = null;
+    selectedEvent = value;
+    updateActiveButtons();
+    render();
   }
 
   function selectYear(value) {
     favoritesToggle.checked = false;
     pinnedFavoriteIds = null;
     selectedYear = value;
-    if (value !== "all") selectedDecade = "all";
+    selectedDecade = "all";
     updateActiveButtons();
     render();
   }
@@ -175,19 +189,22 @@
 
   function updateActiveButtons() {
     timelineList.querySelectorAll(".scroll-item").forEach((btn) => {
-      btn.classList.toggle("active", btn.dataset.value === selectedYear);
+      const active =
+        btn.dataset.value === "all"
+          ? selectedYear === "all" && selectedDecade === "all"
+          : btn.dataset.value === selectedYear;
+      btn.classList.toggle("active", active);
     });
     timelineList.querySelectorAll(".decade-item").forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.value === selectedDecade);
     });
+    eventsList.querySelectorAll(".event-item").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.value === selectedEvent);
+    });
   }
 
-  function hasOption(select, value) {
-    return [...select.options].some((opt) => opt.value === value);
-  }
-
-  function hasScrollItem(selector, value) {
-    return [...timelineList.querySelectorAll(selector)].some(
+  function hasItem(container, selector, value) {
+    return [...container.querySelectorAll(selector)].some(
       (btn) => btn.dataset.value === value && !btn.disabled
     );
   }
@@ -206,19 +223,20 @@
         .map((s) => Number(s))
         .filter((id) => idToItem.has(id));
       if (ids.length > 0) {
+        // This is someone else's shared set, not "my" favorites -- leave
+        // the checkbox unchecked and the normal filters at their defaults.
         pinnedFavoriteIds = new Set(ids);
-        favoritesToggle.checked = true;
         return;
       }
     }
 
-    if (event && hasOption(eventFilter, event)) {
-      eventFilter.value = event;
+    if (event && hasItem(eventsList, ".event-item", event)) {
+      selectedEvent = event;
     }
 
-    if (decade && hasScrollItem(".decade-item", decade)) {
+    if (decade && hasItem(timelineList, ".decade-item", decade)) {
       selectedDecade = decade;
-    } else if (year && hasScrollItem(".scroll-item", year)) {
+    } else if (year && hasItem(timelineList, ".scroll-item", year)) {
       selectedYear = year;
     }
     updateActiveButtons();
@@ -230,11 +248,13 @@
 
   function syncURL() {
     const params = new URLSearchParams();
-    if (favoritesToggle.checked) {
-      const ids = [...currentFavoriteIds()].sort((a, b) => a - b);
-      if (ids.length > 0) params.set("favorites", ids.join(","));
-    } else {
-      if (eventFilter.value !== "all") params.set("event", eventFilter.value);
+    if (pinnedFavoriteIds) {
+      // Viewing someone else's shared set: keep the link that got us here
+      // intact (so refreshing/copying it still works).
+      const ids = [...pinnedFavoriteIds].sort((a, b) => a - b);
+      params.set("favorites", ids.join(","));
+    } else if (!favoritesToggle.checked) {
+      if (selectedEvent !== "all") params.set("event", selectedEvent);
       if (selectedDecade !== "all") {
         params.set("decade", selectedDecade);
       } else if (selectedYear !== "all") {
@@ -251,14 +271,16 @@
   }
 
   function render() {
-    const favoritesOnly = favoritesToggle.checked;
-    const eventValue = eventFilter.value;
+    const viewingShared = pinnedFavoriteIds !== null;
+    const favoritesOnly = viewingShared || favoritesToggle.checked;
+    const eventValue = selectedEvent;
     const order = sortOrder.value;
 
     let items;
-    if (favoritesOnly) {
-      const idSet = currentFavoriteIds();
-      items = LOGO_DATA.filter((item) => idSet.has(item.id));
+    if (viewingShared) {
+      items = LOGO_DATA.filter((item) => pinnedFavoriteIds.has(item.id));
+    } else if (favoritesOnly) {
+      items = LOGO_DATA.filter((item) => favorites.has(item.url));
     } else {
       items = LOGO_DATA.filter((item) => {
         let eventMatch;
@@ -288,7 +310,9 @@
     if (items.length === 0) {
       const empty = document.createElement("div");
       empty.className = "empty-state";
-      empty.textContent = favoritesOnly
+      empty.textContent = viewingShared
+        ? "None of these logos are available anymore."
+        : favoritesOnly
         ? "No favorites yet. Click the star on a logo to save it."
         : "No logos match those filters.";
       grid.appendChild(empty);
@@ -308,18 +332,26 @@
       });
     }
 
-    eventClear.classList.toggle("visible", eventValue !== "all");
+    if (favoritesToggle.checked && !viewingShared) {
+      const ids = favoriteIdsFromLocal();
+      if (ids.length > 0) {
+        shareFavoritesLink.href = `${window.location.pathname}?favorites=${ids.join(",")}`;
+        shareFavorites.classList.add("visible");
+      } else {
+        shareFavorites.classList.remove("visible");
+      }
+    } else {
+      shareFavorites.classList.remove("visible");
+    }
 
     syncURL();
   }
 
-  [eventFilter, sortOrder].forEach((el) =>
-    el.addEventListener("change", () => {
-      favoritesToggle.checked = false;
-      pinnedFavoriteIds = null;
-      render();
-    })
-  );
+  sortOrder.addEventListener("change", () => {
+    favoritesToggle.checked = false;
+    pinnedFavoriteIds = null;
+    render();
+  });
 
   metaToggle.addEventListener("change", () => {
     grid.classList.toggle("hide-meta", !metaToggle.checked);
@@ -330,7 +362,7 @@
     // (if any) was pinned by an incoming shared link.
     pinnedFavoriteIds = null;
     if (favoritesToggle.checked) {
-      eventFilter.value = "all";
+      selectedEvent = "all";
       selectedYear = "all";
       selectedDecade = "all";
       sortOrder.value = "desc";
@@ -356,15 +388,8 @@
     }
   });
 
-  eventClear.addEventListener("click", () => {
-    eventFilter.value = "all";
-    favoritesToggle.checked = false;
-    pinnedFavoriteIds = null;
-    render();
-  });
-
   resetFilters.addEventListener("click", () => {
-    eventFilter.value = "all";
+    selectedEvent = "all";
     selectedYear = "all";
     selectedDecade = "all";
     sortOrder.value = "desc";
