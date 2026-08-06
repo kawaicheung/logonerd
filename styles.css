@@ -1,18 +1,29 @@
 :root {
   --years-width: 60px;
-  --decades-width: 34px;
+  --decades-width: 46px;
+
+  --color-text: #1a1a1a;
+  --color-bg: #fff;
+  --color-muted: #666;
+  --color-faint: #999;
+  --color-border: #ccc;
+  --color-border-light: #ddd;
+  --color-hover: #f0f0f0;
+  --color-accent: #ffb347;
 }
 
 * {
   box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   margin: 0;
   padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  color: #1a1a1a;
-  background: #fff;
+  color: var(--color-text);
+  background: var(--color-bg);
 }
 
 #page-content {
@@ -34,7 +45,7 @@ h1 {
 
 .subtitle {
   margin: 0.25rem 0 0;
-  color: #666;
+  color: var(--color-muted);
   font-size: 0.9rem;
 }
 
@@ -45,7 +56,7 @@ h1 {
   flex-wrap: wrap;
   align-items: flex-end;
   gap: 1rem;;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--color-border-light);
   padding: 1rem 0;
 }
 
@@ -59,16 +70,16 @@ h1 {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: #666;
+  color: var(--color-muted);
 }
 
 .control select {
   font-family: inherit;
   font-size: 0.9rem;
   padding: 0.4rem 0.5rem;
-  border: 1px solid #ccc;
-  background: #fff;
-  color: #1a1a1a;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text);
   min-width: 160px;
 }
 
@@ -87,9 +98,9 @@ h1 {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  border: 1px solid #ccc;
-  background: #fff;
-  color: #666;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-muted);
   font-size: 0.7rem;
   line-height: 1;
   padding: 0;
@@ -101,23 +112,23 @@ h1 {
 }
 
 .clear-btn:hover {
-  background: #1a1a1a;
-  border-color: #1a1a1a;
-  color: #fff;
+  background: var(--color-text);
+  border-color: var(--color-text);
+  color: var(--color-bg);
 }
 
 #reset-filters {
   font-family: inherit;
   font-size: 0.9rem;
   padding: 0.4rem 0.75rem;
-  border: 1px solid #ccc;
-  background: #fff;
-  color: #1a1a1a;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text);
   cursor: pointer;
 }
 
 #reset-filters:hover {
-  background: #f0f0f0;
+  background: var(--color-hover);
 }
 
 .toggles {
@@ -132,7 +143,7 @@ h1 {
   align-items: center;
   gap: 0.4rem;
   font-size: 0.85rem;
-  color: #1a1a1a;
+  color: var(--color-text);
   cursor: pointer;
 }
 
@@ -148,15 +159,12 @@ h1 {
   position: fixed;
   top: 0;
   left: 0;
+  width: calc(var(--years-width) + var(--decades-width));
   height: 100vh;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0 1rem;
-  border-right: 1px solid #ddd;
-  background: #fff;
+  border-right: 1px solid var(--color-border-light);
+  background: var(--color-bg);
   z-index: 10;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -168,83 +176,80 @@ h1 {
   display: none;
 }
 
-.years-rail {
+#timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 1rem 0.3rem;
+}
+
+.decade-group {
+  display: flex;
+  flex-direction: row;
+}
+
+.years-col {
   width: var(--years-width);
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  padding: 1rem 0.3rem;
-}
-
-.decades-rail {
-  width: var(--decades-width);
-  flex: 0 0 auto;
-  position: relative;
-  border: 1px solid #eee;
 }
 
 .scroll-item {
   flex: 0 0 auto;
-  font-family: inherit;
-  font-size: 0.75rem;
+  width: var(--years-width);
+  font-family: "League Gothic", sans-serif;
+  font-size: 1.8rem;
   padding: 0.35rem 0.25rem;
-  border: 1px solid #ccc;
-  background: #fff;
-  color: #1a1a1a;
+  border: none;
+  background: var(--color-bg);
+  color: var(--color-text);
   cursor: pointer;
   white-space: nowrap;
   text-align: center;
 }
 
 .scroll-item:hover {
-  background: #f0f0f0;
+  background: var(--color-hover);
 }
 
 .scroll-item.active {
-  border-color: #1a1a1a;
-  background: #1a1a1a;
-  color: #fff;
+  background: var(--color-text);
+  color: var(--color-bg);
 }
 
 .scroll-item:disabled {
-  color: #ccc;
-  border-color: #eee;
+  color: var(--color-border);
   background: #fafafa;
   cursor: not-allowed;
   pointer-events: none;
 }
 
-/* Decade blocks (and the decades rail's own "All" item) are positioned
-   absolutely, sized in JS to span the years they cover. */
-.decades-rail > * {
-  position: absolute;
-  left: 0;
-  right: 0;
+.decade-item {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  padding: 0;
+  padding: 0 0.4rem;
   margin: 0;
-  border: none;
-  border-top: 1px solid #eee;
-  font-family: inherit;
-  font-size: 0.7rem;
-  background: #fff;
-  color: #1a1a1a;
+  border: solid 1px var(--color-text);
+  border-left: none;
+  font-family: "League Gothic", sans-serif;
+  font-size: 1rem;
+  background: var(--color-bg);
+  color: var(--color-text);
   cursor: pointer;
   white-space: nowrap;
 }
 
-.decades-rail > *:hover {
-  background: #f0f0f0;
+.decade-item:hover {
+  background: var(--color-hover);
 }
 
-.decades-rail > *.active {
-  border-color: #1a1a1a;
-  background: #1a1a1a;
-  color: #fff;
+.decade-item.active {
+  background: var(--color-text);
+  color: var(--color-bg);
 }
 
 .decade-item .decade-label {
@@ -263,14 +268,14 @@ main#grid {
 
 .card {
   position: relative;
-  background: #fff;
+  background: var(--color-bg);
   padding: 0.6rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   gap: 1.2rem;
-  border-bottom: solid 1px #ccc;
+  border-bottom: solid 1px var(--color-border);
   border-bottom-left-radius: 1rem;
   border-bottom-right-radius: 1rem;
   box-shadow: rgba(0, 0, 0, 0.05) 2px 6px 4px;
@@ -285,7 +290,7 @@ main#grid {
   padding: 0;
   border: none;
   background: transparent;
-  color: #999;
+  color: var(--color-faint);
   cursor: pointer;
   opacity: 0;
   transition: opacity 0.15s ease, color 0.15s ease;
@@ -305,11 +310,11 @@ main#grid {
 }
 
 .favorite-btn:hover {
-  color: #ffb347;
+  color: var(--color-accent);
 }
 
 .favorite-btn.favorited {
-  color: #ffb347;
+  color: var(--color-accent);
 }
 
 .favorite-btn.favorited svg {
@@ -340,7 +345,7 @@ main#grid {
 .empty-state {
   grid-column: 1 / -1;
   text-align: center;
-  color: #666;
+  color: var(--color-muted);
   padding: 3rem 0;
   font-size: 0.9rem;
 }
@@ -348,9 +353,9 @@ main#grid {
 footer {
   max-width: 1200px;
   margin: 2rem auto 0;
-  color: #999;
+  color: var(--color-faint);
   font-size: 0.75rem;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--color-border-light);
   padding-top: 1rem;
 }
 

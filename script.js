@@ -1,8 +1,7 @@
 (function () {
   const grid = document.getElementById("grid");
   const eventFilter = document.getElementById("event-filter");
-  const yearScroll = document.getElementById("year-scroll");
-  const decadeScroll = document.getElementById("decade-scroll");
+  const timelineList = document.getElementById("timeline-list");
   const sortOrder = document.getElementById("sort-order");
   const resetFilters = document.getElementById("reset-filters");
   const eventClear = document.getElementById("event-clear");
@@ -28,6 +27,15 @@
 
   const favorites = loadFavorites();
 
+  const urlToId = new Map(LOGO_DATA.map((item) => [item.url, item.id]));
+  const idToItem = new Map(LOGO_DATA.map((item) => [item.id, item]));
+
+  // Set when a shared "?favorites=" link is opened: a fixed list of ids to
+  // show, independent of the viewer's own localStorage favorites. Null
+  // means "show whatever's currently in my own localStorage favorites,"
+  // which is restored as soon as the viewer toggles favorites view by hand.
+  let pinnedFavoriteIds = null;
+
   let selectedYear = "all";
   let selectedDecade = "all";
 
@@ -45,18 +53,6 @@
     const presentYears = new Set(data.map((d) => d.year));
     const minYear = Math.min(...presentYears);
     const maxYear = Math.max(...presentYears);
-
-    const years = [];
-    for (let year = maxYear; year >= minYear; year--) years.push(year);
-
-    const decades = [];
-    for (
-      let decade = Math.floor(maxYear / 10) * 10;
-      decade >= Math.floor(minYear / 10) * 10;
-      decade -= 10
-    ) {
-      decades.push(decade);
-    }
 
     const remainingEvents = new Set(events);
 
@@ -99,20 +95,32 @@
       eventFilter.appendChild(group);
     }
 
-    yearScroll.appendChild(makeScrollItem("all", "All", selectYear));
-    years.forEach((year) => {
-      const btn = makeScrollItem(String(year), String(year), selectYear);
-      if (!presentYears.has(year)) btn.disabled = true;
-      yearScroll.appendChild(btn);
-    });
+    timelineList.appendChild(makeScrollItem("all", "All", selectYear));
 
-    decades.forEach((decade) => {
-      decadeScroll.appendChild(
+    for (
+      let decade = Math.floor(maxYear / 10) * 10;
+      decade >= Math.floor(minYear / 10) * 10;
+      decade -= 10
+    ) {
+      const group = document.createElement("div");
+      group.className = "decade-group";
+
+      const yearsCol = document.createElement("div");
+      yearsCol.className = "years-col";
+      for (let year = decade + 9; year >= decade; year--) {
+        if (year > maxYear || year < minYear) continue;
+        const btn = makeScrollItem(String(year), String(year), selectYear);
+        if (!presentYears.has(year)) btn.disabled = true;
+        yearsCol.appendChild(btn);
+      }
+      group.appendChild(yearsCol);
+
+      group.appendChild(
         makeDecadeItem(String(decade), `The ${decade}s`, selectDecade)
       );
-    });
 
-    layoutDecadeItems();
+      timelineList.appendChild(group);
+    }
   }
 
   function makeScrollItem(value, label, onSelect) {
@@ -138,38 +146,18 @@
     return btn;
   }
 
-  // Sizes/positions each decades-rail item to exactly span the years-rail
-  // items it corresponds to, so the two rails read as one aligned timeline.
-  function layoutDecadeItems() {
-    const yearItems = [...yearScroll.children].slice(1); // skip the "All" year button
-    const decadeItems = [...decadeScroll.children];
-    const railTop = yearScroll.getBoundingClientRect().top;
-
-    let yi = 0;
-    decadeItems.forEach((decadeBtn) => {
-      const decadeValue = Number(decadeBtn.dataset.value);
-      let runLength = 0;
-      while (
-        yi + runLength < yearItems.length &&
-        Math.floor(Number(yearItems[yi + runLength].dataset.value) / 10) * 10 ===
-          decadeValue
-      ) {
-        runLength++;
-      }
-
-      const firstRect = yearItems[yi].getBoundingClientRect();
-      const lastRect = yearItems[yi + runLength - 1].getBoundingClientRect();
-      decadeBtn.style.top = `${firstRect.top - railTop}px`;
-      decadeBtn.style.height = `${lastRect.bottom - firstRect.top}px`;
-
-      yi += runLength;
-    });
-
-    decadeScroll.style.height = `${yearScroll.scrollHeight}px`;
+  function currentFavoriteIds() {
+    if (pinnedFavoriteIds) return pinnedFavoriteIds;
+    return new Set(
+      [...favorites]
+        .map((url) => urlToId.get(url))
+        .filter((id) => id !== undefined)
+    );
   }
 
   function selectYear(value) {
     favoritesToggle.checked = false;
+    pinnedFavoriteIds = null;
     selectedYear = value;
     if (value !== "all") selectedDecade = "all";
     updateActiveButtons();
@@ -178,6 +166,7 @@
 
   function selectDecade(value) {
     favoritesToggle.checked = false;
+    pinnedFavoriteIds = null;
     selectedDecade = value;
     if (value !== "all") selectedYear = "all";
     updateActiveButtons();
@@ -185,10 +174,10 @@
   }
 
   function updateActiveButtons() {
-    [...yearScroll.children].forEach((btn) => {
+    timelineList.querySelectorAll(".scroll-item").forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.value === selectedYear);
     });
-    [...decadeScroll.children].forEach((btn) => {
+    timelineList.querySelectorAll(".decade-item").forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.value === selectedDecade);
     });
   }
@@ -197,8 +186,8 @@
     return [...select.options].some((opt) => opt.value === value);
   }
 
-  function hasScrollItem(container, value) {
-    return [...container.children].some(
+  function hasScrollItem(selector, value) {
+    return [...timelineList.querySelectorAll(selector)].some(
       (btn) => btn.dataset.value === value && !btn.disabled
     );
   }
@@ -209,14 +198,27 @@
     const year = params.get("year");
     const decade = params.get("decade");
     const sort = params.get("sort");
+    const favoritesParam = params.get("favorites");
+
+    if (favoritesParam) {
+      const ids = favoritesParam
+        .split(",")
+        .map((s) => Number(s))
+        .filter((id) => idToItem.has(id));
+      if (ids.length > 0) {
+        pinnedFavoriteIds = new Set(ids);
+        favoritesToggle.checked = true;
+        return;
+      }
+    }
 
     if (event && hasOption(eventFilter, event)) {
       eventFilter.value = event;
     }
 
-    if (decade && hasScrollItem(decadeScroll, decade)) {
+    if (decade && hasScrollItem(".decade-item", decade)) {
       selectedDecade = decade;
-    } else if (year && hasScrollItem(yearScroll, year)) {
+    } else if (year && hasScrollItem(".scroll-item", year)) {
       selectedYear = year;
     }
     updateActiveButtons();
@@ -228,13 +230,18 @@
 
   function syncURL() {
     const params = new URLSearchParams();
-    if (eventFilter.value !== "all") params.set("event", eventFilter.value);
-    if (selectedDecade !== "all") {
-      params.set("decade", selectedDecade);
-    } else if (selectedYear !== "all") {
-      params.set("year", selectedYear);
+    if (favoritesToggle.checked) {
+      const ids = [...currentFavoriteIds()].sort((a, b) => a - b);
+      if (ids.length > 0) params.set("favorites", ids.join(","));
+    } else {
+      if (eventFilter.value !== "all") params.set("event", eventFilter.value);
+      if (selectedDecade !== "all") {
+        params.set("decade", selectedDecade);
+      } else if (selectedYear !== "all") {
+        params.set("year", selectedYear);
+      }
+      if (sortOrder.value !== "desc") params.set("sort", sortOrder.value);
     }
-    if (sortOrder.value !== "desc") params.set("sort", sortOrder.value);
 
     const queryString = params.toString();
     const newURL = queryString
@@ -250,7 +257,8 @@
 
     let items;
     if (favoritesOnly) {
-      items = LOGO_DATA.filter((item) => favorites.has(item.url));
+      const idSet = currentFavoriteIds();
+      items = LOGO_DATA.filter((item) => idSet.has(item.id));
     } else {
       items = LOGO_DATA.filter((item) => {
         let eventMatch;
@@ -308,6 +316,7 @@
   [eventFilter, sortOrder].forEach((el) =>
     el.addEventListener("change", () => {
       favoritesToggle.checked = false;
+      pinnedFavoriteIds = null;
       render();
     })
   );
@@ -317,6 +326,9 @@
   });
 
   favoritesToggle.addEventListener("change", () => {
+    // A hand click always means "show MY favorites," not whatever list
+    // (if any) was pinned by an incoming shared link.
+    pinnedFavoriteIds = null;
     if (favoritesToggle.checked) {
       eventFilter.value = "all";
       selectedYear = "all";
@@ -347,6 +359,7 @@
   eventClear.addEventListener("click", () => {
     eventFilter.value = "all";
     favoritesToggle.checked = false;
+    pinnedFavoriteIds = null;
     render();
   });
 
@@ -357,6 +370,7 @@
     sortOrder.value = "desc";
     metaToggle.checked = true;
     favoritesToggle.checked = false;
+    pinnedFavoriteIds = null;
     grid.classList.remove("hide-meta");
     updateActiveButtons();
     render();
