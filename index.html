@@ -21,16 +21,11 @@
   </nav>
 </div>
 
-<div id="page-content">
-
-<header>
-  <h1>Logo Nerd</h1>
-  <p class="subtitle">A browsable archive of championship event logos.</p>
-</header>
 
 <section id="controls">
+  <div id="site-title">LogoNerd</div>
+
   <div class="control">
-    <label for="sort-order">Sort</label>
     <select id="sort-order">
       <option value="desc">Year: newest first</option>
       <option value="asc">Year: oldest first</option>
@@ -39,7 +34,6 @@
 
   <button id="reset-filters" type="button">Reset</button>
 
-  <div class="control toggles">
     <label for="meta-toggle-input">
       <input type="checkbox" id="meta-toggle-input" checked>
       Show details
@@ -48,8 +42,10 @@
       <input type="checkbox" id="favorites-toggle-input">
       Show favorites
     </label>
-  </div>
 </section>
+
+<div id="page-content">
+
 
 <main id="grid"></main>
 

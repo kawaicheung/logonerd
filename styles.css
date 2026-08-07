@@ -36,35 +36,27 @@ body {
 
 #page-content {
   margin-right: calc(var(--edge-offset) + var(--years-width) + var(--decades-width) + var(--events-width));
-  padding: 0 1.5rem 3rem;
+  padding: 7rem 1.5rem 3rem;
 }
 
-header {
-  margin: 0 auto;
-  padding: 2rem 0 1rem;
-}
-
-h1 {
+#site-title {
   font-size: 1.5rem;
   font-weight: 600;
   font-family: var(--font-league-gothic);
-  margin: 0;
-}
-
-.subtitle {
-  margin: 0.25rem 0 0;
-  color: var(--color-muted);
-  font-size: 0.9rem;
 }
 
 #controls {
-  margin: 0 auto 1.5rem;
+  position: fixed;
+  top: var(--edge-offset);
+  right: calc(var(--edge-offset) + var(--years-width) + var(--decades-width) + var(--events-width) + 2px);
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: 1rem;;
-  border-bottom: 1px solid var(--color-border-light);
-  padding: 1rem 0;
+  align-items: center;
+  gap: 1.5rem;
+  border: solid 1px var(--color-text);
+  border-right: none;
+  background: var(--color-bg);
+  padding: 0.5rem 1rem;
+  z-index: 10;
 }
 
 .control {
@@ -104,25 +96,6 @@ h1 {
   background: var(--color-hover);
 }
 
-.toggles {
-  margin-left: auto;
-  flex-direction: row;
-  align-items: center;
-  gap: 1rem;
-}
-
-.toggles label {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.85rem;
-  color: var(--color-text);
-  cursor: pointer;
-}
-
-.toggles input[type="checkbox"] {
-  cursor: pointer;
-}
 
 #grid.hide-meta .card .meta {
   display: none;
@@ -133,7 +106,6 @@ h1 {
   top: var(--edge-offset);
   right: var(--edge-offset);
   display: flex;
-  flex-direction: row;
   height: calc(100vh - 2 * var(--edge-offset));
   z-index: 10;
   border: solid 1px var(--color-text);
@@ -219,7 +191,6 @@ h1 {
 
 .decade-group {
   display: flex;
-  flex-direction: row;
 }
 
 .years-col {
