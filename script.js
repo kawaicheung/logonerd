@@ -115,7 +115,7 @@
       group.className = "decade-group";
 
       group.appendChild(
-        makeDecadeItem(String(decade), `The ${decade}s`, selectDecade)
+        makeDecadeItem(String(decade), `${decade}s`, selectDecade)
       );
 
       const yearsCol = document.createElement("div");
