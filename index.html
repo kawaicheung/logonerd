@@ -22,26 +22,15 @@
 </div>
 
 
+<div id="site-title">LogoNerd</div>
+
 <section id="controls">
-  <div id="site-title">LogoNerd</div>
+  <button id="sort-order" type="button" class="control-btn">Newest first</button>
 
-  <div class="control">
-    <select id="sort-order">
-      <option value="desc">Year: newest first</option>
-      <option value="asc">Year: oldest first</option>
-    </select>
-  </div>
+  <button id="reset-filters" type="button" class="control-btn">All</button>
 
-  <button id="reset-filters" type="button">Reset</button>
-
-    <label for="meta-toggle-input">
-      <input type="checkbox" id="meta-toggle-input" checked>
-      Show details
-    </label>
-    <label for="favorites-toggle-input">
-      <input type="checkbox" id="favorites-toggle-input">
-      Show favorites
-    </label>
+  <button id="meta-toggle" type="button" class="control-btn active" aria-pressed="true">Info</button>
+  <button id="favorites-toggle" type="button" class="control-btn" aria-pressed="false">Faves</button>
 </section>
 
 <div id="page-content">
@@ -56,6 +45,6 @@
 </div>
 
 <script src="data.js?v=20260806q"></script>
-<script src="script.js?v=20260807a"></script>
+<script src="script.js?v=20260807c"></script>
 </body>
 </html>

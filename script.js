@@ -4,10 +4,32 @@
   const timelineList = document.getElementById("timeline-list");
   const sortOrder = document.getElementById("sort-order");
   const resetFilters = document.getElementById("reset-filters");
-  const metaToggle = document.getElementById("meta-toggle-input");
-  const favoritesToggle = document.getElementById("favorites-toggle-input");
+  const metaToggle = document.getElementById("meta-toggle");
+  const favoritesToggle = document.getElementById("favorites-toggle");
   const shareFavorites = document.getElementById("share-favorites");
   const shareFavoritesLink = document.getElementById("share-favorites-link");
+
+  let sortDirection = "desc";
+  let showDetails = true;
+  let showFavorites = false;
+
+  function setSortDirection(value) {
+    sortDirection = value;
+    sortOrder.textContent = value === "asc" ? "Oldest first" : "Newest first";
+  }
+
+  function setShowDetails(value) {
+    showDetails = value;
+    metaToggle.classList.toggle("active", value);
+    metaToggle.setAttribute("aria-pressed", String(value));
+    grid.classList.toggle("hide-meta", !value);
+  }
+
+  function setShowFavorites(value) {
+    showFavorites = value;
+    favoritesToggle.classList.toggle("active", value);
+    favoritesToggle.setAttribute("aria-pressed", String(value));
+  }
 
   const FAVORITES_KEY = "logonerd:favorites";
   const STAR_ICON =
@@ -175,7 +197,7 @@
   }
 
   function selectEvent(value) {
-    favoritesToggle.checked = false;
+    setShowFavorites(false);
     pinnedFavoriteIds = null;
     selectedEvent = value;
     updateActiveButtons();
@@ -183,7 +205,7 @@
   }
 
   function selectYear(value) {
-    favoritesToggle.checked = false;
+    setShowFavorites(false);
     pinnedFavoriteIds = null;
     selectedYear = value;
     selectedDecade = "all";
@@ -192,7 +214,7 @@
   }
 
   function selectDecade(value) {
-    favoritesToggle.checked = false;
+    setShowFavorites(false);
     pinnedFavoriteIds = null;
     selectedDecade = value;
     if (value !== "all") selectedYear = "all";
@@ -260,7 +282,7 @@
     updateActiveButtons();
 
     if (sort === "asc") {
-      sortOrder.value = "asc";
+      setSortDirection("asc");
     }
   }
 
@@ -271,14 +293,14 @@
       // intact (so refreshing/copying it still works).
       const ids = [...pinnedFavoriteIds].sort((a, b) => a - b);
       params.set("favorites", ids.join(","));
-    } else if (!favoritesToggle.checked) {
+    } else if (!showFavorites) {
       if (selectedEvent !== "all") params.set("event", selectedEvent);
       if (selectedDecade !== "all") {
         params.set("decade", selectedDecade);
       } else if (selectedYear !== "all") {
         params.set("year", selectedYear);
       }
-      if (sortOrder.value !== "desc") params.set("sort", sortOrder.value);
+      if (sortDirection !== "desc") params.set("sort", sortDirection);
     }
 
     const queryString = params.toString();
@@ -290,9 +312,9 @@
 
   function render() {
     const viewingShared = pinnedFavoriteIds !== null;
-    const favoritesOnly = viewingShared || favoritesToggle.checked;
+    const favoritesOnly = viewingShared || showFavorites;
     const eventValue = selectedEvent;
-    const order = sortOrder.value;
+    const order = sortDirection;
 
     let items;
     if (viewingShared) {
@@ -350,7 +372,7 @@
       });
     }
 
-    if (favoritesToggle.checked && !viewingShared) {
+    if (showFavorites && !viewingShared) {
       const ids = favoriteIdsFromLocal();
       if (ids.length > 0) {
         shareFavoritesLink.href = `${window.location.pathname}?favorites=${ids.join(",")}`;
@@ -365,25 +387,27 @@
     syncURL();
   }
 
-  sortOrder.addEventListener("change", () => {
-    favoritesToggle.checked = false;
+  sortOrder.addEventListener("click", () => {
+    setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    setShowFavorites(false);
     pinnedFavoriteIds = null;
     render();
   });
 
-  metaToggle.addEventListener("change", () => {
-    grid.classList.toggle("hide-meta", !metaToggle.checked);
+  metaToggle.addEventListener("click", () => {
+    setShowDetails(!showDetails);
   });
 
-  favoritesToggle.addEventListener("change", () => {
+  favoritesToggle.addEventListener("click", () => {
     // A hand click always means "show MY favorites," not whatever list
     // (if any) was pinned by an incoming shared link.
     pinnedFavoriteIds = null;
-    if (favoritesToggle.checked) {
+    setShowFavorites(!showFavorites);
+    if (showFavorites) {
       selectedEvent = "all";
       selectedYear = "all";
       selectedDecade = "all";
-      sortOrder.value = "desc";
+      setSortDirection("desc");
       updateActiveButtons();
     }
     render();
@@ -399,7 +423,7 @@
       favorites.add(url);
     }
     saveFavorites();
-    if (favoritesToggle.checked) {
+    if (showFavorites) {
       render();
     } else {
       btn.classList.toggle("favorited", favorites.has(url));
@@ -410,11 +434,10 @@
     selectedEvent = "all";
     selectedYear = "all";
     selectedDecade = "all";
-    sortOrder.value = "desc";
-    metaToggle.checked = true;
-    favoritesToggle.checked = false;
+    setSortDirection("desc");
+    setShowDetails(true);
+    setShowFavorites(false);
     pinnedFavoriteIds = null;
-    grid.classList.remove("hide-meta");
     updateActiveButtons();
     render();
   });
