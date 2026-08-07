@@ -44,9 +44,9 @@
   const LEAGUES = {
     MLB: ["World Series", "MLB All-Star Game", "MLB Spring Training"],
     NFL: ["Super Bowl", "NFL Draft"],
-    NHL: ["NHL All-Star Game"],
-    NBA: ["NBA Finals", "NBA All-Star Game"],
-    WNBA: ["WNBA Finals", "WNBA All-Star Game"],
+    NHL: ["NHL All-Star Game", "NHL Draft", "Stanley Cup Playoffs"],
+    NBA: ["NBA All-Star Game", "NBA Draft", "NBA Finals"],
+    WNBA: ["WNBA All-Star Game", "WNBA Finals"],
     Olympics: ["Summer Olympics", "Winter Olympics"],
   };
   const GROUP_PREFIX = "group:";
