@@ -65,7 +65,7 @@
 
   const LEAGUES = {
     MLB: ["World Series", "MLB All-Star Game", "MLB Spring Training"],
-    NFL: ["Super Bowl", "NFL Draft"],
+    NFL: ["Super Bowl", "NFL Draft", "Pro Bowl"],
     NHL: ["NHL All-Star Game", "NHL Draft", "Stanley Cup Playoffs"],
     NBA: ["NBA All-Star Game", "NBA Draft", "NBA Finals"],
     WNBA: ["WNBA All-Star Game", "WNBA Finals"],
