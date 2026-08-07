@@ -114,6 +114,10 @@
       const group = document.createElement("div");
       group.className = "decade-group";
 
+      group.appendChild(
+        makeDecadeItem(String(decade), `The ${decade}s`, selectDecade)
+      );
+
       const yearsCol = document.createElement("div");
       yearsCol.className = "years-col";
       for (let year = decade + 9; year >= decade; year--) {
@@ -123,10 +127,6 @@
         yearsCol.appendChild(btn);
       }
       group.appendChild(yearsCol);
-
-      group.appendChild(
-        makeDecadeItem(String(decade), `The ${decade}s`, selectDecade)
-      );
 
       timelineList.appendChild(group);
     }
