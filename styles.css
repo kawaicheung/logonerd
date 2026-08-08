@@ -47,9 +47,30 @@ body {
   position: fixed;
   bottom: var(--edge-offset);
   right: var(--edge-offset);
+  text-align: right;
+  z-index: 10;
+}
+
+#site-title-main {
   font-size: 1.5rem;
   font-weight: 600;
   font-family: var(--font-league-gothic);
+}
+
+#site-author {
+  font-family: var(--font-league-gothic);
+  color: var(--color-muted);
+}
+
+#footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(2 * var(--edge-offset));
+  background: linear-gradient(to top, var(--color-bg), transparent);
+  pointer-events: none;
+  z-index: 9;
 }
 
 #controls {
