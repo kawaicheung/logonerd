@@ -346,6 +346,7 @@
     items.sort((a, b) => (order === "asc" ? a.year - b.year : b.year - a.year));
 
     grid.innerHTML = "";
+    grid.scrollTop = 0;
 
     if (items.length === 0) {
       const empty = document.createElement("div");
@@ -389,8 +390,6 @@
 
   sortOrder.addEventListener("click", () => {
     setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    setShowFavorites(false);
-    pinnedFavoriteIds = null;
     render();
   });
 
@@ -407,7 +406,6 @@
       selectedEvent = "all";
       selectedYear = "all";
       selectedDecade = "all";
-      setSortDirection("desc");
       updateActiveButtons();
     }
     render();
@@ -434,7 +432,6 @@
     selectedEvent = "all";
     selectedYear = "all";
     selectedDecade = "all";
-    setSortDirection("desc");
     setShowDetails(true);
     setShowFavorites(false);
     pinnedFavoriteIds = null;

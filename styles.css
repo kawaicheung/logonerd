@@ -2,7 +2,8 @@
   --years-width: 50px;
   --decades-width: 50px;
   --events-width: 140px;
-  --edge-offset: 1rem;
+  --sidebar-width: calc(var(--years-width) + var(--decades-width) + var(--events-width));
+  --edge-offset: 3rem;
 
   --color-text: #1a1a1a;
   --color-bg: #fff;
@@ -37,16 +38,14 @@ body {
 }
 
 #page-content {
-  margin-right: calc(var(--edge-offset) + var(--years-width) + var(--decades-width) + var(--events-width));
-  padding: 2rem 1rem 4vh;
+  margin-right: calc(var(--edge-offset) + var(--sidebar-width));
   height: 100vh;
   display: flex;
-  flex-direction: column;
 }
 
 #site-title {
   position: fixed;
-  top: var(--edge-offset);
+  bottom: var(--edge-offset);
   right: var(--edge-offset);
   font-size: 1.5rem;
   font-weight: 600;
@@ -55,14 +54,15 @@ body {
 
 #controls {
   position: fixed;
-  bottom: var(--edge-offset);
+  top: var(--edge-offset);
   right: var(--edge-offset);
   display: flex;
   align-items: center;
-  border: solid 1px var(--color-text);
+  border: solid 1px var(--color-border);
   background: var(--color-bg);
   font-size: var(--font-size-small-label);
   z-index: 10;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
 .control-btn {
@@ -77,7 +77,7 @@ body {
 }
 
 .control-btn + .control-btn {
-  border-left: solid 1px var(--color-text);
+  border-left: solid 1px var(--color-border);
 }
 
 .control-btn:hover {
@@ -110,7 +110,10 @@ body {
   background: var(--color-bg);
   scrollbar-width: none;
   -ms-overflow-style: none;
-  border-right: solid 1px var(--color-text);
+  rotate: -1deg;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  margin-top: 1rem;
+  border: solid 1px var(--color-border);
 }
 
 #timeline-filters::-webkit-scrollbar {
@@ -125,6 +128,9 @@ body {
   background: var(--color-bg);
   scrollbar-width: none;
   -ms-overflow-style: none;
+  rotate: 1deg;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  border: solid 1px var(--color-border);
 }
 
 #events-filter::-webkit-scrollbar {
@@ -171,7 +177,7 @@ body {
   z-index: 1;
   font-family: var(--font-league-gothic);
   font-size: var(--font-size-medium-label);
-  border-bottom: solid 1px var(--color-text);
+  border-bottom: solid 1px var(--color-border);
   letter-spacing: 0;
 }
 
@@ -194,7 +200,7 @@ body {
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  border-left: solid 1px var(--color-text);
+  border-left: solid 1px var(--color-border);
 }
 
 .year-item {
@@ -219,7 +225,7 @@ body {
   top: 0;
   z-index: 1;
   text-align: left;
-  border-bottom: solid 1px var(--color-text);
+  border-bottom: solid 1px var(--color-border);
 }
 
 .year-item:hover {
@@ -259,7 +265,7 @@ body {
   color: var(--color-text);
   cursor: pointer;
   white-space: nowrap;
-  border-bottom: solid 1px var(--color-text);
+  border-bottom: solid 1px var(--color-border);
 }
 
 .decade-item:hover {
@@ -289,6 +295,7 @@ main#grid {
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  padding-top: var(--edge-offset);
 }
 
 main#grid::-webkit-scrollbar {

@@ -1,50 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Logo Nerd</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Pathway+Gothic+One&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logo Nerd</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pathway+Gothic+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<div id="sidebar">
-  <nav id="timeline-filters">
-    <div id="timeline-list"></div>
-  </nav>
+  <div id="sidebar">
+    <nav id="timeline-filters">
+      <div id="timeline-list"></div>
+    </nav>
 
-  <nav id="events-filter">
-    <div id="events-list"></div>
-  </nav>
-</div>
+    <nav id="events-filter">
+      <div id="events-list"></div>
+    </nav>
+  </div>
 
+  <div id="site-title">LogoNerd</div>
 
-<div id="site-title">LogoNerd</div>
+  <section id="controls">
+    <button id="sort-order" type="button" class="control-btn">Newest first</button>
+    <button id="reset-filters" type="button" class="control-btn">All</button>
+    <button id="meta-toggle" type="button" class="control-btn active" aria-pressed="true">Info</button>
+    <button id="favorites-toggle" type="button" class="control-btn" aria-pressed="false">Faves</button>
+  </section>
 
-<section id="controls">
-  <button id="sort-order" type="button" class="control-btn">Newest first</button>
+  <div id="page-content">
+    <main id="grid"></main>
+    <p id="share-favorites">
+      <a id="share-favorites-link" href="#">Link to share your favorites</a>
+    </p>
+  </div>
 
-  <button id="reset-filters" type="button" class="control-btn">All</button>
-
-  <button id="meta-toggle" type="button" class="control-btn active" aria-pressed="true">Info</button>
-  <button id="favorites-toggle" type="button" class="control-btn" aria-pressed="false">Faves</button>
-</section>
-
-<div id="page-content">
-
-
-<main id="grid"></main>
-
-<p id="share-favorites">
-  <a id="share-favorites-link" href="#">Link to share your favorites</a>
-</p>
-
-</div>
-
-<script src="data.js?v=20260807a"></script>
-<script src="script.js?v=20260807d"></script>
+  <script src="data.js?v=20260807a"></script>
+  <script src="script.js?v=20260807f"></script>
 </body>
 </html>
