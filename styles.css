@@ -105,13 +105,52 @@ body {
   background: var(--color-hover);
 }
 
-.control-btn.active {
-  background: var(--color-text);
-  color: var(--color-bg);
+.icon-shortcut {
+  position: fixed;
+  top: calc(var(--edge-offset) + 3.25rem);
+  right: var(--edge-offset);
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: solid 1px var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text);
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
-#grid.hide-meta .card .meta {
-  display: none;
+.icon-shortcut svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+.icon-shortcut:hover {
+  background: var(--color-hover);
+}
+
+.icon-shortcut.active {
+  color: var(--color-accent);
+}
+
+.icon-shortcut.active svg {
+  fill: currentColor;
+}
+
+@keyframes icon-shortcut-bounce {
+  0%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-10px); }
+  50% { transform: translateY(0); }
+  70% { transform: translateY(-5px); }
+}
+
+.icon-shortcut.bounce {
+  animation: icon-shortcut-bounce 0.5s ease;
 }
 
 #sidebar {
@@ -326,12 +365,12 @@ main#grid::-webkit-scrollbar {
 .card {
   position: relative;
   background: var(--color-bg);
-  padding: 2rem 1rem;
+  padding: 2rem 1rem 1rem 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 1.2rem;
+  gap: 0.6rem;
   border-radius: 0.2rem;
   box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px;
 }
@@ -393,8 +432,13 @@ main#grid::-webkit-scrollbar {
 .card .meta {
   font-size: 0.85rem;
   font-family: var(--font-family-sans-serif);
-  font-weight: 400;
-  letter-spacing: -0.01rem;
+  letter-spacing: -0.02rem;
+  visibility: hidden;
+  color: var(--color-muted);
+}
+
+.card:hover .meta {
+  visibility: visible;
 }
 
 .empty-state {

@@ -4,25 +4,16 @@
   const timelineList = document.getElementById("timeline-list");
   const sortOrder = document.getElementById("sort-order");
   const resetFilters = document.getElementById("reset-filters");
-  const metaToggle = document.getElementById("meta-toggle");
   const favoritesToggle = document.getElementById("favorites-toggle");
   const shareFavorites = document.getElementById("share-favorites");
   const shareFavoritesLink = document.getElementById("share-favorites-link");
 
   let sortDirection = "desc";
-  let showDetails = true;
   let showFavorites = false;
 
   function setSortDirection(value) {
     sortDirection = value;
     sortOrder.textContent = value === "asc" ? "Oldest first" : "Newest first";
-  }
-
-  function setShowDetails(value) {
-    showDetails = value;
-    metaToggle.classList.toggle("active", value);
-    metaToggle.setAttribute("aria-pressed", String(value));
-    grid.classList.toggle("hide-meta", !value);
   }
 
   function setShowFavorites(value) {
@@ -393,10 +384,6 @@
     render();
   });
 
-  metaToggle.addEventListener("click", () => {
-    setShowDetails(!showDetails);
-  });
-
   favoritesToggle.addEventListener("click", () => {
     // A hand click always means "show MY favorites," not whatever list
     // (if any) was pinned by an incoming shared link.
@@ -419,6 +406,9 @@
       favorites.delete(url);
     } else {
       favorites.add(url);
+      favoritesToggle.classList.remove("bounce");
+      void favoritesToggle.offsetWidth;
+      favoritesToggle.classList.add("bounce");
     }
     saveFavorites();
     if (showFavorites) {
@@ -432,7 +422,6 @@
     selectedEvent = "all";
     selectedYear = "all";
     selectedDecade = "all";
-    setShowDetails(true);
     setShowFavorites(false);
     pinnedFavoriteIds = null;
     updateActiveButtons();
