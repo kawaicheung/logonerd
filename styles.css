@@ -39,6 +39,7 @@ body {
 }
 
 #page-content {
+  position: relative;
   margin-right: calc(var(--edge-offset) + var(--sidebar-width));
   height: 100vh;
   display: flex;
@@ -46,10 +47,15 @@ body {
 
 #site-title {
   position: fixed;
-  bottom: var(--edge-offset);
+  top: var(--edge-offset);
   right: var(--edge-offset);
   text-align: right;
   z-index: 10;
+}
+
+#site-title-row {
+  display: flex;
+  align-items: center;
 }
 
 #site-title-main {
@@ -75,17 +81,15 @@ body {
   z-index: 9;
 }
 
-#icon-shortcuts {
-  position: fixed;
-  top: var(--edge-offset);
+#sort-order-btn {
+  position: absolute;
+  bottom: var(--edge-offset);
   right: var(--edge-offset);
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
   z-index: 10;
 }
 
 .icon-shortcut {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -104,17 +108,18 @@ body {
   stroke-width: 1.5;
 }
 
-#sort-order svg {
+#sort-order-btn svg {
+  width: 42px;
+  height: 42px;
   transition: transform 0.2s ease;
 }
 
-#sort-order.asc svg {
+#sort-order-btn.asc svg {
   transform: rotate(180deg);
 }
 
 .icon-shortcut.active {
   color: var(--color-accent);
-  transform: scale(1.6);
 }
 
 .icon-shortcut.active svg {
@@ -153,22 +158,28 @@ body {
 }
 
 @keyframes icon-shortcut-bounce {
-  0%, 100% { transform: scale(1); }
-  30% { transform: scale(1.35); }
-  50% { transform: scale(1); }
-  70% { transform: scale(1.15); }
+  0% {
+    transform: scale(1);
+    animation-timing-function: cubic-bezier(0.34, 2.6, 0.64, 1);
+  }
+  60% {
+    transform: scale(1.6);
+    animation-timing-function: ease-out;
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .icon-shortcut.bounce {
-  animation: icon-shortcut-bounce 0.5s ease;
+  animation: icon-shortcut-bounce 0.4s;
 }
 
 #sidebar {
   position: fixed;
-  top: 50%;
+  bottom: calc(2 * var(--edge-offset));
   right: var(--edge-offset);
   display: flex;
-  transform: translateY(-50%);
   z-index: 10;
   gap: 0.3rem;
 }
@@ -256,7 +267,7 @@ body {
 
 .event-item.event-group-label {
   padding-left: 0.3rem;
-  font-weight: 600;
+  font-weight: 800;
 }
 
 #timeline-list {

@@ -4,7 +4,7 @@
   const eventsList = document.getElementById("events-list");
   const timelineFilters = document.getElementById("timeline-filters");
   const timelineList = document.getElementById("timeline-list");
-  const sortOrder = document.getElementById("sort-order");
+  const sortOrder = document.getElementById("sort-order-btn");
   const favoritesToggle = document.getElementById("favorites-toggle");
   const shareFavorites = document.getElementById("share-favorites");
   const shareFavoritesLink = document.getElementById("share-favorites-link");

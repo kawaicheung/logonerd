@@ -22,21 +22,20 @@
   </div>
 
   <div id="site-title">
-    <div id="site-title-main">LogoNerd</div>
+    <div id="site-title-row">
+      <button id="favorites-toggle" type="button" class="icon-shortcut" aria-pressed="false" aria-label="Toggle favorites">
+        <svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.26 6.6.6-5 4.53 1.5 6.7L12 16.9l-6 3.7 1.5-6.7-5-4.53 6.6-.6z"/></svg>
+      </button>
+      <div id="site-title-main">LogoNerd</div>
+    </div>
     <div id="site-author">By Ka Wai Cheung</div>
-  </div>
-
-  <div id="icon-shortcuts">
-    <button id="sort-order" type="button" class="icon-shortcut" aria-label="Toggle sort order">
-      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
-    </button>
-    <button id="favorites-toggle" type="button" class="icon-shortcut" aria-pressed="false" aria-label="Toggle favorites">
-      <svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.26 6.6.6-5 4.53 1.5 6.7L12 16.9l-6 3.7 1.5-6.7-5-4.53 6.6-.6z"/></svg>
-    </button>
   </div>
 
   <div id="page-content">
     <main id="grid"></main>
+    <button id="sort-order-btn" type="button" class="icon-shortcut" aria-label="Toggle sort order">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+    </button>
     <p id="share-favorites">
       <a id="share-favorites-link" href="#">Link to share your favorites</a>
     </p>
