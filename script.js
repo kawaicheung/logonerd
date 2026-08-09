@@ -417,7 +417,7 @@
       favoritesBar.classList.add("visible");
       const ids = favoriteIdsFromLocal();
       if (ids.length > 0) {
-        shareFavoritesBtn.dataset.shareUrl = `${window.location.pathname}?favorites=${ids.join(",")}`;
+        shareFavoritesBtn.dataset.shareUrl = `${window.location.origin}${window.location.pathname}?favorites=${ids.join(",")}`;
         shareFavorites.classList.add("visible");
       } else {
         shareFavorites.classList.remove("visible");
