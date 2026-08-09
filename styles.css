@@ -52,7 +52,8 @@ body {
 }
 
 #site-title-main {
-  font-size: 1.5rem;
+  font-size: 2rem;
+  letter-spacing: -0.05rem;
   font-weight: 600;
   font-family: var(--font-league-gothic);
 }
@@ -73,65 +74,40 @@ body {
   z-index: 9;
 }
 
-#controls {
+#icon-shortcuts {
   position: fixed;
   top: var(--edge-offset);
   right: var(--edge-offset);
   display: flex;
   align-items: center;
-  border: solid 1px var(--color-border);
-  background: var(--color-bg);
-  font-size: var(--font-size-small-label);
+  gap: 0.75rem;
   z-index: 10;
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-}
-
-.control-btn {
-  font-family: var(--font-family-sans-serif);
-  font-size: var(--font-size-small-label);
-  border: none;
-  background: var(--color-bg);
-  color: var(--color-text);
-  cursor: pointer;
-  white-space: nowrap;
-  padding: 0.35rem 0.5rem;
-}
-
-.control-btn + .control-btn {
-  border-left: solid 1px var(--color-border);
-}
-
-.control-btn:hover {
-  background: var(--color-hover);
 }
 
 .icon-shortcut {
-  position: fixed;
-  top: calc(var(--edge-offset) + 3.25rem);
-  right: var(--edge-offset);
-  width: 3rem;
-  height: 3rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: solid 1px var(--color-border);
-  background: var(--color-bg);
+  background: transparent;
+  border: none;
   color: var(--color-text);
   cursor: pointer;
-  z-index: 10;
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
 .icon-shortcut svg {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.5;
 }
 
-.icon-shortcut:hover {
-  background: var(--color-hover);
+#sort-order svg {
+  transition: transform 0.2s ease;
+}
+
+#sort-order.asc svg {
+  transform: rotate(180deg);
 }
 
 .icon-shortcut.active {
@@ -142,11 +118,41 @@ body {
   fill: currentColor;
 }
 
+.spark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--size, 10px);
+  height: var(--size, 10px);
+  margin: calc(var(--size, 10px) / -2);
+  color: var(--color-accent);
+  pointer-events: none;
+  animation: spark-burst var(--duration, 0.5s) ease-out forwards;
+  animation-delay: var(--delay, 0s);
+}
+
+.spark svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+@keyframes spark-burst {
+  0% {
+    transform: rotate(var(--angle)) translateY(calc(-1 * var(--start, 18px))) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(var(--angle)) translateY(calc(-1 * var(--distance, 58px))) scale(0.3);
+    opacity: 0;
+  }
+}
+
 @keyframes icon-shortcut-bounce {
-  0%, 100% { transform: translateY(0); }
-  30% { transform: translateY(-10px); }
-  50% { transform: translateY(0); }
-  70% { transform: translateY(-5px); }
+  0%, 100% { transform: scale(1); }
+  30% { transform: scale(1.35); }
+  50% { transform: scale(1); }
+  70% { transform: scale(1.15); }
 }
 
 .icon-shortcut.bounce {
@@ -160,6 +166,7 @@ body {
   display: flex;
   transform: translateY(-50%);
   z-index: 10;
+  gap: 0.3rem;
 }
 
 #timeline-filters {
@@ -170,6 +177,7 @@ body {
   background: var(--color-bg);
   scrollbar-width: none;
   -ms-overflow-style: none;
+  scroll-behavior: smooth;
   rotate: -1deg;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   margin-top: 1rem;
@@ -188,6 +196,7 @@ body {
   background: var(--color-bg);
   scrollbar-width: none;
   -ms-overflow-style: none;
+  scroll-behavior: smooth;
   rotate: 1deg;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   border: solid 1px var(--color-border);
@@ -274,10 +283,6 @@ body {
   cursor: pointer;
   white-space: nowrap;
   border-bottom: solid 1px var(--color-border);
-
-  &:last-child {
-    border-bottom-color: var(--color-text);
-  }
 }
 
 #timeline-list > .year-item:first-child {
@@ -355,7 +360,7 @@ main#grid {
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding-top: var(--edge-offset);
+  padding: var(--edge-offset) 0;
 }
 
 main#grid::-webkit-scrollbar {

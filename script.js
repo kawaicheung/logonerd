@@ -1,9 +1,10 @@
 (function () {
   const grid = document.getElementById("grid");
+  const eventsFilter = document.getElementById("events-filter");
   const eventsList = document.getElementById("events-list");
+  const timelineFilters = document.getElementById("timeline-filters");
   const timelineList = document.getElementById("timeline-list");
   const sortOrder = document.getElementById("sort-order");
-  const resetFilters = document.getElementById("reset-filters");
   const favoritesToggle = document.getElementById("favorites-toggle");
   const shareFavorites = document.getElementById("share-favorites");
   const shareFavoritesLink = document.getElementById("share-favorites-link");
@@ -13,7 +14,11 @@
 
   function setSortDirection(value) {
     sortDirection = value;
-    sortOrder.textContent = value === "asc" ? "Oldest first" : "Newest first";
+    sortOrder.classList.toggle("asc", value === "asc");
+    sortOrder.setAttribute(
+      "aria-label",
+      value === "asc" ? "Sort newest first" : "Sort oldest first"
+    );
   }
 
   function setShowFavorites(value) {
@@ -25,6 +30,30 @@
   const FAVORITES_KEY = "logonerd:favorites";
   const STAR_ICON =
     '<svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.26 6.6.6-5 4.53 1.5 6.7L12 16.9l-6 3.7 1.5-6.7-5-4.53 6.6-.6z"/></svg>';
+
+  function spawnFavoriteSparks() {
+    favoritesToggle.classList.remove("bounce");
+    void favoritesToggle.offsetWidth;
+    favoritesToggle.classList.add("bounce");
+
+    const count = 12;
+    for (let i = 0; i < count; i++) {
+      const baseAngle = (360 / count) * i;
+      const angle = baseAngle + (Math.random() * 24 - 12);
+      const spark = document.createElement("span");
+      spark.className = "spark";
+      spark.style.setProperty("--angle", `${angle}deg`);
+      spark.style.setProperty("--size", `${6 + Math.random() * 8}px`);
+      spark.style.setProperty("--start", `${14 + Math.random() * 10}px`);
+      spark.style.setProperty("--distance", `${40 + Math.random() * 35}px`);
+      spark.style.setProperty("--duration", `${0.35 + Math.random() * 0.35}s`);
+      spark.style.setProperty("--delay", `${Math.random() * 0.08}s`);
+      spark.innerHTML = STAR_ICON;
+      spark.firstElementChild.style.transform = `rotate(${Math.random() * 360}deg)`;
+      spark.addEventListener("animationend", () => spark.remove());
+      favoritesToggle.appendChild(spark);
+    }
+  }
 
   function loadFavorites() {
     try {
@@ -187,10 +216,19 @@
       .sort((a, b) => a - b);
   }
 
+  function centerInScroll(container, el) {
+    if (!container || !el) return;
+    const containerRect = container.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    container.scrollTop +=
+      elRect.top - containerRect.top - containerRect.height / 2 + elRect.height / 2;
+  }
+
   function selectEvent(value) {
     setShowFavorites(false);
     pinnedFavoriteIds = null;
     selectedEvent = value;
+    if (value === "all") eventsFilter.scrollTop = 0;
     updateActiveButtons();
     render();
   }
@@ -200,6 +238,11 @@
     pinnedFavoriteIds = null;
     selectedYear = value;
     selectedDecade = "all";
+    if (value === "all") {
+      timelineFilters.scrollTop = 0;
+    } else {
+      centerInScroll(timelineFilters, timelineList.querySelector(`.year-item[data-value="${value}"]`));
+    }
     updateActiveButtons();
     render();
   }
@@ -209,6 +252,8 @@
     pinnedFavoriteIds = null;
     selectedDecade = value;
     if (value !== "all") selectedYear = "all";
+    const decadeBtn = timelineList.querySelector(`.decade-item[data-value="${value}"]`);
+    centerInScroll(timelineFilters, decadeBtn ? decadeBtn.closest(".decade-group") : null);
     updateActiveButtons();
     render();
   }
@@ -406,9 +451,7 @@
       favorites.delete(url);
     } else {
       favorites.add(url);
-      favoritesToggle.classList.remove("bounce");
-      void favoritesToggle.offsetWidth;
-      favoritesToggle.classList.add("bounce");
+      spawnFavoriteSparks();
     }
     saveFavorites();
     if (showFavorites) {
@@ -416,16 +459,6 @@
     } else {
       btn.classList.toggle("favorited", favorites.has(url));
     }
-  });
-
-  resetFilters.addEventListener("click", () => {
-    selectedEvent = "all";
-    selectedYear = "all";
-    selectedDecade = "all";
-    setShowFavorites(false);
-    pinnedFavoriteIds = null;
-    updateActiveButtons();
-    render();
   });
 
   populateFilters(LOGO_DATA);
