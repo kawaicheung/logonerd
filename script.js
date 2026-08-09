@@ -6,11 +6,15 @@
   const timelineList = document.getElementById("timeline-list");
   const sortOrder = document.getElementById("sort-order-btn");
   const favoritesToggle = document.getElementById("favorites-toggle");
+  const sidebar = document.getElementById("sidebar");
+  const favoritesBar = document.getElementById("favorites-bar");
   const shareFavorites = document.getElementById("share-favorites");
-  const shareFavoritesLink = document.getElementById("share-favorites-link");
+  const shareFavoritesBtn = document.getElementById("share-favorites-btn");
+  const shareFeedback = document.getElementById("share-feedback");
 
   let sortDirection = "desc";
   let showFavorites = false;
+  let copyTimeout = null;
 
   function setSortDirection(value) {
     sortDirection = value;
@@ -25,6 +29,7 @@
     showFavorites = value;
     favoritesToggle.classList.toggle("active", value);
     favoritesToggle.setAttribute("aria-pressed", String(value));
+    sidebar.classList.toggle("disabled", value);
   }
 
   const FAVORITES_KEY = "logonerd:favorites";
@@ -302,6 +307,7 @@
         // This is someone else's shared set, not "my" favorites -- leave
         // the checkbox unchecked and the normal filters at their defaults.
         pinnedFavoriteIds = new Set(ids);
+        sidebar.classList.add("disabled");
         return;
       }
     }
@@ -400,9 +406,7 @@
         const isFavorited = favorites.has(item.url);
         card.innerHTML = `
           <button class="favorite-btn${isFavorited ? " favorited" : ""}" type="button" data-url="${item.url}" aria-label="Toggle favorite">${STAR_ICON}</button>
-          <div class="logo-wrap">
-            <img src="${item.url}" alt="${item.label}" loading="lazy">
-          </div>
+          <img src="${item.url}" alt="${item.label}" loading="lazy">
           <div class="meta">${item.year} ${item.event_type}</div>
         `;
         grid.appendChild(card);
@@ -410,14 +414,16 @@
     }
 
     if (showFavorites && !viewingShared) {
+      favoritesBar.classList.add("visible");
       const ids = favoriteIdsFromLocal();
       if (ids.length > 0) {
-        shareFavoritesLink.href = `${window.location.pathname}?favorites=${ids.join(",")}`;
+        shareFavoritesBtn.dataset.shareUrl = `${window.location.pathname}?favorites=${ids.join(",")}`;
         shareFavorites.classList.add("visible");
       } else {
         shareFavorites.classList.remove("visible");
       }
     } else {
+      favoritesBar.classList.remove("visible");
       shareFavorites.classList.remove("visible");
     }
 
@@ -459,6 +465,31 @@
     } else {
       btn.classList.toggle("favorited", favorites.has(url));
     }
+  });
+
+  shareFavoritesBtn.addEventListener("click", () => {
+    navigator.clipboard.writeText(shareFavoritesBtn.dataset.shareUrl);
+
+    shareFavoritesBtn.classList.remove("bounce");
+    void shareFavoritesBtn.offsetWidth;
+    shareFavoritesBtn.classList.add("bounce");
+
+    shareFeedback.classList.add("visible");
+    clearTimeout(copyTimeout);
+    copyTimeout = setTimeout(() => {
+      shareFeedback.classList.remove("visible");
+    }, 1200);
+  });
+
+  sidebar.addEventListener("click", () => {
+    if (!sidebar.classList.contains("disabled")) return;
+    pinnedFavoriteIds = null;
+    setShowFavorites(false);
+    selectedEvent = "all";
+    selectedYear = "all";
+    selectedDecade = "all";
+    updateActiveButtons();
+    render();
   });
 
   populateFilters(LOGO_DATA);
