@@ -6,6 +6,9 @@
   const timelineList = document.getElementById("timeline-list");
   const sortOrder = document.getElementById("sort-order-btn");
   const favoritesToggle = document.getElementById("favorites-toggle");
+  const randomizeBtn = document.getElementById("randomize-btn");
+  const randomDisplay = document.getElementById("random-display");
+  const randomImg = document.getElementById("random-img");
   const sidebar = document.getElementById("sidebar");
   const filterTitle = document.getElementById("filter-title");
   const shareFavorites = document.getElementById("share-favorites");
@@ -20,6 +23,7 @@
 
   let sortDirection = "desc";
   let showFavorites = false;
+  let randomItem = null;
   let copyTimeout = null;
   let currentItems = [];
   let lightboxIndex = -1;
@@ -46,6 +50,12 @@
     showFavorites = value;
     updateFavoritesToggleState();
     sidebar.classList.toggle("disabled", value);
+  }
+
+  function exitSpecialModes() {
+    pinnedFavoriteIds = null;
+    randomItem = null;
+    setShowFavorites(false);
   }
 
   function logoPath(filename, variant) {
@@ -250,8 +260,7 @@
   }
 
   function selectEvent(value) {
-    setShowFavorites(false);
-    pinnedFavoriteIds = null;
+    exitSpecialModes();
     selectedEvent = value;
     if (value === "all") eventsFilter.scrollTop = 0;
     updateActiveButtons();
@@ -259,8 +268,7 @@
   }
 
   function selectYear(value) {
-    setShowFavorites(false);
-    pinnedFavoriteIds = null;
+    exitSpecialModes();
     selectedYear = value;
     selectedDecade = "all";
     if (value === "all") {
@@ -273,8 +281,7 @@
   }
 
   function selectDecade(value) {
-    setShowFavorites(false);
-    pinnedFavoriteIds = null;
+    exitSpecialModes();
     selectedDecade = value;
     if (value !== "all") selectedYear = "all";
     const decadeBtn = timelineList.querySelector(`.decade-item[data-value="${value}"]`);
@@ -379,7 +386,9 @@
     const order = sortDirection;
 
     let items;
-    if (viewingShared) {
+    if (randomItem) {
+      items = [randomItem];
+    } else if (viewingShared) {
       items = LOGO_DATA.filter((item) => pinnedFavoriteIds.has(item.id));
     } else if (favoritesOnly) {
       items = LOGO_DATA.filter((item) => favorites.has(item.url));
@@ -411,33 +420,47 @@
     grid.innerHTML = "";
     grid.scrollTop = 0;
 
-    if (items.length === 0) {
-      const empty = document.createElement("div");
-      empty.className = "empty-state";
-      empty.textContent = viewingShared
-        ? "None of these logos are available anymore."
-        : favoritesOnly
-        ? "No favorites yet. Click the star on a logo to save it."
-        : "No logos match those filters.";
-      grid.appendChild(empty);
+    if (randomItem) {
+      grid.classList.add("hidden");
+      randomImg.src = logoPath(randomItem.url, "hi-res");
+      randomImg.alt = randomItem.label;
+      randomDisplay.classList.add("visible");
     } else {
-      items.forEach((item) => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.dataset.url = item.url;
-        const isFavorited = favorites.has(item.url);
-        card.innerHTML = `
-          <button class="favorite-btn${isFavorited ? " favorited" : ""}" type="button" data-url="${item.url}" aria-label="Toggle favorite">${STAR_ICON}</button>
-          <img src="${logoPath(item.url, "low-res")}" alt="${item.label}" loading="lazy">
-          <div class="meta">${item.year} ${item.event_type}</div>
-        `;
-        grid.appendChild(card);
-      });
+      grid.classList.remove("hidden");
+      randomDisplay.classList.remove("visible");
+
+      if (items.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = viewingShared
+          ? "None of these logos are available anymore."
+          : favoritesOnly
+          ? "No favorites yet. Click the star on a logo to save it."
+          : "No logos match those filters.";
+        grid.appendChild(empty);
+      } else {
+        items.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.dataset.url = item.url;
+          const isFavorited = favorites.has(item.url);
+          card.innerHTML = `
+            <button class="favorite-btn${isFavorited ? " favorited" : ""}" type="button" data-url="${item.url}" aria-label="Toggle favorite">${STAR_ICON}</button>
+            <img src="${logoPath(item.url, "low-res")}" alt="${item.label}" loading="lazy">
+            <div class="meta">${item.year} ${item.event_type}</div>
+          `;
+          grid.appendChild(card);
+        });
+      }
     }
 
     const isOwnFavorites = showFavorites && !viewingShared;
 
-    if (isOwnFavorites) {
+    if (randomItem) {
+      filterTitle.textContent = `${randomItem.year} ${randomItem.event_type}`;
+      sortOrder.classList.add("hidden");
+      shareFavorites.classList.remove("visible");
+    } else if (isOwnFavorites) {
       filterTitle.textContent = "Your Favorites";
       sortOrder.classList.add("hidden");
       const ids = favoriteIdsFromLocal();
@@ -481,10 +504,18 @@
     render();
   });
 
+  randomizeBtn.addEventListener("click", () => {
+    exitSpecialModes();
+    randomItem = LOGO_DATA[Math.floor(Math.random() * LOGO_DATA.length)];
+    sidebar.classList.add("disabled");
+    render();
+  });
+
   favoritesToggle.addEventListener("click", () => {
     // A hand click always means "show MY favorites," not whatever list
     // (if any) was pinned by an incoming shared link.
     pinnedFavoriteIds = null;
+    randomItem = null;
     setShowFavorites(!showFavorites);
     if (showFavorites) {
       selectedEvent = "all";
@@ -609,8 +640,7 @@
 
   sidebar.addEventListener("click", () => {
     if (!sidebar.classList.contains("disabled")) return;
-    pinnedFavoriteIds = null;
-    setShowFavorites(false);
+    exitSpecialModes();
     selectedEvent = "all";
     selectedYear = "all";
     selectedDecade = "all";

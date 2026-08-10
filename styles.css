@@ -5,6 +5,7 @@
   --sidebar-width: calc(var(--years-width) + var(--decades-width) + var(--events-width));
   --edge-offset: 3rem;
   --sidebar-list-max-height: 90%;
+  --random-img-max-size: 70%;
 
   --color-text: #1a1a1a;
   --color-bg: #fff;
@@ -84,7 +85,6 @@ body {
   position: fixed;
   top: var(--edge-offset);
   left: var(--edge-offset);
-  right: calc(var(--edge-offset) + var(--sidebar-width));
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -143,6 +143,14 @@ body {
 
 .icon-shortcut:hover {
   transform: scale(1.2);
+}
+
+#randomize-btn {
+  transform: rotate(-8deg);
+}
+
+#randomize-btn:hover {
+  transform: rotate(-8deg) scale(1.2);
 }
 
 .icon-shortcut.active {
@@ -419,6 +427,28 @@ main#grid {
 
 main#grid::-webkit-scrollbar {
   display: none;
+}
+
+#grid.hidden {
+  display: none;
+}
+
+#random-display {
+  display: none;
+  flex: 1;
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+#random-display.visible {
+  display: flex;
+}
+
+#random-img {
+  max-width: var(--random-img-max-size);
+  max-height: var(--random-img-max-size);
+  object-fit: contain;
 }
 
 .card {
