@@ -7,27 +7,23 @@
   const sortOrder = document.getElementById("sort-order-btn");
   const favoritesToggle = document.getElementById("favorites-toggle");
   const randomizeBtn = document.getElementById("randomize-btn");
-  const randomDisplay = document.getElementById("random-display");
-  const randomImg = document.getElementById("random-img");
-  const randomFavorite = document.getElementById("random-favorite");
   const sidebar = document.getElementById("sidebar");
   const filterTitle = document.getElementById("filter-title");
   const shareFavorites = document.getElementById("share-favorites");
   const shareFavoritesBtn = document.getElementById("share-favorites-btn");
   const shareFeedback = document.getElementById("share-feedback");
-  const lightbox = document.getElementById("lightbox");
-  const lightboxImg = document.getElementById("lightbox-img");
-  const lightboxMeta = document.getElementById("lightbox-meta");
-  const lightboxFavorite = document.getElementById("lightbox-favorite");
-  const lightboxPrev = document.getElementById("lightbox-prev");
-  const lightboxNext = document.getElementById("lightbox-next");
+  const itemFavorite = document.getElementById("item-favorite");
+  const itemDisplay = document.getElementById("item-display");
+  const itemImg = document.getElementById("item-img");
+  const itemPrev = document.getElementById("item-prev");
+  const itemNext = document.getElementById("item-next");
 
   let sortDirection = "desc";
   let showFavorites = false;
   let randomItem = null;
   let copyTimeout = null;
   let currentItems = [];
-  let lightboxIndex = -1;
+  let viewedIndex = -1;
 
   function setSortDirection(value) {
     sortDirection = value;
@@ -56,6 +52,7 @@
   function exitSpecialModes() {
     pinnedFavoriteIds = null;
     randomItem = null;
+    viewedIndex = -1;
     setShowFavorites(false);
   }
 
@@ -380,6 +377,29 @@
     window.history.replaceState(null, "", newURL);
   }
 
+  function renderItemDisplay() {
+    const item = viewedIndex !== -1 ? currentItems[viewedIndex] : null;
+    if (!item) {
+      grid.classList.remove("hidden");
+      itemDisplay.classList.remove("visible");
+      itemFavorite.classList.remove("visible");
+      return false;
+    }
+    grid.classList.add("hidden");
+    itemDisplay.classList.add("visible");
+    itemImg.src = logoPath(item.url, "hi-res");
+    itemImg.alt = item.label;
+    itemPrev.disabled = viewedIndex <= 0;
+    itemNext.disabled = viewedIndex >= currentItems.length - 1;
+
+    filterTitle.textContent = `${item.year} ${item.event_type}`;
+    itemFavorite.classList.add("visible");
+    itemFavorite.classList.toggle("favorited", favorites.has(item.url));
+    sortOrder.classList.add("hidden");
+    shareFavorites.classList.remove("visible");
+    return true;
+  }
+
   function render() {
     const viewingShared = pinnedFavoriteIds !== null;
     const favoritesOnly = viewingShared || showFavorites;
@@ -418,17 +438,13 @@
     items.sort((a, b) => (order === "asc" ? a.year - b.year : b.year - a.year));
     currentItems = items;
 
+    if (randomItem) viewedIndex = 0;
+
     grid.innerHTML = "";
     grid.scrollTop = 0;
 
-    if (randomItem) {
-      grid.classList.add("hidden");
-      randomImg.src = logoPath(randomItem.url, "hi-res");
-      randomImg.alt = randomItem.label;
-      randomDisplay.classList.add("visible");
-    } else {
-      grid.classList.remove("hidden");
-      randomDisplay.classList.remove("visible");
+    if (!renderItemDisplay()) {
+      itemFavorite.classList.remove("visible");
 
       if (items.length === 0) {
         const empty = document.createElement("div");
@@ -453,52 +469,44 @@
           grid.appendChild(card);
         });
       }
-    }
 
-    const isOwnFavorites = showFavorites && !viewingShared;
+      const isOwnFavorites = showFavorites && !viewingShared;
 
-    if (randomItem) {
-      filterTitle.textContent = `${randomItem.year} ${randomItem.event_type}`;
-      randomFavorite.classList.add("visible");
-      randomFavorite.classList.toggle("favorited", favorites.has(randomItem.url));
-      sortOrder.classList.add("hidden");
-      shareFavorites.classList.remove("visible");
-    } else if (isOwnFavorites) {
-      filterTitle.textContent = "Your Favorites";
-      randomFavorite.classList.remove("visible");
-      sortOrder.classList.add("hidden");
-      const ids = favoriteIdsFromLocal();
-      if (ids.length > 0) {
-        shareFavoritesBtn.dataset.shareUrl = `${window.location.origin}${window.location.pathname}?favorites=${ids.join(",")}`;
-        shareFavorites.classList.add("visible");
+      if (isOwnFavorites) {
+        filterTitle.textContent = "Your Favorites";
+        sortOrder.classList.add("hidden");
+        const ids = favoriteIdsFromLocal();
+        if (ids.length > 0) {
+          shareFavoritesBtn.dataset.shareUrl = `${window.location.origin}${window.location.pathname}?favorites=${ids.join(",")}`;
+          shareFavorites.classList.add("visible");
+        } else {
+          shareFavorites.classList.remove("visible");
+        }
       } else {
-        shareFavorites.classList.remove("visible");
-      }
-    } else {
-      randomFavorite.classList.remove("visible");
-      let eventLabel = "";
-      if (!viewingShared && selectedEvent !== "all") {
-        eventLabel = selectedEvent.startsWith(GROUP_PREFIX)
-          ? selectedEvent.slice(GROUP_PREFIX.length)
-          : selectedEvent;
-      }
+        let eventLabel = "";
+        if (!viewingShared && selectedEvent !== "all") {
+          eventLabel = selectedEvent.startsWith(GROUP_PREFIX)
+            ? selectedEvent.slice(GROUP_PREFIX.length)
+            : selectedEvent;
+        }
 
-      let title;
-      if (!viewingShared && !eventLabel && selectedDecade === "all" && selectedYear === "all") {
-        title = "Sporting event logos from the past 100+ years";
-      } else {
-        title = capitalize(`${eventLabel ? eventLabel + " " : ""}logos`);
-        if (!viewingShared) {
-          if (selectedDecade !== "all") {
-            title += ` from the ${selectedDecade}s`;
-          } else if (selectedYear !== "all") {
-            title += ` from ${selectedYear}`;
+        let title;
+        if (!viewingShared && !eventLabel && selectedDecade === "all" && selectedYear === "all") {
+          title = "Sporting event logos from the past 100+ years";
+        } else {
+          title = capitalize(`${eventLabel ? eventLabel + " " : ""}logos`);
+          if (!viewingShared) {
+            if (selectedDecade !== "all") {
+              title += ` from the ${selectedDecade}s`;
+            } else if (selectedYear !== "all") {
+              title += ` from ${selectedYear}`;
+            }
           }
         }
+        filterTitle.textContent = title;
+        sortOrder.classList.remove("hidden");
+        shareFavorites.classList.remove("visible");
       }
-      filterTitle.textContent = title;
-      sortOrder.classList.remove("hidden");
-      shareFavorites.classList.remove("visible");
     }
 
     syncURL();
@@ -520,17 +528,12 @@
     render();
   });
 
-  randomFavorite.addEventListener("click", () => {
-    if (!randomItem) return;
-    const nowFavorited = toggleFavorite(randomItem.url);
-    randomFavorite.classList.toggle("favorited", nowFavorited);
-  });
-
   favoritesToggle.addEventListener("click", () => {
     // A hand click always means "show MY favorites," not whatever list
     // (if any) was pinned by an incoming shared link.
     pinnedFavoriteIds = null;
     randomItem = null;
+    viewedIndex = -1;
     setShowFavorites(!showFavorites);
     if (showFavorites) {
       selectedEvent = "all";
@@ -569,54 +572,51 @@
 
     const card = e.target.closest(".card");
     if (card) {
-      openLightbox(card.dataset.url);
+      openItem(card.dataset.url);
     }
   });
 
-  function updateLightboxNav() {
-    lightboxPrev.disabled = lightboxIndex <= 0;
-    lightboxNext.disabled = lightboxIndex >= currentItems.length - 1;
-  }
-
-  function showLightboxItem(index) {
-    const item = currentItems[index];
-    if (!item) return;
-    lightboxIndex = index;
-    lightboxImg.src = logoPath(item.url, "hi-res");
-    lightboxImg.alt = item.label;
-    lightboxMeta.textContent = `${item.year} ${item.event_type}`;
-    lightboxFavorite.classList.toggle("favorited", favorites.has(item.url));
-    updateLightboxNav();
-  }
-
-  function openLightbox(url) {
+  function openItem(url) {
     const index = currentItems.findIndex((item) => item.url === url);
     if (index === -1) return;
-    showLightboxItem(index);
-    lightbox.classList.add("visible");
+    viewedIndex = index;
+    renderItemDisplay();
   }
 
-  function closeLightbox() {
-    lightbox.classList.remove("visible");
-    lightboxImg.src = "";
-    lightboxIndex = -1;
+  function closeItem() {
+    if (randomItem) {
+      exitSpecialModes();
+      selectedEvent = "all";
+      selectedYear = "all";
+      selectedDecade = "all";
+      updateActiveButtons();
+    } else {
+      viewedIndex = -1;
+    }
+    render();
   }
 
-  lightbox.addEventListener("click", closeLightbox);
+  itemDisplay.addEventListener("click", closeItem);
 
-  lightboxPrev.addEventListener("click", (e) => {
+  itemPrev.addEventListener("click", (e) => {
     e.stopPropagation();
-    if (lightboxIndex > 0) showLightboxItem(lightboxIndex - 1);
+    if (viewedIndex > 0) {
+      viewedIndex -= 1;
+      renderItemDisplay();
+    }
   });
 
-  lightboxNext.addEventListener("click", (e) => {
+  itemNext.addEventListener("click", (e) => {
     e.stopPropagation();
-    if (lightboxIndex < currentItems.length - 1) showLightboxItem(lightboxIndex + 1);
+    if (viewedIndex < currentItems.length - 1) {
+      viewedIndex += 1;
+      renderItemDisplay();
+    }
   });
 
-  lightboxFavorite.addEventListener("click", (e) => {
+  itemFavorite.addEventListener("click", (e) => {
     e.stopPropagation();
-    const item = currentItems[lightboxIndex];
+    const item = currentItems[viewedIndex];
     if (!item) return;
     const nowFavorited = toggleFavorite(item.url);
     const card = grid.querySelector(`.card[data-url="${item.url}"] .favorite-btn`);
@@ -624,19 +624,15 @@
 
     if (showFavorites) {
       render();
-      const newIndex = currentItems.findIndex((i) => i.url === item.url);
-      if (newIndex === -1) {
-        closeLightbox();
-      } else {
-        showLightboxItem(newIndex);
-      }
+      viewedIndex = currentItems.findIndex((i) => i.url === item.url);
+      render();
     } else {
-      lightboxFavorite.classList.toggle("favorited", nowFavorited);
+      itemFavorite.classList.toggle("favorited", nowFavorited);
     }
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeLightbox();
+    if (e.key === "Escape" && viewedIndex !== -1) closeItem();
   });
 
   shareFavoritesBtn.addEventListener("click", () => {
@@ -655,15 +651,6 @@
 
   sidebar.addEventListener("click", () => {
     if (!sidebar.classList.contains("disabled")) return;
-    exitSpecialModes();
-    selectedEvent = "all";
-    selectedYear = "all";
-    selectedDecade = "all";
-    updateActiveButtons();
-    render();
-  });
-
-  randomDisplay.addEventListener("click", () => {
     exitSpecialModes();
     selectedEvent = "all";
     selectedYear = "all";

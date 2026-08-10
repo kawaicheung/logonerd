@@ -5,7 +5,7 @@
   --sidebar-width: calc(var(--years-width) + var(--decades-width) + var(--events-width));
   --edge-offset: 3rem;
   --sidebar-list-max-height: 90%;
-  --random-img-max-size: 70%;
+  --item-img-max-size: 70%;
 
   --color-text: #1a1a1a;
   --color-bg: #fff;
@@ -85,6 +85,20 @@ body {
 #site-author {
   font-family: var(--font-league-gothic);
   color: var(--color-muted);
+}
+
+#item-favorite {
+  position: static;
+  width: 28px;
+  height: 28px;
+  opacity: 1;
+  display: none;
+}
+
+#item-favorite.visible {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #filter-title-bar {
@@ -455,7 +469,8 @@ main#grid::-webkit-scrollbar {
   display: none;
 }
 
-#random-display {
+#item-display {
+  position: relative;
   display: none;
   flex: 1;
   min-height: 0;
@@ -464,14 +479,53 @@ main#grid::-webkit-scrollbar {
   cursor: pointer;
 }
 
-#random-display.visible {
+#item-display.visible {
   display: flex;
 }
 
-#random-img {
-  max-width: var(--random-img-max-size);
-  max-height: var(--random-img-max-size);
+#item-img {
+  max-width: var(--item-img-max-size);
+  max-height: var(--item-img-max-size);
   object-fit: contain;
+}
+
+.item-nav {
+  position: absolute;
+  bottom: var(--edge-offset);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--color-text);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.25s cubic-bezier(0.34, 2.6, 0.64, 1);
+}
+
+.item-nav svg {
+  width: 64px;
+  height: 64px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+#item-prev {
+  right: calc(var(--edge-offset) + 72px);
+}
+
+#item-next {
+  right: var(--edge-offset);
+}
+
+.item-nav:hover:not(:disabled) {
+  transform: scale(1.2);
+}
+
+.item-nav:disabled {
+  opacity: 0.2;
+  cursor: default;
 }
 
 .card {
@@ -487,114 +541,6 @@ main#grid::-webkit-scrollbar {
   box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px;
   border: solid 2px transparent;
   cursor: zoom-in;
-}
-
-#lightbox {
-  position: fixed;
-  inset: var(--edge-offset);
-  border: solid 1px var(--color-border);
-  box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  background: var(--color-bg);
-  padding: 4vw;
-  z-index: 100;
-  cursor: zoom-out;
-}
-
-#lightbox.visible {
-  display: flex;
-}
-
-#lightbox-body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  max-width: 100%;
-  height: 100%;
-}
-
-#lightbox-img {
-  max-width: 100%;
-  max-height: var(--sidebar-list-max-height);
-  object-fit: contain;
-}
-
-#lightbox-meta {
-  position: absolute;
-  bottom: var(--edge-offset);
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 1.4rem;
-  letter-spacing: -0.05rem;
-  font-family: var(--font-family-sans-serif);
-  color: var(--color-muted);
-  font-weight: 600;
-}
-
-#lightbox-favorite {
-  position: absolute;
-  top: auto;
-  bottom: calc(var(--edge-offset) + 64px + 1rem);
-  right: var(--edge-offset);
-  transform: translateX(-25%);
-  width: 44px;
-  height: 44px;
-  opacity: 1;
-}
-
-#random-favorite {
-  position: static;
-  width: 28px;
-  height: 28px;
-  opacity: 1;
-  display: none;
-}
-
-#random-favorite.visible {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.lightbox-nav {
-  position: absolute;
-  bottom: var(--edge-offset);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  color: var(--color-text);
-  cursor: pointer;
-  padding: 0;
-  transition: transform 0.25s cubic-bezier(0.34, 2.6, 0.64, 1);
-}
-
-.lightbox-nav svg {
-  width: 64px;
-  height: 64px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.5;
-}
-
-#lightbox-prev {
-  right: calc(var(--edge-offset) + 72px);
-}
-
-#lightbox-next {
-  right: var(--edge-offset);
-}
-
-.lightbox-nav:hover:not(:disabled) {
-  transform: scale(1.2);
-}
-
-.lightbox-nav:disabled {
-  opacity: 0.2;
-  cursor: default;
 }
 
 .favorite-btn {

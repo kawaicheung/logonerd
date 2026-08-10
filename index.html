@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pathway+Gothic+One&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260810a">
+  <link rel="stylesheet" href="styles.css?v=20260810b">
 </head>
 <body>
 
@@ -46,7 +46,7 @@
 
   <div id="filter-title-bar">
     <h3 id="filter-title"></h3>
-    <button id="random-favorite" class="favorite-btn" type="button" aria-label="Toggle favorite">
+    <button id="item-favorite" class="favorite-btn" type="button" aria-label="Toggle favorite">
       <svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.26 6.6.6-5 4.53 1.5 6.7L12 16.9l-6 3.7 1.5-6.7-5-4.53 6.6-.6z"/></svg>
     </button>
     <button id="sort-order-btn" type="button" class="icon-shortcut" aria-label="Toggle sort order">
@@ -62,30 +62,20 @@
 
   <div id="page-content">
     <main id="grid"></main>
-    <div id="random-display">
-      <img id="random-img" src="" alt="">
+    <div id="item-display">
+      <button id="item-prev" class="item-nav" type="button" aria-label="Previous logo">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <img id="item-img" src="" alt="">
+      <button id="item-next" class="item-nav" type="button" aria-label="Next logo">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
     </div>
   </div>
 
   <div id="footer"></div>
 
-  <div id="lightbox">
-    <button id="lightbox-prev" class="lightbox-nav" type="button" aria-label="Previous logo">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
-    </button>
-    <button id="lightbox-favorite" class="favorite-btn" type="button" aria-label="Toggle favorite">
-      <svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.26 6.6.6-5 4.53 1.5 6.7L12 16.9l-6 3.7 1.5-6.7-5-4.53 6.6-.6z"/></svg>
-    </button>
-    <div id="lightbox-body">
-      <img id="lightbox-img" src="" alt="">
-    </div>
-    <div id="lightbox-meta"></div>
-    <button id="lightbox-next" class="lightbox-nav" type="button" aria-label="Next logo">
-      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
-    </button>
-  </div>
-
   <script src="data.js?v=20260807a"></script>
-  <script src="script.js?v=20260807m"></script>
+  <script src="script.js?v=20260810b"></script>
 </body>
 </html>
