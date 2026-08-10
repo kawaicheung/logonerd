@@ -4,6 +4,7 @@
   --events-width: 140px;
   --sidebar-width: calc(var(--years-width) + var(--decades-width) + var(--events-width));
   --edge-offset: 3rem;
+  --sidebar-list-max-height: 90%;
 
   --color-text: #1a1a1a;
   --color-bg: #fff;
@@ -47,12 +48,19 @@ body {
   gap: 1rem;
 }
 
-#site-title {
+#nav-panel {
   position: fixed;
   top: var(--edge-offset);
   right: var(--edge-offset);
-  text-align: right;
+  bottom: var(--edge-offset);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   z-index: 10;
+}
+
+#site-title {
+  text-align: right;
 }
 
 #site-title-row {
@@ -195,11 +203,10 @@ body {
 }
 
 #sidebar {
-  position: fixed;
-  bottom: calc(2 * var(--edge-offset));
-  right: var(--edge-offset);
+  flex: 1;
+  min-height: 0;
   display: flex;
-  z-index: 10;
+  align-items: center;
   gap: 0.3rem;
   transition: opacity 0.2s ease;
 }
@@ -216,7 +223,7 @@ body {
 }
 
 #timeline-filters {
-  height: max(70vh, 400px);
+  max-height: var(--sidebar-list-max-height);
   width: calc(var(--years-width) + var(--decades-width));
   overflow-y: auto;
   overflow-x: hidden;
@@ -236,7 +243,7 @@ body {
 
 #events-filter {
   width: var(--events-width);
-  height: max(70vh, 400px);
+  max-height: var(--sidebar-list-max-height);
   overflow-y: auto;
   overflow-x: hidden;
   background: var(--color-bg);
@@ -457,7 +464,7 @@ main#grid::-webkit-scrollbar {
 
 #lightbox-img {
   max-width: 100%;
-  max-height: 80%;
+  max-height: var(--sidebar-list-max-height);
   object-fit: contain;
 }
 

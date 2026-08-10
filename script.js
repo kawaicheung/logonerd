@@ -455,12 +455,17 @@
           : selectedEvent;
       }
 
-      let title = capitalize(`${eventLabel ? eventLabel + " " : ""}logos`);
-      if (!viewingShared) {
-        if (selectedDecade !== "all") {
-          title += ` from the ${selectedDecade}s`;
-        } else if (selectedYear !== "all") {
-          title += ` from ${selectedYear}`;
+      let title;
+      if (!viewingShared && !eventLabel && selectedDecade === "all" && selectedYear === "all") {
+        title = "Sporting event logos from the past 100+ years";
+      } else {
+        title = capitalize(`${eventLabel ? eventLabel + " " : ""}logos`);
+        if (!viewingShared) {
+          if (selectedDecade !== "all") {
+            title += ` from the ${selectedDecade}s`;
+          } else if (selectedYear !== "all") {
+            title += ` from ${selectedYear}`;
+          }
         }
       }
       filterTitle.textContent = title;
