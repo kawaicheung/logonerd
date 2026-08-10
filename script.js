@@ -13,10 +13,16 @@
   const shareFeedback = document.getElementById("share-feedback");
   const lightbox = document.getElementById("lightbox");
   const lightboxImg = document.getElementById("lightbox-img");
+  const lightboxMeta = document.getElementById("lightbox-meta");
+  const lightboxFavorite = document.getElementById("lightbox-favorite");
+  const lightboxPrev = document.getElementById("lightbox-prev");
+  const lightboxNext = document.getElementById("lightbox-next");
 
   let sortDirection = "desc";
   let showFavorites = false;
   let copyTimeout = null;
+  let currentItems = [];
+  let lightboxIndex = -1;
 
   function setSortDirection(value) {
     sortDirection = value;
@@ -396,6 +402,7 @@
     }
 
     items.sort((a, b) => (order === "asc" ? a.year - b.year : b.year - a.year));
+    currentItems = items;
 
     grid.innerHTML = "";
     grid.scrollTop = 0;
@@ -460,22 +467,28 @@
     render();
   });
 
+  function toggleFavorite(url) {
+    const nowFavorited = !favorites.has(url);
+    if (nowFavorited) {
+      favorites.add(url);
+      spawnFavoriteSparks();
+    } else {
+      favorites.delete(url);
+    }
+    saveFavorites();
+    updateFavoritesToggleState();
+    return nowFavorited;
+  }
+
   grid.addEventListener("click", (e) => {
     const btn = e.target.closest(".favorite-btn");
     if (btn) {
       const url = btn.dataset.url;
-      if (favorites.has(url)) {
-        favorites.delete(url);
-      } else {
-        favorites.add(url);
-        spawnFavoriteSparks();
-      }
-      saveFavorites();
-      updateFavoritesToggleState();
+      const nowFavorited = toggleFavorite(url);
       if (showFavorites) {
         render();
       } else {
-        btn.classList.toggle("favorited", favorites.has(url));
+        btn.classList.toggle("favorited", nowFavorited);
       }
       return;
     }
@@ -486,17 +499,67 @@
     }
   });
 
+  function updateLightboxNav() {
+    lightboxPrev.disabled = lightboxIndex <= 0;
+    lightboxNext.disabled = lightboxIndex >= currentItems.length - 1;
+  }
+
+  function showLightboxItem(index) {
+    const item = currentItems[index];
+    if (!item) return;
+    lightboxIndex = index;
+    lightboxImg.src = logoPath(item.url, "hi-res");
+    lightboxImg.alt = item.label;
+    lightboxMeta.textContent = `${item.year} ${item.event_type}`;
+    lightboxFavorite.classList.toggle("favorited", favorites.has(item.url));
+    updateLightboxNav();
+  }
+
   function openLightbox(url) {
-    lightboxImg.src = logoPath(url, "hi-res");
+    const index = currentItems.findIndex((item) => item.url === url);
+    if (index === -1) return;
+    showLightboxItem(index);
     lightbox.classList.add("visible");
   }
 
   function closeLightbox() {
     lightbox.classList.remove("visible");
     lightboxImg.src = "";
+    lightboxIndex = -1;
   }
 
   lightbox.addEventListener("click", closeLightbox);
+
+  lightboxPrev.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (lightboxIndex > 0) showLightboxItem(lightboxIndex - 1);
+  });
+
+  lightboxNext.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (lightboxIndex < currentItems.length - 1) showLightboxItem(lightboxIndex + 1);
+  });
+
+  lightboxFavorite.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const item = currentItems[lightboxIndex];
+    if (!item) return;
+    const nowFavorited = toggleFavorite(item.url);
+    const card = grid.querySelector(`.card[data-url="${item.url}"] .favorite-btn`);
+    if (card) card.classList.toggle("favorited", nowFavorited);
+
+    if (showFavorites) {
+      render();
+      const newIndex = currentItems.findIndex((i) => i.url === item.url);
+      if (newIndex === -1) {
+        closeLightbox();
+      } else {
+        showLightboxItem(newIndex);
+      }
+    } else {
+      lightboxFavorite.classList.toggle("favorited", nowFavorited);
+    }
+  });
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeLightbox();
