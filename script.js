@@ -38,6 +38,10 @@
     favoritesToggle.setAttribute("aria-pressed", String(showFavorites));
   }
 
+  function capitalize(text) {
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  }
+
   function setShowFavorites(value) {
     showFavorites = value;
     updateFavoritesToggleState();
@@ -451,7 +455,7 @@
           : selectedEvent;
       }
 
-      let title = `${items.length} ${eventLabel ? eventLabel + " " : ""}logo${items.length === 1 ? "" : "s"}`;
+      let title = capitalize(`${eventLabel ? eventLabel + " " : ""}logos`);
       if (!viewingShared) {
         if (selectedDecade !== "all") {
           title += ` from the ${selectedDecade}s`;

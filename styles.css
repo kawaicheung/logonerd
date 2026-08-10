@@ -407,6 +407,7 @@ main#grid {
   scrollbar-width: none;
   -ms-overflow-style: none;
   padding: var(--edge-offset) 0;
+  padding-top: calc(2.4 * var(--edge-offset));
 }
 
 main#grid::-webkit-scrollbar {
