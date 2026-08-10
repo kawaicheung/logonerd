@@ -25,10 +25,14 @@
     );
   }
 
+  function updateFavoritesToggleState() {
+    favoritesToggle.classList.toggle("active", favorites.size > 0);
+    favoritesToggle.setAttribute("aria-pressed", String(showFavorites));
+  }
+
   function setShowFavorites(value) {
     showFavorites = value;
-    favoritesToggle.classList.toggle("active", value);
-    favoritesToggle.setAttribute("aria-pressed", String(value));
+    updateFavoritesToggleState();
     sidebar.classList.toggle("disabled", value);
   }
 
@@ -460,6 +464,7 @@
       spawnFavoriteSparks();
     }
     saveFavorites();
+    updateFavoritesToggleState();
     if (showFavorites) {
       render();
     } else {
@@ -494,5 +499,6 @@
 
   populateFilters(LOGO_DATA);
   applyFiltersFromURL();
+  updateFavoritesToggleState();
   render();
 })();
