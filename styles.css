@@ -196,22 +196,22 @@ body {
 }
 
 #randomize-btn {
-  transform: rotate(-8deg);
+  transform: translateY(1px) rotate(-8deg);
 }
 
 #randomize-btn:hover {
-  transform: rotate(-8deg) scale(1.2);
+  transform: translateY(1px) rotate(-8deg) scale(1.2);
 }
 
 @keyframes dice-roll {
   0% {
-    transform: translateY(0) rotate(-8deg);
+    transform: translateY(1px) rotate(-8deg);
   }
   40% {
     transform: translateY(-16px) rotate(420deg);
   }
   100% {
-    transform: translateY(0) rotate(712deg);
+    transform: translateY(1px) rotate(712deg);
   }
 }
 
