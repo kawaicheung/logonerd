@@ -442,7 +442,8 @@ main#grid::-webkit-scrollbar {
   display: none;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.75);
+  background: var(--color-bg);
+  padding: 4vw;
   z-index: 100;
   cursor: zoom-out;
 }
@@ -452,10 +453,9 @@ main#grid::-webkit-scrollbar {
 }
 
 #lightbox img {
-  max-width: 80vw;
-  max-height: 80vh;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
-  box-shadow: rgba(0, 0, 0, 0.4) 0px 10px 40px;
 }
 
 .favorite-btn {
