@@ -663,6 +663,15 @@
     render();
   });
 
+  randomDisplay.addEventListener("click", () => {
+    exitSpecialModes();
+    selectedEvent = "all";
+    selectedYear = "all";
+    selectedDecade = "all";
+    updateActiveButtons();
+    render();
+  });
+
   populateFilters(LOGO_DATA);
   applyFiltersFromURL();
   updateFavoritesToggleState();
