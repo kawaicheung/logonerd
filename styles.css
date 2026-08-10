@@ -54,6 +54,10 @@ body {
   transform: translateZ(0);
 }
 
+#randomize-btn-mobile {
+  display: none;
+}
+
 #page-content {
   position: relative;
   margin-right: calc(var(--horiz-edge-offset) + var(--sidebar-width));
@@ -76,6 +80,7 @@ body {
 
 #site-title {
   text-align: right;
+  cursor: pointer;
 }
 
 #site-title-row {
@@ -126,17 +131,6 @@ body {
   font-size: var(--font-size-big-label);
   font-weight: 600;
   margin: 0;
-}
-
-#footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: calc(2 * var(--vert-edge-offset));
-  background: linear-gradient(to top, var(--color-bg), transparent);
-  pointer-events: none;
-  z-index: 9;
 }
 
 #attribution {
@@ -217,6 +211,22 @@ body {
 
 #randomize-btn.rolling {
   animation: dice-roll 0.45s ease-out;
+}
+
+@keyframes dice-roll-mobile {
+  0% {
+    transform: translateX(-50%) rotate(-8deg);
+  }
+  40% {
+    transform: translateX(-50%) translateY(-16px) rotate(420deg);
+  }
+  100% {
+    transform: translateX(-50%) rotate(712deg);
+  }
+}
+
+#randomize-btn-mobile.rolling {
+  animation: dice-roll-mobile 0.45s ease-out;
 }
 
 .icon-shortcut.active {
@@ -479,7 +489,7 @@ body {
 main#grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(204px, 204px));
-  gap: 0.4rem;
+  gap: 0rem;
   align-content: safe center;
   justify-content: safe center;
   flex: 1;
@@ -695,6 +705,20 @@ main#grid::-webkit-scrollbar {
     display: none;
   }
 
+  #randomize-btn {
+    display: none;
+  }
+
+  #randomize-btn-mobile {
+    display: flex;
+    position: fixed;
+    bottom: var(--vert-edge-offset);
+    left: 50%;
+    transform: translateX(-50%) rotate(-8deg);
+    transition: none;
+    z-index: 10;
+  }
+
   #page-content {
     margin: 0 var(--horiz-edge-offset);
   }
@@ -710,12 +734,26 @@ main#grid::-webkit-scrollbar {
 
   #site-title {
     text-align: center;
+    cursor: default;
   }
 
   #filter-title-bar {
     top: auto;
     left: 50%;
-    bottom: var(--vert-edge-offset);
+    bottom: calc(var(--vert-edge-offset) + 44px);
     transform: translateX(-50%);
+    display: none;
+  }
+
+  #filter-title-bar:has(#item-favorite.visible) {
+    display: flex;
+  }
+
+  #filter-title {
+    text-align: center;
+  }
+
+  #attribution {
+    display: none;
   }
 }

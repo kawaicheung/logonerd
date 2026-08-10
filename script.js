@@ -1,4 +1,5 @@
 (function () {
+  const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
   const grid = document.getElementById("grid");
   const eventsFilter = document.getElementById("events-filter");
   const eventsList = document.getElementById("events-list");
@@ -7,7 +8,9 @@
   const sortOrder = document.getElementById("sort-order-btn");
   const favoritesToggle = document.getElementById("favorites-toggle");
   const randomizeBtn = document.getElementById("randomize-btn");
+  const randomizeBtnMobile = document.getElementById("randomize-btn-mobile");
   const sidebar = document.getElementById("sidebar");
+  const siteTitle = document.getElementById("site-title");
   const filterTitle = document.getElementById("filter-title");
   const shareFavorites = document.getElementById("share-favorites");
   const shareFavoritesBtn = document.getElementById("share-favorites-btn");
@@ -448,7 +451,12 @@
     if (!renderItemDisplay()) {
       itemFavorite.classList.remove("visible");
 
-      if (items.length === 0) {
+      if (isTouchDevice) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = "Tap the dice to roll a random sporting event logo.";
+        grid.appendChild(empty);
+      } else if (items.length === 0) {
         const empty = document.createElement("div");
         empty.className = "empty-state";
         empty.textContent = viewingShared
@@ -519,16 +527,19 @@
     render();
   });
 
-  randomizeBtn.addEventListener("click", () => {
-    randomizeBtn.classList.remove("rolling");
-    void randomizeBtn.offsetWidth;
-    randomizeBtn.classList.add("rolling");
+  function rollDice(btn) {
+    btn.classList.remove("rolling");
+    void btn.offsetWidth;
+    btn.classList.add("rolling");
 
     exitSpecialModes();
     randomItem = LOGO_DATA[Math.floor(Math.random() * LOGO_DATA.length)];
     sidebar.classList.add("disabled");
     render();
-  });
+  }
+
+  randomizeBtn.addEventListener("click", () => rollDice(randomizeBtn));
+  randomizeBtnMobile.addEventListener("click", () => rollDice(randomizeBtnMobile));
 
   favoritesToggle.addEventListener("click", () => {
     // A hand click always means "show MY favorites," not whatever list
@@ -596,6 +607,7 @@
   }
 
   function closeItem() {
+    if (isTouchDevice) return;
     if (randomItem) {
       exitSpecialModes();
       selectedEvent = "all";
@@ -663,6 +675,17 @@
 
   sidebar.addEventListener("click", () => {
     if (!sidebar.classList.contains("disabled")) return;
+    exitSpecialModes();
+    selectedEvent = "all";
+    selectedYear = "all";
+    selectedDecade = "all";
+    updateActiveButtons();
+    render();
+  });
+
+  siteTitle.addEventListener("click", (e) => {
+    if (isTouchDevice) return;
+    if (e.target.closest(".icon-shortcut")) return;
     exitSpecialModes();
     selectedEvent = "all";
     selectedYear = "all";
