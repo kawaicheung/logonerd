@@ -129,6 +129,20 @@ body {
   z-index: 9;
 }
 
+#attribution {
+  position: fixed;
+  bottom: 0.75rem;
+  right: var(--edge-offset);
+  font-size: 0.7rem;
+  color: var(--color-faint);
+  text-decoration: none;
+  z-index: 10;
+}
+
+#attribution:hover {
+  color: var(--color-muted);
+}
+
 #sort-order-btn.hidden {
   display: none;
 }
