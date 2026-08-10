@@ -179,6 +179,10 @@ body {
   stroke-width: 1.5;
 }
 
+#favorites-toggle svg {
+  stroke-linejoin: round;
+}
+
 #sort-order-btn svg {
   transition: transform 0.2s ease;
 }
@@ -607,6 +611,7 @@ main#grid::-webkit-scrollbar {
   fill: none;
   stroke: currentColor;
   stroke-width: 1.5;
+  stroke-linejoin: round;
 }
 
 .favorite-btn:hover {
