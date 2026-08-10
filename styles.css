@@ -73,6 +73,7 @@ body {
   font-size: 2.4rem;
   letter-spacing: -0.05rem;
   font-weight: 600;
+  padding-left: 0.2rem;
   font-family: var(--font-league-gothic);
 }
 
@@ -151,6 +152,22 @@ body {
 
 #randomize-btn:hover {
   transform: rotate(-8deg) scale(1.2);
+}
+
+@keyframes dice-roll {
+  0% {
+    transform: translateY(0) rotate(-8deg);
+  }
+  40% {
+    transform: translateY(-16px) rotate(420deg);
+  }
+  100% {
+    transform: translateY(0) rotate(712deg);
+  }
+}
+
+#randomize-btn.rolling {
+  animation: dice-roll 0.6s ease;
 }
 
 .icon-shortcut.active {
@@ -503,19 +520,36 @@ main#grid::-webkit-scrollbar {
   bottom: var(--edge-offset);
   left: 50%;
   transform: translateX(-50%);
-  font-size: 1.4vw;
-  letter-spacing: -0.02rem;
+  font-size: 1.4rem;
+  letter-spacing: -0.05rem;
   font-family: var(--font-family-sans-serif);
   color: var(--color-muted);
+  font-weight: 600;
 }
 
 #lightbox-favorite {
   position: absolute;
-  top: var(--edge-offset);
+  top: auto;
+  bottom: calc(var(--edge-offset) + 64px + 1rem);
   right: var(--edge-offset);
+  transform: translateX(-25%);
   width: 44px;
   height: 44px;
   opacity: 1;
+}
+
+#random-favorite {
+  position: static;
+  width: 28px;
+  height: 28px;
+  opacity: 1;
+  display: none;
+}
+
+#random-favorite.visible {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .lightbox-nav {

@@ -9,6 +9,7 @@
   const randomizeBtn = document.getElementById("randomize-btn");
   const randomDisplay = document.getElementById("random-display");
   const randomImg = document.getElementById("random-img");
+  const randomFavorite = document.getElementById("random-favorite");
   const sidebar = document.getElementById("sidebar");
   const filterTitle = document.getElementById("filter-title");
   const shareFavorites = document.getElementById("share-favorites");
@@ -458,10 +459,13 @@
 
     if (randomItem) {
       filterTitle.textContent = `${randomItem.year} ${randomItem.event_type}`;
+      randomFavorite.classList.add("visible");
+      randomFavorite.classList.toggle("favorited", favorites.has(randomItem.url));
       sortOrder.classList.add("hidden");
       shareFavorites.classList.remove("visible");
     } else if (isOwnFavorites) {
       filterTitle.textContent = "Your Favorites";
+      randomFavorite.classList.remove("visible");
       sortOrder.classList.add("hidden");
       const ids = favoriteIdsFromLocal();
       if (ids.length > 0) {
@@ -471,6 +475,7 @@
         shareFavorites.classList.remove("visible");
       }
     } else {
+      randomFavorite.classList.remove("visible");
       let eventLabel = "";
       if (!viewingShared && selectedEvent !== "all") {
         eventLabel = selectedEvent.startsWith(GROUP_PREFIX)
@@ -505,10 +510,20 @@
   });
 
   randomizeBtn.addEventListener("click", () => {
+    randomizeBtn.classList.remove("rolling");
+    void randomizeBtn.offsetWidth;
+    randomizeBtn.classList.add("rolling");
+
     exitSpecialModes();
     randomItem = LOGO_DATA[Math.floor(Math.random() * LOGO_DATA.length)];
     sidebar.classList.add("disabled");
     render();
+  });
+
+  randomFavorite.addEventListener("click", () => {
+    if (!randomItem) return;
+    const nowFavorited = toggleFavorite(randomItem.url);
+    randomFavorite.classList.toggle("favorited", nowFavorited);
   });
 
   favoritesToggle.addEventListener("click", () => {
