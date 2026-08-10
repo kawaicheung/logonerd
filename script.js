@@ -391,6 +391,8 @@
     itemImg.alt = item.label;
     itemPrev.disabled = viewedIndex <= 0;
     itemNext.disabled = viewedIndex >= currentItems.length - 1;
+    itemPrev.classList.toggle("hidden", !!randomItem);
+    itemNext.classList.toggle("hidden", !!randomItem);
 
     filterTitle.textContent = `${item.year} ${item.event_type}`;
     itemFavorite.classList.add("visible");
@@ -573,6 +575,16 @@
     const card = e.target.closest(".card");
     if (card) {
       openItem(card.dataset.url);
+      return;
+    }
+
+    if (showFavorites) {
+      exitSpecialModes();
+      selectedEvent = "all";
+      selectedYear = "all";
+      selectedDecade = "all";
+      updateActiveButtons();
+      render();
     }
   });
 

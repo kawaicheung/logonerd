@@ -3,7 +3,8 @@
   --decades-width: 50px;
   --events-width: 140px;
   --sidebar-width: calc(var(--years-width) + var(--decades-width) + var(--events-width));
-  --edge-offset: 3rem;
+  --horiz-edge-offset: 3rem;
+  --vert-edge-offset: 2.5rem;
   --sidebar-list-max-height: 90%;
   --item-img-max-size: 70%;
 
@@ -55,7 +56,7 @@ body {
 
 #page-content {
   position: relative;
-  margin-right: calc(var(--edge-offset) + var(--sidebar-width));
+  margin-right: calc(var(--horiz-edge-offset) + var(--sidebar-width));
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -64,9 +65,9 @@ body {
 
 #nav-panel {
   position: fixed;
-  top: var(--edge-offset);
-  right: var(--edge-offset);
-  bottom: var(--edge-offset);
+  top: calc(0.6 * var(--vert-edge-offset));
+  right: var(--horiz-edge-offset);
+  bottom: var(--vert-edge-offset);
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -112,8 +113,8 @@ body {
 
 #filter-title-bar {
   position: fixed;
-  top: var(--edge-offset);
-  left: var(--edge-offset);
+  top: var(--vert-edge-offset);
+  left: var(--horiz-edge-offset);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -132,7 +133,7 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  height: calc(2 * var(--edge-offset));
+  height: calc(2 * var(--vert-edge-offset));
   background: linear-gradient(to top, var(--color-bg), transparent);
   pointer-events: none;
   z-index: 9;
@@ -140,8 +141,8 @@ body {
 
 #attribution {
   position: fixed;
-  bottom: calc(.5 * var(--edge-offset));
-  right: var(--edge-offset);
+  bottom: calc(.5 * var(--vert-edge-offset));
+  right: var(--horiz-edge-offset);
   font-size: 0.7rem;
   color: var(--color-text);
   letter-spacing: -0.01rem;
@@ -211,7 +212,7 @@ body {
 }
 
 #randomize-btn.rolling {
-  animation: dice-roll 0.6s ease-out;
+  animation: dice-roll 0.45s ease-out;
 }
 
 .icon-shortcut.active {
@@ -482,8 +483,8 @@ main#grid {
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding: var(--edge-offset) 0;
-  padding-top: calc(2.4 * var(--edge-offset));
+  padding: var(--horiz-edge-offset) 0;
+  padding-top: calc((2 * var(--font-size-big-label)) + var(--vert-edge-offset));
 }
 
 main#grid::-webkit-scrollbar {
@@ -516,7 +517,7 @@ main#grid::-webkit-scrollbar {
 
 .item-nav {
   position: absolute;
-  bottom: var(--edge-offset);
+  bottom: var(--vert-edge-offset);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -537,11 +538,11 @@ main#grid::-webkit-scrollbar {
 }
 
 #item-prev {
-  right: calc(var(--edge-offset) + 72px);
+  right: calc(var(--horiz-edge-offset) + 72px);
 }
 
 #item-next {
-  right: var(--edge-offset);
+  right: var(--horiz-edge-offset);
 }
 
 .item-nav:hover:not(:disabled) {
@@ -551,6 +552,10 @@ main#grid::-webkit-scrollbar {
 .item-nav:disabled {
   opacity: 0.2;
   cursor: default;
+}
+
+.item-nav.hidden {
+  display: none;
 }
 
 .card {
@@ -686,11 +691,11 @@ main#grid::-webkit-scrollbar {
   }
 
   #page-content {
-    margin: 0 var(--edge-offset);
+    margin: 0 var(--horiz-edge-offset);
   }
 
   #nav-panel {
-    top: var(--edge-offset);
+    top: var(--vert-edge-offset);
     right: auto;
     bottom: auto;
     left: 50%;
@@ -705,7 +710,7 @@ main#grid::-webkit-scrollbar {
   #filter-title-bar {
     top: auto;
     left: 50%;
-    bottom: var(--edge-offset);
+    bottom: var(--vert-edge-offset);
     transform: translateX(-50%);
   }
 }
