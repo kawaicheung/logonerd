@@ -138,6 +138,17 @@ body {
   margin: 0;
 }
 
+#footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(2 * var(--vert-edge-offset));
+  background: linear-gradient(to top, var(--color-bg), transparent);
+  pointer-events: none;
+  z-index: 9;
+}
+
 #attribution {
   position: fixed;
   bottom: calc(.5 * var(--vert-edge-offset));

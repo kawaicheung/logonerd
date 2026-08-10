@@ -263,7 +263,11 @@
   function selectEvent(value) {
     exitSpecialModes();
     selectedEvent = value;
-    if (value === "all") eventsFilter.scrollTop = 0;
+    if (value === "all") {
+      eventsFilter.scrollTop = 0;
+    } else {
+      centerInScroll(eventsFilter, eventsList.querySelector(`.event-item[data-value="${value}"]`));
+    }
     updateActiveButtons();
     render();
   }
@@ -504,7 +508,8 @@
         if (!viewingShared && !eventLabel && selectedDecade === "all" && selectedYear === "all") {
           title = "Sporting event logos from the past 100+ years";
         } else {
-          title = capitalize(`${eventLabel ? eventLabel + " " : ""}logos`);
+          const logoWord = items.length === 1 ? "logo" : "logos";
+          title = capitalize(`${eventLabel ? eventLabel + " " : ""}${logoWord}`);
           if (!viewingShared) {
             if (selectedDecade !== "all") {
               title += ` from the ${selectedDecade}s`;
