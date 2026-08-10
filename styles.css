@@ -58,6 +58,11 @@ body {
   display: none;
 }
 
+#randomize-btn-mobile svg {
+  width: 56px;
+  height: 56px;
+}
+
 #page-content {
   position: relative;
   margin-right: calc(var(--horiz-edge-offset) + var(--sidebar-width));
@@ -215,13 +220,13 @@ body {
 
 @keyframes dice-roll-mobile {
   0% {
-    transform: translateX(-50%) rotate(-8deg);
+    transform: translateX(-50%) translateY(0) rotate(-8deg);
   }
   40% {
-    transform: translateX(-50%) translateY(-16px) rotate(420deg);
+    transform: translateX(-50%) translateY(-48px) rotate(420deg);
   }
   100% {
-    transform: translateX(-50%) rotate(712deg);
+    transform: translateX(-50%) translateY(0) rotate(712deg);
   }
 }
 
@@ -712,7 +717,7 @@ main#grid::-webkit-scrollbar {
   #randomize-btn-mobile {
     display: flex;
     position: fixed;
-    bottom: var(--vert-edge-offset);
+    bottom: calc(var(--vert-edge-offset) + env(safe-area-inset-bottom) + 90px);
     left: 50%;
     transform: translateX(-50%) rotate(-8deg);
     transition: none;
@@ -724,9 +729,9 @@ main#grid::-webkit-scrollbar {
   }
 
   #nav-panel {
-    top: var(--vert-edge-offset);
+    top: auto;
     right: auto;
-    bottom: auto;
+    bottom: calc(var(--vert-edge-offset) + env(safe-area-inset-bottom));
     left: 50%;
     transform: translateX(-50%);
     align-items: center;
@@ -738,9 +743,9 @@ main#grid::-webkit-scrollbar {
   }
 
   #filter-title-bar {
-    top: auto;
+    top: var(--vert-edge-offset);
     left: 50%;
-    bottom: calc(var(--vert-edge-offset) + 44px);
+    bottom: auto;
     transform: translateX(-50%);
     display: none;
   }
