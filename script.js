@@ -11,6 +11,8 @@
   const shareFavorites = document.getElementById("share-favorites");
   const shareFavoritesBtn = document.getElementById("share-favorites-btn");
   const shareFeedback = document.getElementById("share-feedback");
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightbox-img");
 
   let sortDirection = "desc";
   let showFavorites = false;
@@ -34,6 +36,10 @@
     showFavorites = value;
     updateFavoritesToggleState();
     sidebar.classList.toggle("disabled", value);
+  }
+
+  function logoPath(filename, variant) {
+    return `logos/${variant}/${filename}`;
   }
 
   const FAVORITES_KEY = "logonerd:favorites";
@@ -407,10 +413,11 @@
       items.forEach((item) => {
         const card = document.createElement("div");
         card.className = "card";
+        card.dataset.url = item.url;
         const isFavorited = favorites.has(item.url);
         card.innerHTML = `
           <button class="favorite-btn${isFavorited ? " favorited" : ""}" type="button" data-url="${item.url}" aria-label="Toggle favorite">${STAR_ICON}</button>
-          <img src="${item.url}" alt="${item.label}" loading="lazy">
+          <img src="${logoPath(item.url, "low-res")}" alt="${item.label}" loading="lazy">
           <div class="meta">${item.year} ${item.event_type}</div>
         `;
         grid.appendChild(card);
@@ -455,21 +462,44 @@
 
   grid.addEventListener("click", (e) => {
     const btn = e.target.closest(".favorite-btn");
-    if (!btn) return;
-    const url = btn.dataset.url;
-    if (favorites.has(url)) {
-      favorites.delete(url);
-    } else {
-      favorites.add(url);
-      spawnFavoriteSparks();
+    if (btn) {
+      const url = btn.dataset.url;
+      if (favorites.has(url)) {
+        favorites.delete(url);
+      } else {
+        favorites.add(url);
+        spawnFavoriteSparks();
+      }
+      saveFavorites();
+      updateFavoritesToggleState();
+      if (showFavorites) {
+        render();
+      } else {
+        btn.classList.toggle("favorited", favorites.has(url));
+      }
+      return;
     }
-    saveFavorites();
-    updateFavoritesToggleState();
-    if (showFavorites) {
-      render();
-    } else {
-      btn.classList.toggle("favorited", favorites.has(url));
+
+    const card = e.target.closest(".card");
+    if (card) {
+      openLightbox(card.dataset.url);
     }
+  });
+
+  function openLightbox(url) {
+    lightboxImg.src = logoPath(url, "hi-res");
+    lightbox.classList.add("visible");
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove("visible");
+    lightboxImg.src = "";
+  }
+
+  lightbox.addEventListener("click", closeLightbox);
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeLightbox();
   });
 
   shareFavoritesBtn.addEventListener("click", () => {
