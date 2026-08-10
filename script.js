@@ -7,7 +7,7 @@
   const sortOrder = document.getElementById("sort-order-btn");
   const favoritesToggle = document.getElementById("favorites-toggle");
   const sidebar = document.getElementById("sidebar");
-  const favoritesBar = document.getElementById("favorites-bar");
+  const filterTitle = document.getElementById("filter-title");
   const shareFavorites = document.getElementById("share-favorites");
   const shareFavoritesBtn = document.getElementById("share-favorites-btn");
   const shareFeedback = document.getElementById("share-feedback");
@@ -431,8 +431,11 @@
       });
     }
 
-    if (showFavorites && !viewingShared) {
-      favoritesBar.classList.add("visible");
+    const isOwnFavorites = showFavorites && !viewingShared;
+
+    if (isOwnFavorites) {
+      filterTitle.textContent = "Your Favorites";
+      sortOrder.classList.add("hidden");
       const ids = favoriteIdsFromLocal();
       if (ids.length > 0) {
         shareFavoritesBtn.dataset.shareUrl = `${window.location.origin}${window.location.pathname}?favorites=${ids.join(",")}`;
@@ -441,7 +444,23 @@
         shareFavorites.classList.remove("visible");
       }
     } else {
-      favoritesBar.classList.remove("visible");
+      let eventLabel = "";
+      if (!viewingShared && selectedEvent !== "all") {
+        eventLabel = selectedEvent.startsWith(GROUP_PREFIX)
+          ? selectedEvent.slice(GROUP_PREFIX.length)
+          : selectedEvent;
+      }
+
+      let title = `${items.length} ${eventLabel ? eventLabel + " " : ""}logo${items.length === 1 ? "" : "s"}`;
+      if (!viewingShared) {
+        if (selectedDecade !== "all") {
+          title += ` from the ${selectedDecade}s`;
+        } else if (selectedYear !== "all") {
+          title += ` from ${selectedYear}`;
+        }
+      }
+      filterTitle.textContent = title;
+      sortOrder.classList.remove("hidden");
       shareFavorites.classList.remove("visible");
     }
 

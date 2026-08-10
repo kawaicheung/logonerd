@@ -72,21 +72,18 @@ body {
   color: var(--color-muted);
 }
 
-#favorites-bar {
+#filter-title-bar {
   position: fixed;
   top: var(--edge-offset);
   left: var(--edge-offset);
   right: calc(var(--edge-offset) + var(--sidebar-width));
-  display: none;
+  display: flex;
+  align-items: center;
   gap: 0.5rem;
   z-index: 10;
 }
 
-#favorites-bar.visible {
-  display: flex;
-}
-
-#favorites-heading {
+#filter-title {
   font-family: var(--font-league-gothic);
   font-size: var(--font-size-big-label);
   font-weight: 600;
@@ -104,11 +101,8 @@ body {
   z-index: 9;
 }
 
-#sort-order-btn {
-  position: absolute;
-  bottom: var(--edge-offset);
-  right: var(--edge-offset);
-  z-index: 10;
+#sort-order-btn.hidden {
+  display: none;
 }
 
 .icon-shortcut {
@@ -132,8 +126,6 @@ body {
 }
 
 #sort-order-btn svg {
-  width: 42px;
-  height: 42px;
   transition: transform 0.2s ease;
 }
 
