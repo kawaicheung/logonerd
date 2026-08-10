@@ -131,16 +131,17 @@ body {
 
 #attribution {
   position: fixed;
-  bottom: 0.75rem;
+  bottom: calc(.5 * var(--edge-offset));
   right: var(--edge-offset);
   font-size: 0.7rem;
-  color: var(--color-faint);
-  text-decoration: none;
+  color: var(--color-text);
+  letter-spacing: -0.01rem;
   z-index: 10;
 }
 
-#attribution:hover {
-  color: var(--color-muted);
+#attribution a {
+  color: inherit;
+  text-decoration: underline;
 }
 
 #sort-order-btn.hidden {
