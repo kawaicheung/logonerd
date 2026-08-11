@@ -1,5 +1,5 @@
 :root {
-  --years-width: 50px;
+  --years-width: 56px;
   --decades-width: 50px;
   --events-width: 140px;
   --sidebar-width: calc(var(--years-width) + var(--decades-width) + var(--events-width));
@@ -110,13 +110,30 @@ body {
 #site-title-row {
   display: flex;
   align-items: center;
+  gap: 0.8rem;
 }
 
 #site-title-main {
+  position: relative;
   font-size: 2.4rem;
-  letter-spacing: -0.05rem;
   padding-left: 0.4rem;
   font-family: var(--font-league-gothic);
+}
+
+#site-title-main::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 125%;
+  height: 70%;
+  border-radius: 50%;
+  border-style: solid;
+  border-color: var(--color-text);
+  border-width: 0 4px;
+  transform: translate(-50%, -50%) rotate(-20deg);
+  z-index: -1;
+  pointer-events: none;
 }
 
 #site-author {
@@ -195,6 +212,7 @@ body {
   border: none;
   color: var(--color-text);
   cursor: pointer;
+  padding: 0;
   transition: transform 0.25s cubic-bezier(0.34, 2.6, 0.64, 1);
 }
 
@@ -419,7 +437,7 @@ body {
   flex: 0 0 auto;
   font-family: var(--font-league-gothic);
   font-size: var(--font-size-medium-label);
-  padding: 0.15rem 0.3sca5rem;
+  padding: 0.15rem 0.35rem;
   border: none;
   background: var(--color-bg);
   color: var(--color-text);
@@ -812,9 +830,26 @@ main#grid.favorites-view {
 }
 
 #mobile-brand-title {
+  position: relative;
   font-size: 2.4rem;
   letter-spacing: -0.05rem;
   font-family: var(--font-league-gothic);
+}
+
+#mobile-brand-title::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 125%;
+  height: 70%;
+  border-radius: 50%;
+  border-style: solid;
+  border-color: var(--color-text);
+  border-width: 0 4px;
+  transform: translate(-50%, -50%) rotate(-20deg);
+  z-index: -1;
+  pointer-events: none;
 }
 
 #mobile-brand-author {
