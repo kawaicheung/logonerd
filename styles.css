@@ -708,6 +708,7 @@ main#grid::-webkit-scrollbar {
 
 @media (pointer: coarse) {
   #app {
+    --horiz-edge-offset: 3vw;
     min-width: 0;
     margin: 0;
   }
@@ -763,6 +764,8 @@ main#grid::-webkit-scrollbar {
 
   #filter-title-bar:has(#item-favorite.visible) {
     display: flex;
+    justify-content: center;
+    width: 100%;
   }
 
   #filter-title {
@@ -771,5 +774,9 @@ main#grid::-webkit-scrollbar {
 
   #attribution {
     display: none;
+  }
+
+  #item-img {
+    transform: translateY(-8vh);
   }
 }
