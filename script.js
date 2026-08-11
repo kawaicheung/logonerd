@@ -540,7 +540,7 @@
 
           let title;
           if (!viewingShared && !eventLabel && selectedDecade === "all" && selectedYear === "all") {
-            title = "Sporting event logos from the past 100+ years";
+            title = "All logos";
           } else {
             const logoWord = items.length === 1 ? "logo" : "logos";
             title = capitalize(`${eventLabel ? eventLabel + " " : ""}${logoWord}`);
