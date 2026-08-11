@@ -22,9 +22,8 @@
   --font-league-gothic: "League Gothic", sans-serif;
   --font-family-sans-serif: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
-  --font-size-big-label: 1.8rem;
+  --font-size-big-label: 2.1rem;
   --font-size-medium-label: 1.4rem;
-  --font-size-small-label: 0.8rem;
 
   --shadow-card: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
   
@@ -84,16 +83,22 @@ body {
 
 #page-content {
   --pc-margin: 1rem;
+  --pc-height: calc(100vh - (2 * var(--vert-edge-offset)));
 
   position: relative;
   margin: var(--pc-margin);
   margin-right: calc(var(--horiz-edge-offset) + var(--sidebar-width));
-  height: calc(100vh - (2 * var(--vert-edge-offset)));
+  height: var(--pc-height);
   border-radius: 2px;
   display: flex;
   flex-direction: column;
   gap: 1rem;
   background-color: var(--color-bg);
+  border: solid 2px transparent;
+
+  #app:has(#item-favorite.visible.favorited) & {
+    border-color: var(--color-accent);
+  }
 
   &::after {
     content: "";
@@ -134,7 +139,7 @@ body {
 #site-title-main {
   position: relative;
   font-size: 2.4rem;
-  padding-left: 0.4rem;
+  padding-left: 0.8rem;
   font-family: var(--font-league-gothic);
 
   &::before {
@@ -186,7 +191,7 @@ body {
   }
 
   &.bounce {
-    animation: icon-shortcut-bounce 0.2s;
+    animation: icon-shortcut-bounce 0.32s;
   }
 }
 
@@ -457,7 +462,7 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   font-family: var(--font-family-sans-serif);
-  font-size: var(--font-size-small-label);
+  font-size: 0.8rem;
   letter-spacing: -0.03rem;
   margin: 0;
   border-bottom: solid 1px var(--color-border);
@@ -500,6 +505,7 @@ main#grid {
   -ms-overflow-style: none;
   padding: 0 calc(0.5 * var(--horiz-edge-offset));
   padding-top: calc((2 * var(--font-size-big-label)) + var(--vert-edge-offset));
+  padding-bottom: calc(0.1 * var(--pc-height));
 
   &::-webkit-scrollbar {
     display: none;
@@ -515,6 +521,7 @@ main#grid {
 
   &:has(.empty-state) {
     padding-top: 0;
+    padding-bottom: 0;
   }
 }
 
@@ -528,8 +535,12 @@ main#grid {
   text-align: center;
   gap: 0.6rem;
   border-radius: 0.2rem;
-  border: solid 1px var(--color-border);
+  border: solid 2px transparent;
   cursor: zoom-in;
+
+  &:has(.favorite-btn.favorited) {
+    border-color: var(--color-accent-border);
+  }
 
   & img {
     width: 100%;
@@ -565,11 +576,6 @@ main#grid {
   opacity: 0;
   transition: opacity 0.15s ease, color 0.15s ease, transform 0.25s cubic-bezier(0.34, 2.6, 0.64, 1);
 
-  &,
-  &.favorited {
-    opacity: 1;
-  }
-
   & svg {
     width: 100%;
     height: 100%;
@@ -580,6 +586,7 @@ main#grid {
   }
 
   &.favorited {
+    opacity: 1;
     color: var(--color-accent);
 
     & svg {
@@ -693,28 +700,16 @@ main#grid {
     transform: translateY(1px) rotate(-8deg) scale(1.2);
   }
 
-  .event-item:hover {
-    background: var(--color-hover);
-  }
+  .event-item,
+  .year-item,
+  .decade-item {
+    &:hover {
+      background: var(--color-hover);
+    }
 
-  .event-item.active:hover {
-    background: var(--color-text);
-  }
-
-  .year-item:hover {
-    background: var(--color-hover);
-  }
-
-  .year-item.active:hover {
-    background: var(--color-text);
-  }
-
-  .decade-item:hover {
-    background: var(--color-hover);
-  }
-
-  .decade-item.active:hover {
-    background: var(--color-text);
+    &.active:hover {
+      background: var(--color-text);
+    }
   }
 
   .item-nav:hover:not(:disabled) {
@@ -728,10 +723,18 @@ main#grid {
 
   .card:hover {
     border-color: var(--color-text);
-  }
 
-  .card:hover .meta {
-    visibility: visible;
+    &:has(.favorite-btn.favorited) {
+      border-color: var(--color-accent-border);
+    }
+
+    & .meta {
+      visibility: visible;
+    }
+
+    & .favorite-btn {
+      opacity: 1;
+    }
   }
 }
 
@@ -895,15 +898,15 @@ main#grid {
 
 @keyframes icon-shortcut-bounce {
   0% {
-    transform: scale(1);
+    transform: translateY(0);
     animation-timing-function: cubic-bezier(0.34, 2.6, 0.64, 1);
   }
-  50% {
-    transform: scale(1.25);
+  40% {
+    transform: translateY(-2px);
     animation-timing-function: ease-out;
   }
   100% {
-    transform: scale(1);
+    transform: translateY(0);
   }
 }
 

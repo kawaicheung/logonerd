@@ -102,10 +102,14 @@
     const STAR_ICON =
       '<svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.26 6.6.6-5 4.53 1.5 6.7L12 16.9l-6 3.7 1.5-6.7-5-4.53 6.6-.6z"/></svg>';
 
-    function spawnFavoriteSparks() {
+    function bounceFavoritesToggle() {
       favoritesToggle.classList.remove("bounce");
       void favoritesToggle.offsetWidth;
       favoritesToggle.classList.add("bounce");
+    }
+
+    function spawnFavoriteSparks() {
+      bounceFavoritesToggle();
 
       const count = 12;
       for (let i = 0; i < count; i++) {
@@ -498,7 +502,7 @@
             empty.textContent = "None of these logos are available anymore.";
           } else if (favoritesOnly) {
             empty.innerHTML =
-              'No favorites yet. Click the star on a logo to favorite it. <a href="#" id="empty-state-back">Click to go back</a>.';
+              'You do not have any favorites. Click the star on a logo to favorite it. <a href="#" id="empty-state-back">Click to go back</a>.';
           } else {
             empty.textContent = "No logos exist for the given time period.";
           }
@@ -540,7 +544,7 @@
 
           let title;
           if (!viewingShared && !eventLabel && selectedDecade === "all" && selectedYear === "all") {
-            title = "All logos";
+            title = "All sporting event logos";
           } else {
             const logoWord = items.length === 1 ? "logo" : "logos";
             title = capitalize(`${eventLabel ? eventLabel + " " : ""}${logoWord}`);
@@ -580,6 +584,8 @@
     randomizeBtn.addEventListener("click", () => rollDice(randomizeBtn));
 
     favoritesToggle.addEventListener("click", () => {
+      bounceFavoritesToggle();
+
       // A hand click always means "show MY favorites," not whatever list
       // (if any) was pinned by an incoming shared link.
       pinnedFavoriteIds = null;
