@@ -544,7 +544,7 @@
 
           let title;
           if (!viewingShared && !eventLabel && selectedDecade === "all" && selectedYear === "all") {
-            title = "All sporting event logos";
+            title = "All major sporting event logos";
           } else {
             const logoWord = items.length === 1 ? "logo" : "logos";
             title = capitalize(`${eventLabel ? eventLabel + " " : ""}${logoWord}`);
