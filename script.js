@@ -1,5 +1,6 @@
 (function () {
   const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+  if (isTouchDevice) document.body.classList.add("mobile-pre-roll");
   const grid = document.getElementById("grid");
   const eventsFilter = document.getElementById("events-filter");
   const eventsList = document.getElementById("events-list");
@@ -456,10 +457,7 @@
       itemFavorite.classList.remove("visible");
 
       if (isTouchDevice) {
-        const empty = document.createElement("div");
-        empty.className = "empty-state";
-        empty.textContent = "Tap the dice to roll a random sporting event logo.";
-        grid.appendChild(empty);
+        // grid intentionally left blank; centered dice + title serve as the empty state
       } else if (items.length === 0) {
         const empty = document.createElement("div");
         empty.className = "empty-state";
@@ -536,6 +534,7 @@
     btn.classList.remove("rolling");
     void btn.offsetWidth;
     btn.classList.add("rolling");
+    document.body.classList.remove("mobile-pre-roll");
 
     exitSpecialModes();
     randomItem = LOGO_DATA[Math.floor(Math.random() * LOGO_DATA.length)];

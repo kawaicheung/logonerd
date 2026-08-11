@@ -732,7 +732,7 @@ main#grid::-webkit-scrollbar {
     bottom: calc(var(--vert-edge-offset) + env(safe-area-inset-bottom) + 90px);
     left: 50%;
     transform: translateX(-50%) rotate(-8deg);
-    transition: none;
+    transition: bottom 0.6s ease;
     z-index: 10;
   }
 
@@ -747,6 +747,16 @@ main#grid::-webkit-scrollbar {
     left: 50%;
     transform: translateX(-50%);
     align-items: center;
+    transition: bottom 0.6s ease, transform 0.6s ease;
+  }
+
+  body.mobile-pre-roll #randomize-btn-mobile {
+    bottom: calc(50% + 90px);
+  }
+
+  body.mobile-pre-roll #nav-panel {
+    bottom: 50%;
+    transform: translateX(-50%) translateY(50%);
   }
 
   #site-title {
