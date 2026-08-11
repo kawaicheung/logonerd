@@ -18,17 +18,22 @@
     const randomizeBtn = document.getElementById("mobile-randomize-btn");
 
     function rollDice() {
-      randomizeBtn.classList.remove("rolling");
+      const isFirstRoll = !document.body.classList.contains("mobile-rolled");
+      const animClass = isFirstRoll ? "rolling" : "rolling-repeat";
+
+      randomizeBtn.classList.remove("rolling", "rolling-repeat");
       void randomizeBtn.offsetWidth;
-      randomizeBtn.classList.add("rolling");
+      randomizeBtn.classList.add(animClass);
       document.body.classList.add("mobile-rolled");
 
       const item = LOGO_DATA[Math.floor(Math.random() * LOGO_DATA.length)];
-      itemImg.src = logoPath(item.url, "hi-res");
-      itemImg.alt = item.label;
-      itemImg.classList.add("visible");
-      filterTitle.textContent = `${item.year} ${item.event_type}`;
-      titleBar.classList.add("visible");
+      setTimeout(() => {
+        itemImg.src = logoPath(item.url, "hi-res");
+        itemImg.alt = item.label;
+        itemImg.classList.add("visible");
+        filterTitle.textContent = `${item.year} ${item.event_type}`;
+        titleBar.classList.add("visible");
+      }, isFirstRoll ? 390 : 225);
     }
 
     randomizeBtn.addEventListener("click", rollDice);

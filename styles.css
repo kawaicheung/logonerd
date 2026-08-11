@@ -29,9 +29,11 @@
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
 }
 
-img {
+img,
+svg {
   user-select: none;
   -webkit-user-drag: none;
 }
@@ -488,7 +490,7 @@ main#grid {
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding: var(--horiz-edge-offset) 0;
+  padding: 0 var(--horiz-edge-offset);
   padding-top: calc((2 * var(--font-size-big-label)) + var(--vert-edge-offset));
 }
 
@@ -721,7 +723,7 @@ main#grid::-webkit-scrollbar {
 
 #mobile-item-img {
   max-width: 80%;
-  max-height: 70%;
+  max-height: 50vh;
   object-fit: contain;
   transform: translateY(-8vh);
   display: none;
@@ -753,11 +755,9 @@ main#grid::-webkit-scrollbar {
 
 #mobile-brand {
   position: fixed;
-  bottom: 50%;
-  left: 50%;
-  transform: translateX(-50%) translateY(50%);
-  text-align: center;
-  transition: bottom 0.6s ease, transform 0.6s ease;
+  bottom: calc(2.5rem + env(safe-area-inset-bottom));
+  right: 1.5rem;
+  text-align: right;
 }
 
 #mobile-brand-title {
@@ -778,7 +778,7 @@ main#grid::-webkit-scrollbar {
   align-items: center;
   justify-content: center;
   position: fixed;
-  bottom: calc(50% + 90px);
+  bottom: calc(50% - 56px);
   left: 50%;
   transform: translateX(-50%) rotate(-8deg);
   background: transparent;
@@ -786,13 +786,13 @@ main#grid::-webkit-scrollbar {
   color: var(--color-text);
   cursor: pointer;
   padding: 0;
-  transition: bottom 0.6s ease;
+  transition: bottom 0.6s ease 0.18s;
   z-index: 10;
 }
 
 #mobile-randomize-btn svg {
-  width: 56px;
-  height: 56px;
+  width: 112px;
+  height: 112px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.5;
@@ -802,23 +802,39 @@ main#grid::-webkit-scrollbar {
   0% {
     transform: translateX(-50%) translateY(0) rotate(-8deg);
   }
+  23% {
+    transform: translateX(-50%) translateY(-90px) rotate(420deg);
+  }
+  100% {
+    transform: translateX(-50%) translateY(0) rotate(1440deg);
+  }
+}
+
+#mobile-randomize-btn.rolling {
+  animation: dice-roll-mobile 0.78s ease-out;
+}
+
+@keyframes dice-roll-mobile-repeat {
+  0% {
+    transform: translateX(-50%) translateY(0) rotate(-8deg);
+  }
   40% {
-    transform: translateX(-50%) translateY(-48px) rotate(420deg);
+    transform: translateX(-50%) translateY(-90px) rotate(420deg);
   }
   100% {
     transform: translateX(-50%) translateY(0) rotate(712deg);
   }
 }
 
-#mobile-randomize-btn.rolling {
-  animation: dice-roll-mobile 0.45s ease-out;
-}
-
-body.mobile-rolled #mobile-brand {
-  bottom: calc(2.5rem + env(safe-area-inset-bottom));
-  transform: translateX(-50%);
+#mobile-randomize-btn.rolling-repeat {
+  animation: dice-roll-mobile-repeat 0.45s ease-out;
 }
 
 body.mobile-rolled #mobile-randomize-btn {
-  bottom: calc(2.5rem + env(safe-area-inset-bottom) + 90px);
+  bottom: calc(2.5rem + env(safe-area-inset-bottom));
+}
+
+body.mobile-rolled #mobile-randomize-btn svg {
+  width: 56px;
+  height: 56px;
 }
