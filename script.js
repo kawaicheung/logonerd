@@ -33,7 +33,7 @@
         itemImg.classList.add("visible");
         filterTitle.textContent = `${item.year} ${item.event_type}`;
         titleBar.classList.add("visible");
-      }, isFirstRoll ? 390 : 225);
+      }, isFirstRoll ? 260 : 225);
     }
 
     randomizeBtn.addEventListener("click", rollDice);
