@@ -88,7 +88,7 @@
     function setShowFavorites(value) {
       showFavorites = value;
       updateFavoritesToggleState();
-      sidebar.classList.toggle("disabled", value);
+      grid.classList.toggle("favorites-view", value);
     }
 
     function exitSpecialModes() {
@@ -421,6 +421,7 @@
 
     function renderItemDisplay() {
       const item = viewedIndex !== -1 ? currentItems[viewedIndex] : null;
+      sidebar.classList.toggle("disabled", showFavorites || !!item);
       if (!item) {
         grid.classList.remove("hidden");
         itemDisplay.classList.remove("visible");
@@ -493,11 +494,14 @@
         if (items.length === 0) {
           const empty = document.createElement("div");
           empty.className = "empty-state";
-          empty.textContent = viewingShared
-            ? "None of these logos are available anymore."
-            : favoritesOnly
-            ? "No favorites yet. Click the star on a logo to save it."
-            : "No logos match those filters.";
+          if (viewingShared) {
+            empty.textContent = "None of these logos are available anymore.";
+          } else if (favoritesOnly) {
+            empty.innerHTML =
+              'No favorites yet. Click the star on a logo to favorite it. <a href="#" id="empty-state-back">Click to go back</a>.';
+          } else {
+            empty.textContent = "No logos exist for the given time period.";
+          }
           grid.appendChild(empty);
         } else {
           items.forEach((item) => {
@@ -621,6 +625,10 @@
       if (card) {
         openItem(card.dataset.url);
         return;
+      }
+
+      if (e.target.closest("#empty-state-back")) {
+        e.preventDefault();
       }
 
       if (showFavorites) {
