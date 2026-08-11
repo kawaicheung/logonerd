@@ -38,6 +38,11 @@ svg {
   -webkit-user-drag: none;
 }
 
+html,
+body {
+  overscroll-behavior: none;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -45,6 +50,7 @@ body {
   color: var(--color-text);
   background: var(--color-bg);
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }
 
@@ -194,16 +200,8 @@ body {
   transform: rotate(180deg);
 }
 
-.icon-shortcut:hover {
-  transform: scale(1.2);
-}
-
 #randomize-btn {
   transform: translateY(1px) rotate(-8deg);
-}
-
-#randomize-btn:hover {
-  transform: translateY(1px) rotate(-8deg) scale(1.2);
 }
 
 @keyframes dice-roll {
@@ -360,10 +358,6 @@ body {
   padding: 0.35rem 0.5rem;
 }
 
-.event-item:hover {
-  background: var(--color-hover);
-}
-
 .event-item.active {
   background: var(--color-text);
   color: var(--color-bg);
@@ -423,10 +417,6 @@ body {
   border-bottom: solid 1px var(--color-border);
 }
 
-.year-item:hover {
-  background: var(--color-hover);
-}
-
 .year-item.active {
   background: var(--color-text);
   color: var(--color-bg);
@@ -463,10 +453,6 @@ body {
   border-bottom: solid 1px var(--color-border);
 }
 
-.decade-item:hover {
-  background: var(--color-hover);
-}
-
 .decade-item.active {
   background: var(--color-text);
   color: var(--color-bg);
@@ -500,6 +486,10 @@ main#grid::-webkit-scrollbar {
 
 #grid.hidden {
   display: none;
+}
+
+#grid:has(.empty-state) {
+  padding-top: 0;
 }
 
 #item-display {
@@ -552,10 +542,6 @@ main#grid::-webkit-scrollbar {
   right: var(--horiz-edge-offset);
 }
 
-.item-nav:hover:not(:disabled) {
-  transform: scale(1.2);
-}
-
 .item-nav:disabled {
   opacity: 0.2;
   cursor: default;
@@ -595,14 +581,6 @@ main#grid::-webkit-scrollbar {
   transition: opacity 0.15s ease, color 0.15s ease, transform 0.25s cubic-bezier(0.34, 2.6, 0.64, 1);
 }
 
-.favorite-btn:hover {
-  transform: scale(1.2);
-}
-
-.card:hover {
-  border-color: var(--color-muted);
-}
-
 .favorite-btn,
 .favorite-btn.favorited {
   opacity: 1;
@@ -615,10 +593,6 @@ main#grid::-webkit-scrollbar {
   stroke: currentColor;
   stroke-width: 1.5;
   stroke-linejoin: round;
-}
-
-.favorite-btn:hover {
-  color: var(--color-accent);
 }
 
 .favorite-btn.favorited {
@@ -647,10 +621,6 @@ main#grid::-webkit-scrollbar {
   letter-spacing: -0.03rem;
   color: var(--color-muted);
   transform: translateY(50%);
-}
-
-.card:hover .meta {
-  visibility: visible;
 }
 
 .empty-state {
@@ -683,12 +653,55 @@ main#grid::-webkit-scrollbar {
   opacity: 1;
 }
 
+/* Only apply hover effects on devices with a real mouse/trackpad, so a tap
+   on a touchscreen laptop or hybrid device can't leave a hover state stuck. */
+@media (hover: hover) and (pointer: fine) {
+  .icon-shortcut:hover {
+    transform: scale(1.2);
+  }
+
+  #randomize-btn:hover {
+    transform: translateY(1px) rotate(-8deg) scale(1.2);
+  }
+
+  .event-item:hover {
+    background: var(--color-hover);
+  }
+
+  .year-item:hover {
+    background: var(--color-hover);
+  }
+
+  .decade-item:hover {
+    background: var(--color-hover);
+  }
+
+  .item-nav:hover:not(:disabled) {
+    transform: scale(1.2);
+  }
+
+  .favorite-btn:hover {
+    transform: scale(1.2);
+    color: var(--color-accent);
+  }
+
+  .card:hover {
+    border-color: var(--color-muted);
+  }
+
+  .card:hover .meta {
+    visibility: visible;
+  }
+}
+
 /* ===== Mobile (completely separate from desktop above) ===== */
 
 #app-mobile {
   display: none;
   position: relative;
   height: 100vh;
+  height: 100dvh;
+  user-select: none;
 }
 
 @media (pointer: coarse) {
@@ -735,7 +748,7 @@ main#grid::-webkit-scrollbar {
 
 #mobile-title-bar {
   position: fixed;
-  top: 2.5rem;
+  top: calc(2.5rem + env(safe-area-inset-top));
   left: 50%;
   transform: translateX(-50%);
   display: none;
@@ -787,6 +800,7 @@ main#grid::-webkit-scrollbar {
   cursor: pointer;
   padding: 0;
   transition: bottom 0.6s ease 0.18s;
+  touch-action: manipulation;
   z-index: 10;
 }
 
