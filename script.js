@@ -36,7 +36,12 @@
       }, isFirstRoll ? 260 : 225);
     }
 
-    randomizeBtn.addEventListener("click", rollDice);
+    const autoRollTimeout = setTimeout(rollDice, 2000);
+
+    randomizeBtn.addEventListener("click", () => {
+      clearTimeout(autoRollTimeout);
+      rollDice();
+    });
   }
 
   function initDesktop() {

@@ -777,7 +777,7 @@ main#grid {
 
 #mobile-item-img {
   max-width: 80%;
-  max-height: 50vh;
+  max-height: 40vh;
   object-fit: contain;
   transform: translateY(-4vh);
   display: none;
