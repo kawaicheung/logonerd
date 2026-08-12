@@ -197,6 +197,10 @@ body {
   &.bounce {
     animation: icon-shortcut-bounce 0.32s;
   }
+
+  &.pop {
+    animation: icon-shortcut-pop 0.32s;
+  }
 }
 
 #favorites-toggle svg {
@@ -907,12 +911,29 @@ main#grid {
 
 @keyframes icon-shortcut-bounce {
   0% {
+    transform: translateY(0);
     animation-timing-function: cubic-bezier(0.34, 2.6, 0.64, 1);
   }
   40% {
+    transform: translateY(-16px);
     animation-timing-function: ease-out;
   }
   100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes icon-shortcut-pop {
+  0% {
+    transform: scale(1);
+    animation-timing-function: cubic-bezier(0.34, 2.6, 0.64, 1);
+  }
+  50% {
+    transform: scale(1.25);
+    animation-timing-function: ease-out;
+  }
+  100% {
+    transform: scale(1);
   }
 }
 

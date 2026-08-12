@@ -77,7 +77,7 @@
     }
 
     function updateFavoritesToggleState() {
-      favoritesToggle.classList.toggle("active", favorites.size > 0);
+      favoritesToggle.classList.toggle("active", favoriteIdsFromLocal().length > 0);
       favoritesToggle.setAttribute("aria-pressed", String(showFavorites));
     }
 
@@ -108,8 +108,14 @@
       favoritesToggle.classList.add("bounce");
     }
 
+    function popFavoritesToggle() {
+      favoritesToggle.classList.remove("pop");
+      void favoritesToggle.offsetWidth;
+      favoritesToggle.classList.add("pop");
+    }
+
     function spawnFavoriteSparks() {
-      bounceFavoritesToggle();
+      popFavoritesToggle();
 
       const count = 12;
       for (let i = 0; i < count; i++) {
