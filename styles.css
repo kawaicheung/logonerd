@@ -503,7 +503,7 @@ main#grid {
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding: 0 calc(0.5 * var(--horiz-edge-offset));
+  padding: 0 calc(0.25 * var(--horiz-edge-offset));
   padding-top: calc((2 * var(--font-size-big-label)) + var(--vert-edge-offset));
   padding-bottom: calc(0.1 * var(--pc-height));
 
@@ -566,8 +566,8 @@ main#grid {
   position: absolute;
   top: 0.4rem;
   right: 0.4rem;
-  width: 22px;
-  height: 22px;
+  width: 27.5px;
+  height: 27.5px;
   padding: 0;
   border: none;
   background: transparent;

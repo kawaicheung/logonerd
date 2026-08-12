@@ -159,7 +159,7 @@
     let selectedEvent = "all";
 
     const LEAGUES = {
-      MLB: ["World Series", "MLB All-Star Game", "MLB Spring Training"],
+      MLB: ["World Series", "MLB All-Star Game", "MLB Spring Training", "MLB Postseason", "MLB Opening Day"],
       NFL: ["Super Bowl", "NFL Draft", "Pro Bowl"],
       NHL: ["NHL All-Star Game", "NHL Draft", "NHL Winter Classic", "Stanley Cup Playoffs"],
       NBA: ["NBA All-Star Game", "NBA Draft", "NBA Finals", "NBA Playoffs"],
