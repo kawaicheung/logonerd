@@ -146,7 +146,7 @@
     const favorites = loadFavorites();
 
     const urlToId = new Map(LOGO_DATA.map((item) => [item.url, item.id]));
-    const idToItem = new Map(LOGO_DATA.map((item) => [item.id, item]));
+    const validIds = new Set(LOGO_DATA.map((item) => item.id));
 
     // Set when a shared "?favorites=" link is opened: a fixed list of ids to
     // show, independent of the viewer's own localStorage favorites. Null
@@ -373,7 +373,7 @@
         const ids = favoritesParam
           .split(",")
           .map((s) => Number(s))
-          .filter((id) => idToItem.has(id));
+          .filter((id) => validIds.has(id));
         if (ids.length > 0) {
           // This is someone else's shared set, not "my" favorites -- leave
           // the checkbox unchecked and the normal filters at their defaults.
@@ -452,8 +452,6 @@
     function render() {
       const viewingShared = pinnedFavoriteIds !== null;
       const favoritesOnly = viewingShared || showFavorites;
-      const eventValue = selectedEvent;
-      const order = sortDirection;
 
       let items;
       if (randomItem) {
@@ -465,13 +463,13 @@
       } else {
         items = LOGO_DATA.filter((item) => {
           let eventMatch;
-          if (eventValue === "all") {
+          if (selectedEvent === "all") {
             eventMatch = true;
-          } else if (eventValue.startsWith(GROUP_PREFIX)) {
-            const league = eventValue.slice(GROUP_PREFIX.length);
+          } else if (selectedEvent.startsWith(GROUP_PREFIX)) {
+            const league = selectedEvent.slice(GROUP_PREFIX.length);
             eventMatch = eventsForGroup(league).includes(item.event_type);
           } else {
-            eventMatch = item.event_type === eventValue;
+            eventMatch = item.event_type === selectedEvent;
           }
           let yearMatch;
           if (selectedDecade !== "all") {
@@ -484,7 +482,7 @@
         });
       }
 
-      items.sort((a, b) => (order === "asc" ? a.year - b.year : b.year - a.year));
+      items.sort((a, b) => (sortDirection === "asc" ? a.year - b.year : b.year - a.year));
       currentItems = items;
 
       if (randomItem) viewedIndex = 0;
@@ -493,8 +491,6 @@
       grid.scrollTop = 0;
 
       if (!renderItemDisplay()) {
-        itemFavorite.classList.remove("visible");
-
         if (items.length === 0) {
           const empty = document.createElement("div");
           empty.className = "empty-state";

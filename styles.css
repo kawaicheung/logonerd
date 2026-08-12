@@ -25,7 +25,7 @@
   --font-size-big-label: 2.1rem;
   --font-size-medium-label: 1.4rem;
 
-  --shadow-card: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+  --shadow-card: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   
   
 }
@@ -139,7 +139,7 @@ body {
 #site-title-main {
   position: relative;
   font-size: 2.4rem;
-  padding-left: 0.8rem;
+  padding-left: 1rem;
   font-family: var(--font-league-gothic);
 
   &::before {
@@ -171,11 +171,11 @@ body {
   color: var(--color-text);
   cursor: pointer;
   padding: 0;
-  transition: transform 0.25s cubic-bezier(0.34, 2.6, 0.64, 1);
+  transition: transform 0.5s cubic-bezier(0.34, 2.6, 0.64, 1);
 
   & svg {
-    width: 28px;
-    height: 28px;
+    width: 34px;
+    height: 34px;
     fill: none;
     stroke: currentColor;
     stroke-width: 1.5;
@@ -299,7 +299,7 @@ body {
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  transition: all 0.12s ease-out;
+  transition: all 0.3s ease-in;
 
   &.disabled {
     opacity: 0.25;
@@ -771,7 +771,7 @@ main#grid {
   max-width: 80%;
   max-height: 50vh;
   object-fit: contain;
-  transform: translateY(-8vh);
+  transform: translateY(-4vh);
   display: none;
 
   &.visible {
@@ -784,6 +784,7 @@ main#grid {
   top: calc(2.5rem + env(safe-area-inset-top));
   left: 50%;
   transform: translateX(-50%);
+  line-height: 1;
   display: none;
 
   &.visible {
@@ -861,6 +862,10 @@ main#grid {
     animation: dice-roll-mobile-repeat 0.45s ease-out;
   }
 
+  body:not(.mobile-rolled) & {
+    animation: dice-idle 1.8s ease-in-out infinite;
+  }
+
   body.mobile-rolled & {
     bottom: calc(2.5rem + env(safe-area-inset-bottom));
 
@@ -898,15 +903,12 @@ main#grid {
 
 @keyframes icon-shortcut-bounce {
   0% {
-    transform: translateY(0);
     animation-timing-function: cubic-bezier(0.34, 2.6, 0.64, 1);
   }
   40% {
-    transform: translateY(-2px);
     animation-timing-function: ease-out;
   }
   100% {
-    transform: translateY(0);
   }
 }
 
@@ -931,5 +933,15 @@ main#grid {
   }
   100% {
     transform: translateX(-50%) translateY(0) rotate(712deg);
+  }
+}
+
+@keyframes dice-idle {
+  0%,
+  100% {
+    transform: translateX(-50%) rotate(-8deg);
+  }
+  50% {
+    transform: translateX(-50%) rotate(8deg);
   }
 }
