@@ -592,12 +592,6 @@
       randomItem = null;
       viewedIndex = -1;
       setShowFavorites(!showFavorites);
-      if (showFavorites) {
-        selectedEvent = "all";
-        selectedYear = "all";
-        selectedDecade = "all";
-        updateActiveButtons();
-      }
       render();
     });
 
@@ -639,10 +633,6 @@
 
       if (showFavorites) {
         exitSpecialModes();
-        selectedEvent = "all";
-        selectedYear = "all";
-        selectedDecade = "all";
-        updateActiveButtons();
         render();
       }
     });
@@ -657,10 +647,6 @@
     function closeItem() {
       if (randomItem) {
         exitSpecialModes();
-        selectedEvent = "all";
-        selectedYear = "all";
-        selectedDecade = "all";
-        updateActiveButtons();
       } else {
         viewedIndex = -1;
       }
@@ -723,10 +709,6 @@
     sidebar.addEventListener("click", () => {
       if (!sidebar.classList.contains("disabled")) return;
       exitSpecialModes();
-      selectedEvent = "all";
-      selectedYear = "all";
-      selectedDecade = "all";
-      updateActiveButtons();
       render();
     });
 
