@@ -28,7 +28,7 @@
     });
   }
 
-  paintLogoWordmark(document.getElementById("site-title-main"));
+  paintLogoWordmark(document.getElementById("site-title"));
   paintLogoWordmark(document.getElementById("mobile-brand-title"));
 
   function logoPath(filename, variant) {

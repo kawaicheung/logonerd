@@ -131,18 +131,9 @@ body {
 /* ===== Site Title ===== */
 
 #site-title {
+  position: relative;
   text-align: left;
   cursor: pointer;
-}
-
-#site-title-row {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-}
-
-#site-title-main {
-  position: relative;
   font-size: 1.6rem;
   font-family: var(--font-league-gothic);
 
@@ -171,6 +162,23 @@ body {
 .logo-letter-invert {
   background: var(--color-text);
   color: var(--color-bg);
+}
+
+/* ===== Quick Actions (favorite + randomize) ===== */
+
+#quick-actions {
+  position: fixed;
+  top: var(--vert-edge-offset);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  background-color: var(--color-bg);
+  box-shadow: var(--shadow-card);
+  z-index: 10;
 }
 
 /* ===== Icon Buttons (misc controls) ===== */
@@ -375,7 +383,6 @@ body {
 #timeline-filters {
   width: calc(var(--years-width) + var(--decades-width));
   rotate: -1deg;
-  margin-top: 1rem;
 }
 
 #timeline-list {
