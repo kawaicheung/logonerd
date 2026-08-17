@@ -113,14 +113,14 @@
       favoritesToggle.classList.add("bounce");
     }
 
-    function popFavoritesToggle() {
-      favoritesToggle.classList.remove("pop");
-      void favoritesToggle.offsetWidth;
-      favoritesToggle.classList.add("pop");
+    function popElement(el) {
+      el.classList.remove("pop");
+      void el.offsetWidth;
+      el.classList.add("pop");
     }
 
-    function spawnFavoriteSparks() {
-      popFavoritesToggle();
+    function spawnFavoriteSparks(target) {
+      popElement(target);
 
       const count = 12;
       for (let i = 0; i < count; i++) {
@@ -137,7 +137,7 @@
         spark.innerHTML = STAR_ICON;
         spark.firstElementChild.style.transform = `rotate(${Math.random() * 360}deg)`;
         spark.addEventListener("animationend", () => spark.remove());
-        favoritesToggle.appendChild(spark);
+        target.appendChild(spark);
       }
     }
 
@@ -197,7 +197,7 @@
       const remainingEvents = new Set(events);
 
       eventsList.appendChild(
-        makeEventItem("all", "All events", selectEvent, "all-events")
+        makeEventItem("all", "All events", selectEvent, "all-nav-item")
       );
 
       Object.keys(LEAGUES).forEach((league) => {
@@ -232,7 +232,7 @@
         });
       }
 
-      timelineList.appendChild(makeScrollItem("all", "All-Time", selectYear));
+      timelineList.appendChild(makeScrollItem("all", "All-Time", selectYear, "all-nav-item"));
 
       for (
         let decade = Math.floor(maxYear / 10) * 10;
@@ -260,10 +260,10 @@
       }
     }
 
-    function makeScrollItem(value, label, onSelect) {
+    function makeScrollItem(value, label, onSelect, extraClass) {
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "year-item";
+      btn.className = extraClass ? `year-item ${extraClass}` : "year-item";
       btn.dataset.value = value;
       btn.textContent = label;
       btn.addEventListener("click", () => onSelect(value));
@@ -602,11 +602,12 @@
       render();
     });
 
-    function toggleFavorite(url) {
+    function toggleFavorite(url, btn) {
       const nowFavorited = !favorites.has(url);
       if (nowFavorited) {
         favorites.add(url);
-        spawnFavoriteSparks();
+        spawnFavoriteSparks(favoritesToggle);
+        if (btn) spawnFavoriteSparks(btn);
       } else {
         favorites.delete(url);
       }
@@ -619,7 +620,7 @@
       const btn = e.target.closest(".favorite-btn");
       if (btn) {
         const url = btn.dataset.url;
-        const nowFavorited = toggleFavorite(url);
+        const nowFavorited = toggleFavorite(url, btn);
         if (showFavorites) {
           render();
         } else {
@@ -682,7 +683,7 @@
       e.stopPropagation();
       const item = currentItems[viewedIndex];
       if (!item) return;
-      const nowFavorited = toggleFavorite(item.url);
+      const nowFavorited = toggleFavorite(item.url, itemFavorite);
       const card = grid.querySelector(`.card[data-url="${item.url}"] .favorite-btn`);
       if (card) card.classList.toggle("favorited", nowFavorited);
 
