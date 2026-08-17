@@ -543,7 +543,7 @@ main#grid {
   text-align: center;
   gap: 0.6rem;
   border-radius: 0.2rem;
-  border: solid 2px transparent;
+  border: solid 2px var(--color-border);
   cursor: zoom-in;
 
   &:has(.favorite-btn.favorited) {
@@ -562,7 +562,6 @@ main#grid {
     right: 0.4rem;
     font-size: 0.7rem;
     font-family: var(--font-family-sans-serif);
-    visibility: hidden;
     font-weight: 600;
     letter-spacing: -0.03rem;
     color: var(--color-muted);
