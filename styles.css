@@ -262,8 +262,9 @@ body {
 }
 
 #filter-title {
-  font-family: var(--font-league-gothic);
-  font-size: var(--font-size-big-label);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.025rem;
   margin: 0;
 }
 
