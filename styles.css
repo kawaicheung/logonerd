@@ -384,10 +384,7 @@ body {
     &:not(:disabled) {
       background-color: var(--color-text);
       color: var(--color-bg);
-    }
-
-    &:last-child {
-      border-bottom-color: var(--color-text);
+      border: none;
     }
   }
 }
@@ -444,7 +441,7 @@ body {
   &.active {
     background: var(--color-text);
     color: var(--color-bg);
-    border-bottom: none;
+    border: none;
   }
 
   & .decade-label {
@@ -497,6 +494,7 @@ body {
   &.active {
     background: var(--color-text);
     color: var(--color-bg);
+    border: none;
   }
 
   &:disabled {
