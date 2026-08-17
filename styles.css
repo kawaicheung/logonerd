@@ -89,7 +89,7 @@ body {
 
   position: relative;
   margin: var(--pc-margin);
-  margin-right: calc(var(--horiz-edge-offset) + var(--sidebar-width));
+  margin-left: calc(var(--horiz-edge-offset) + var(--sidebar-width));
   height: var(--pc-height);
   border-radius: 2px;
   display: flex;
@@ -117,18 +117,18 @@ body {
 #nav-panel {
   position: fixed;
   top: calc(0.6 * var(--vert-edge-offset));
-  right: var(--horiz-edge-offset);
+  left: var(--horiz-edge-offset);
   bottom: var(--vert-edge-offset);
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   z-index: 10;
 }
 
 /* ===== Site Title ===== */
 
 #site-title {
-  text-align: right;
+  text-align: left;
   cursor: pointer;
 }
 
@@ -141,7 +141,6 @@ body {
 #site-title-main {
   position: relative;
   font-size: 1.6rem;
-  padding-left: 0.4rem;
   font-family: var(--font-league-gothic);
 
   &::before {
@@ -262,7 +261,7 @@ body {
 #filter-title-bar {
   position: fixed;
   top: var(--vert-edge-offset);
-  left: var(--horiz-edge-offset);
+  right: var(--horiz-edge-offset);
   background-color: var(--color-bg);
   display: flex;
   align-items: center;
@@ -298,7 +297,7 @@ body {
 #attribution {
   position: fixed;
   bottom: var(--vert-edge-offset);
-  left: var(--horiz-edge-offset);
+  right: var(--horiz-edge-offset);
   font-size: 0.75rem;
   color: var(--color-text);
   letter-spacing: -0.01rem;
