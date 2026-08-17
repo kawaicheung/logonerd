@@ -1,6 +1,36 @@
 (function () {
   const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
 
+  // Google Fonts for the LogoNerd wordmark, one per letter (loaded in index.html's
+  // Google Fonts link). Edit/reorder this list to change the look; it cycles if the
+  // word is longer than the list.
+  const LOGO_FONTS = [
+    "'Bungee', sans-serif",
+    "'Permanent Marker', cursive",
+    "'Bangers', sans-serif",
+    "'Righteous', sans-serif",
+    "'Anton', sans-serif",
+    "'Righteous', sans-serif",
+    "'Luckiest Guy', cursive",
+    "'Righteous', sans-serif",
+  ];
+
+  function paintLogoWordmark(el) {
+    if (!el) return;
+    const letters = el.textContent.split("");
+    el.textContent = "";
+    letters.forEach((ch, i) => {
+      const span = document.createElement("span");
+      span.className = "logo-letter";
+      span.style.fontFamily = LOGO_FONTS[i % LOGO_FONTS.length];
+      span.textContent = ch;
+      el.appendChild(span);
+    });
+  }
+
+  paintLogoWordmark(document.getElementById("site-title-main"));
+  paintLogoWordmark(document.getElementById("mobile-brand-title"));
+
   function logoPath(filename, variant) {
     return `logos/${variant}/${filename}`;
   }

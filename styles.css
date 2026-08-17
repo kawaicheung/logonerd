@@ -2,7 +2,7 @@
 
 :root {
   --years-width: 56px;
-  --decades-width: 50px;
+  --decades-width: 46px;
   --events-width: 140px;
   --sidebar-width: calc(var(--years-width) + var(--decades-width) + var(--events-width));
   --horiz-edge-offset: 3rem;
@@ -26,8 +26,6 @@
   --font-size-medium-label: 1.4rem;
 
   --shadow-card: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-  
-  
 }
 
 * {
@@ -142,8 +140,8 @@ body {
 
 #site-title-main {
   position: relative;
-  font-size: 2.4rem;
-  padding-left: 1rem;
+  font-size: 1.6rem;
+  padding-left: 0.4rem;
   font-family: var(--font-league-gothic);
 
   &::before {
@@ -151,7 +149,7 @@ body {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 125%;
+    width: 45%;
     height: 70%;
     border-radius: 50%;
     border-style: solid;
@@ -161,6 +159,16 @@ body {
     z-index: -1;
     pointer-events: none;
   }
+}
+
+.logo-letter {
+  display: inline-block;
+  text-transform: uppercase;
+}
+
+.logo-letter-invert {
+  background: var(--color-text);
+  color: var(--color-bg);
 }
 
 /* ===== Icon Buttons (misc controls) ===== */
@@ -238,6 +246,7 @@ body {
   margin: calc(var(--size, 10px) / -2);
   color: var(--color-accent);
   pointer-events: none;
+  z-index: 20;
   animation: spark-burst var(--duration, 0.5s) ease-out forwards;
   animation-delay: var(--delay, 0s);
 
@@ -520,7 +529,7 @@ main#grid {
   scrollbar-width: none;
   -ms-overflow-style: none;
   padding: 0 calc(0.1 * var(--horiz-edge-offset));
-  padding-top: calc((2 * var(--font-size-big-label)) + var(--vert-edge-offset));
+  padding-top: calc((1.2 * var(--font-size-big-label)) + var(--vert-edge-offset));
   padding-bottom: calc(0.1 * var(--pc-height));
 
   &::-webkit-scrollbar {
@@ -543,7 +552,6 @@ main#grid {
 
 .card {
   position: relative;
-  background: var(--color-bg);
   padding: 2rem 1rem;
   display: flex;
   flex-direction: column;
