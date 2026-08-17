@@ -20,6 +20,8 @@
   --color-accent: #ff8c00;
   --color-accent-border: #e67300;
 
+  --nav-item-border: solid 1px var(--color-border);
+
   --font-league-gothic: "League Gothic", sans-serif;
   --font-family-sans-serif: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
@@ -352,25 +354,28 @@ body {
   }
 }
 
-/* ===== Timeline Nav ===== */
-
-#timeline-filters {
+.nav-filter {
   max-height: var(--sidebar-list-max-height);
-  width: calc(var(--years-width) + var(--decades-width));
   overflow-y: auto;
   overflow-x: hidden;
   background: var(--color-bg);
   scrollbar-width: none;
   -ms-overflow-style: none;
   scroll-behavior: smooth;
-  rotate: -1deg;
   box-shadow: var(--shadow-card);
-  margin-top: 1rem;
-  border: solid 1px var(--color-border);
+  border: var(--nav-item-border);
 
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+/* ===== Timeline Nav ===== */
+
+#timeline-filters {
+  width: calc(var(--years-width) + var(--decades-width));
+  rotate: -1deg;
+  margin-top: 1rem;
 }
 
 #timeline-list {
@@ -395,7 +400,7 @@ body {
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  border-left: solid 1px var(--color-border);
+  border-left: var(--nav-item-border);
 }
 
 .year-item {
@@ -407,7 +412,7 @@ body {
   color: var(--color-text);
   cursor: pointer;
   white-space: nowrap;
-  border-bottom: solid 1px var(--color-border);
+  border-bottom: var(--nav-item-border);
 
   &.active {
     background: var(--color-text);
@@ -437,7 +442,7 @@ body {
   color: var(--color-text);
   cursor: pointer;
   white-space: nowrap;
-  border-bottom: solid 1px var(--color-border);
+  border-bottom: var(--nav-item-border);
 
   &.active {
     background: var(--color-text);
@@ -456,20 +461,7 @@ body {
 
 #events-filter {
   width: var(--events-width);
-  max-height: var(--sidebar-list-max-height);
-  overflow-y: auto;
-  overflow-x: hidden;
-  background: var(--color-bg);
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  scroll-behavior: smooth;
   rotate: 1deg;
-  box-shadow: var(--shadow-card);
-  border: solid 1px var(--color-border);
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
 }
 
 #events-list {
@@ -482,25 +474,12 @@ body {
 #places-or {
   font-family: var(--font-league-gothic);
   font-size: var(--font-size-medium-label);
-  color: var(--color-faint);
+  color: var(--color-text);
 }
 
 #places-filter {
   width: var(--places-width);
-  max-height: var(--sidebar-list-max-height);
-  overflow-y: auto;
-  overflow-x: hidden;
-  background: var(--color-bg);
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  scroll-behavior: smooth;
-  box-shadow: var(--shadow-card);
-  border: solid 1px var(--color-border);
-  rotate: 3deg;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  rotate: 0deg;
 }
 
 #places-list {
@@ -521,7 +500,7 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  border-bottom: solid 1px var(--color-border);
+  border-bottom: var(--nav-item-border);
 
   &.active {
     background: var(--color-text);
@@ -559,7 +538,7 @@ body {
   font-size: 0.9rem;
   font-weight: 800;
   padding: 0.3rem 0.5rem;
-  border-bottom: solid 1px var(--color-border);
+  border-bottom: var(--nav-item-border);
   letter-spacing: -0.025rem;
 }
 
@@ -567,7 +546,7 @@ body {
 
 main#grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(204px, 204px));
+  grid-template-columns: repeat(auto-fit, 160px);
   gap: 0.5rem;
   align-content: safe center;
   justify-content: safe center;
