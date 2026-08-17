@@ -4,7 +4,8 @@
   --years-width: 56px;
   --decades-width: 46px;
   --events-width: 140px;
-  --sidebar-width: calc(var(--years-width) + var(--decades-width) + var(--events-width));
+  --places-width: 140px;
+  --sidebar-width: calc(var(--years-width) + var(--decades-width) + var(--events-width) + var(--places-width));
   --horiz-edge-offset: 3rem;
   --vert-edge-offset: 2.5rem;
   --sidebar-list-max-height: 90%;
@@ -476,6 +477,37 @@ body {
   flex-direction: column;
 }
 
+/* ===== Places Nav ===== */
+
+#places-or {
+  font-family: var(--font-league-gothic);
+  font-size: var(--font-size-medium-label);
+  color: var(--color-faint);
+}
+
+#places-filter {
+  width: var(--places-width);
+  max-height: var(--sidebar-list-max-height);
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--color-bg);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+  box-shadow: var(--shadow-card);
+  border: solid 1px var(--color-border);
+  rotate: 3deg;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+#places-list {
+  display: flex;
+  flex-direction: column;
+}
+
 
 .year-item,
 .event-item {
@@ -524,10 +556,11 @@ body {
   top: 0;
   z-index: 1;
   text-align: left;
-  font-family: var(--font-league-gothic);
-  font-size: var(--font-size-medium-label);
+  font-size: 0.9rem;
+  font-weight: 800;
+  padding: 0.3rem 0.5rem;
   border-bottom: solid 1px var(--color-border);
-  letter-spacing: 0;
+  letter-spacing: -0.025rem;
 }
 
 /* ===== Grid & Cards ===== */

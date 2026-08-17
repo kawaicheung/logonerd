@@ -396,7 +396,7 @@ const LOGO_DATA = [
   { id: 394, year: 2001, event_type: "NHL All-Star Game", label: "NHL All-Star Game 2001", location: "Denver, CO", date: "2001", url: "nhl-all-star-game-2001.gif" },
   { id: 395, year: 2002, event_type: "NHL All-Star Game", label: "NHL All-Star Game 2002", location: "Los Angeles, CA", date: "2002", url: "nhl-all-star-game-2002.gif" },
   { id: 396, year: 2003, event_type: "NHL All-Star Game", label: "NHL All-Star Game 2003", location: "Sunrise, FL", date: "2003", url: "nhl-all-star-game-2003.gif" },
-  { id: 397, year: 2004, event_type: "NHL All-Star Game", label: "NHL All-Star Game 2004", location: "Saint Paul, MN", date: "2004", url: "nhl-all-star-game-2004.gif" },
+  { id: 397, year: 2004, event_type: "NHL All-Star Game", label: "NHL All-Star Game 2004", location: "St. Paul, MN", date: "2004", url: "nhl-all-star-game-2004.gif" },
   { id: 398, year: 2007, event_type: "NHL All-Star Game", label: "NHL All-Star Game 2007", location: "Dallas, TX", date: "2007", url: "nhl-all-star-game-2007.gif" },
   { id: 399, year: 2008, event_type: "NHL All-Star Game", label: "NHL All-Star Game 2008", location: "Atlanta, GA", date: "2008", url: "nhl-all-star-game-2008.gif" },
   { id: 400, year: 2009, event_type: "NHL All-Star Game", label: "NHL All-Star Game 2009", location: "Montreal, QC", date: "2009", url: "nhl-all-star-game-2009.gif" },

@@ -78,6 +78,8 @@
     const grid = document.getElementById("grid");
     const eventsFilter = document.getElementById("events-filter");
     const eventsList = document.getElementById("events-list");
+    const placesFilter = document.getElementById("places-filter");
+    const placesList = document.getElementById("places-list");
     const timelineFilters = document.getElementById("timeline-filters");
     const timelineList = document.getElementById("timeline-list");
     const sortOrder = document.getElementById("sort-order-btn");
@@ -199,6 +201,39 @@
     let selectedYear = "all";
     let selectedDecade = "all";
     let selectedEvent = "all";
+    let selectedPlace = "all";
+
+    const US_STATE_CODES = new Set([
+      "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA",
+      "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+      "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT",
+      "VA", "WA", "WV", "WI", "WY", "DC",
+    ]);
+    const CA_PROVINCE_CODES = new Set([
+      "AB", "BC", "MB", "NB", "NL", "NS", "NT", "NU", "ON", "PE", "QC", "SK", "YT",
+    ]);
+    const MULTI_COUNTRY_LABEL = "Multiple Countries";
+    const PLACE_GROUP_PREFIX = "place-group:";
+
+    // Location strings ("City, ST" / "City, Country" / bare country names)
+    // grouped by inferred country, filled in by populateFilters.
+    let placesByCountry = new Map();
+
+    function countryForLocation(location) {
+      if (location.includes(" & ")) return MULTI_COUNTRY_LABEL;
+      const commaIndex = location.lastIndexOf(", ");
+      if (commaIndex === -1) return location;
+      const suffix = location.slice(commaIndex + 2);
+      if (US_STATE_CODES.has(suffix)) return "United States";
+      if (CA_PROVINCE_CODES.has(suffix)) return "Canada";
+      return suffix;
+    }
+
+    function cityLabelForLocation(location) {
+      if (location.includes(" & ")) return location;
+      const commaIndex = location.lastIndexOf(", ");
+      return commaIndex === -1 ? location : location.slice(0, commaIndex);
+    }
 
     const LEAGUES = {
       MLB: ["World Series", "MLB All-Star Game", "MLB Spring Training", "MLB Postseason", "MLB Opening Day"],
@@ -262,6 +297,36 @@
           eventsList.appendChild(makeEventItem(event, event, selectEvent));
         });
       }
+
+      placesByCountry = new Map();
+      data.forEach((item) => {
+        if (!item.location) return;
+        const country = countryForLocation(item.location);
+        if (!placesByCountry.has(country)) placesByCountry.set(country, new Set());
+        placesByCountry.get(country).add(item.location);
+      });
+
+      placesList.appendChild(
+        makeEventItem("all", "All places", selectPlace, "all-nav-item")
+      );
+
+      [...placesByCountry.keys()].sort().forEach((country) => {
+        const places = [...placesByCountry.get(country)].sort();
+        if (places.length === 1 && places[0] === country) {
+          placesList.appendChild(
+            makeEventItem(places[0], country, selectPlace, "event-group-label")
+          );
+          return;
+        }
+        placesList.appendChild(
+          makeEventItem(PLACE_GROUP_PREFIX + country, country, selectPlace, "event-group-label")
+        );
+        places.forEach((place) => {
+          placesList.appendChild(
+            makeEventItem(place, cityLabelForLocation(place), selectPlace)
+          );
+        });
+      });
 
       timelineList.appendChild(makeScrollItem("all", "All-Time", selectYear, "all-nav-item"));
 
@@ -341,8 +406,23 @@
         elRect.top - containerRect.top - containerRect.height / 2 + elRect.height / 2;
     }
 
+    function clearPlace() {
+      if (selectedPlace === "all") return;
+      selectedPlace = "all";
+      placesFilter.scrollTop = 0;
+    }
+
+    function clearEventAndTimeline() {
+      selectedEvent = "all";
+      selectedYear = "all";
+      selectedDecade = "all";
+      eventsFilter.scrollTop = 0;
+      timelineFilters.scrollTop = 0;
+    }
+
     function selectEvent(value) {
       exitSpecialModes();
+      clearPlace();
       selectedEvent = value;
       if (value === "all") {
         eventsFilter.scrollTop = 0;
@@ -353,8 +433,22 @@
       render();
     }
 
+    function selectPlace(value) {
+      exitSpecialModes();
+      clearEventAndTimeline();
+      selectedPlace = value;
+      if (value === "all") {
+        placesFilter.scrollTop = 0;
+      } else {
+        centerInScroll(placesFilter, placesList.querySelector(`.event-item[data-value="${value}"]`));
+      }
+      updateActiveButtons();
+      render();
+    }
+
     function selectYear(value) {
       exitSpecialModes();
+      clearPlace();
       selectedYear = value;
       selectedDecade = "all";
       if (value === "all") {
@@ -368,6 +462,7 @@
 
     function selectDecade(value) {
       exitSpecialModes();
+      clearPlace();
       selectedDecade = value;
       if (value !== "all") selectedYear = "all";
       const decadeBtn = timelineList.querySelector(`.decade-item[data-value="${value}"]`);
@@ -395,6 +490,14 @@
         }
         btn.classList.toggle("active", active);
       });
+      placesList.querySelectorAll(".event-item").forEach((btn) => {
+        let active = btn.dataset.value === selectedPlace;
+        if (!active && selectedPlace.startsWith(PLACE_GROUP_PREFIX)) {
+          const country = selectedPlace.slice(PLACE_GROUP_PREFIX.length);
+          active = placesByCountry.get(country)?.has(btn.dataset.value) ?? false;
+        }
+        btn.classList.toggle("active", active);
+      });
     }
 
     function hasItem(container, selector, value) {
@@ -406,6 +509,7 @@
     function applyFiltersFromURL() {
       const params = new URLSearchParams(window.location.search);
       const event = params.get("event");
+      const place = params.get("place");
       const year = params.get("year");
       const decade = params.get("decade");
       const sort = params.get("sort");
@@ -429,6 +533,10 @@
         selectedEvent = event;
       }
 
+      if (place && hasItem(placesList, ".event-item", place)) {
+        selectedPlace = place;
+      }
+
       if (decade && hasItem(timelineList, ".decade-item", decade)) {
         selectedDecade = decade;
       } else if (year && hasItem(timelineList, ".year-item", year)) {
@@ -450,6 +558,7 @@
         params.set("favorites", ids.join(","));
       } else if (!showFavorites) {
         if (selectedEvent !== "all") params.set("event", selectedEvent);
+        if (selectedPlace !== "all") params.set("place", selectedPlace);
         if (selectedDecade !== "all") {
           params.set("decade", selectedDecade);
         } else if (selectedYear !== "all") {
@@ -524,7 +633,16 @@
           } else {
             yearMatch = selectedYear === "all" || String(item.year) === selectedYear;
           }
-          return eventMatch && yearMatch;
+          let placeMatch;
+          if (selectedPlace === "all") {
+            placeMatch = true;
+          } else if (selectedPlace.startsWith(PLACE_GROUP_PREFIX)) {
+            const country = selectedPlace.slice(PLACE_GROUP_PREFIX.length);
+            placeMatch = !!item.location && (placesByCountry.get(country)?.has(item.location) ?? false);
+          } else {
+            placeMatch = item.location === selectedPlace;
+          }
+          return eventMatch && yearMatch && placeMatch;
         });
       }
 
@@ -584,8 +702,15 @@
               : selectedEvent;
           }
 
+          let placeLabel = "";
+          if (!viewingShared && selectedPlace !== "all") {
+            placeLabel = selectedPlace.startsWith(PLACE_GROUP_PREFIX)
+              ? selectedPlace.slice(PLACE_GROUP_PREFIX.length)
+              : selectedPlace;
+          }
+
           let title;
-          if (!viewingShared && !eventLabel && selectedDecade === "all" && selectedYear === "all") {
+          if (!viewingShared && !eventLabel && !placeLabel && selectedDecade === "all" && selectedYear === "all") {
             title = "All major sporting event logos";
           } else {
             const logoWord = items.length === 1 ? "logo" : "logos";
@@ -595,6 +720,9 @@
                 title += ` from the ${selectedDecade}s`;
               } else if (selectedYear !== "all") {
                 title += ` from ${selectedYear}`;
+              }
+              if (placeLabel) {
+                title += ` in ${placeLabel}`;
               }
             }
           }
@@ -759,6 +887,7 @@
       if (e.target.closest(".icon-shortcut")) return;
       exitSpecialModes();
       selectedEvent = "all";
+      selectedPlace = "all";
       selectedYear = "all";
       selectedDecade = "all";
       updateActiveButtons();
