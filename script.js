@@ -86,6 +86,7 @@
     const sidebar = document.getElementById("sidebar");
     const siteTitle = document.getElementById("site-title");
     const filterTitle = document.getElementById("filter-title");
+    const itemMeta = document.getElementById("item-meta");
     const shareFavorites = document.getElementById("share-favorites");
     const shareFavoritesBtn = document.getElementById("share-favorites-btn");
     const shareFeedback = document.getElementById("share-feedback");
@@ -471,6 +472,7 @@
         grid.classList.remove("hidden");
         itemDisplay.classList.remove("visible");
         itemFavorite.classList.remove("visible");
+        itemMeta.classList.remove("visible");
         return false;
       }
       grid.classList.add("hidden");
@@ -483,6 +485,9 @@
       itemNext.classList.toggle("hidden", !!randomItem);
 
       filterTitle.textContent = `${item.year} ${item.event_type}`;
+      const metaText = [item.location, item.date].filter(Boolean).join(" · ");
+      itemMeta.textContent = metaText;
+      itemMeta.classList.toggle("visible", !!metaText);
       itemFavorite.classList.add("visible");
       itemFavorite.classList.toggle("favorited", favorites.has(item.url));
       sortOrder.classList.add("hidden");

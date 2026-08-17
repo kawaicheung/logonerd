@@ -147,14 +147,14 @@ body {
     content: "";
     position: absolute;
     top: 50%;
-    left: 50%;
-    width: 45%;
+    left: 0%;
+    width: 65%;
     height: 70%;
     border-radius: 50%;
     border-style: solid;
     border-color: var(--color-text);
     border-width: 0 4px;
-    transform: translate(-50%, -50%) rotate(-20deg);
+    transform: translate(0%, -50%) rotate(-20deg);
     z-index: -1;
     pointer-events: none;
   }
@@ -269,11 +269,29 @@ body {
   z-index: 10;
 }
 
+#filter-title-group {
+  position: relative;
+}
+
 #filter-title {
   font-size: 1.2rem;
   font-weight: 800;
   letter-spacing: -0.025rem;
   margin: 0;
+}
+
+#item-meta {
+  position: absolute;
+  top: calc(100% + 0.3rem);
+  right: 0;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  display: none;
+
+  &.visible {
+    display: block;
+  }
 }
 
 #item-favorite {
@@ -318,12 +336,12 @@ body {
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  transition: all 0.3s ease-in;
+  transition: all 0.15s ease-in;
 
   &.disabled {
     opacity: 0.25;
     cursor: pointer;
-    transform: translateX(10%) rotate(2deg) scale(0.88);
+    transform: translateX(10%) rotate(-2deg) scale(0.88);
 
     & .year-item,
     & .decade-item,
