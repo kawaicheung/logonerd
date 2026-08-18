@@ -105,6 +105,7 @@
     let copyTimeout = null;
     let currentItems = [];
     let viewedIndex = -1;
+    let activeGridIndex = -1;
 
     function setSortDirection(value) {
       sortDirection = value;
@@ -378,7 +379,7 @@
         span.textContent = label;
         btn.appendChild(span);
         const img = document.createElement("img");
-        img.className = "event-group-icon";
+        img.className = `event-group-icon event-group-icon--${label.toLowerCase()}`;
         img.src = iconSrc;
         img.alt = "";
         img.loading = "lazy";
@@ -608,7 +609,8 @@
       itemNext.classList.toggle("hidden", !!randomItem);
 
       filterTitle.textContent = `${item.year} ${item.event_type}`;
-      const metaText = [item.location, item.date].filter(Boolean).join(" · ");
+      const dateText = item.date === String(item.year) ? "" : item.date;
+      const metaText = [item.location, dateText].filter(Boolean).join(" · ");
       itemMeta.textContent = metaText;
       itemMeta.classList.toggle("visible", !!metaText);
       itemFavorite.classList.add("visible");
@@ -665,6 +667,7 @@
 
       if (randomItem) viewedIndex = 0;
 
+      activeGridIndex = -1;
       grid.innerHTML = "";
       grid.scrollTop = 0;
 
@@ -847,13 +850,41 @@
       renderItemDisplay();
     }
 
+    function getGridColumnCount() {
+      const cards = grid.querySelectorAll(".card");
+      if (cards.length === 0) return 0;
+      const firstTop = cards[0].offsetTop;
+      let count = 0;
+      for (const card of cards) {
+        if (card.offsetTop !== firstTop) break;
+        count += 1;
+      }
+      return count;
+    }
+
+    function setActiveGridIndex(index) {
+      const cards = grid.querySelectorAll(".card");
+      cards.forEach((c) => c.classList.remove("active"));
+      activeGridIndex = index;
+      const card = cards[index];
+      if (card) {
+        card.classList.add("active");
+        card.scrollIntoView({ block: "nearest" });
+      }
+    }
+
     function closeItem() {
+      const viewedItem = currentItems[viewedIndex];
       if (randomItem) {
         exitSpecialModes();
       } else {
         viewedIndex = -1;
       }
       render();
+      if (viewedItem) {
+        const index = currentItems.findIndex((i) => i.url === viewedItem.url);
+        if (index !== -1) setActiveGridIndex(index);
+      }
     }
 
     itemDisplay.addEventListener("click", closeItem);
@@ -892,6 +923,57 @@
     });
 
     document.addEventListener("keydown", (e) => {
+      const isHorizontal = e.key === "ArrowLeft" || e.key === "ArrowRight";
+      const isVertical = e.key === "ArrowUp" || e.key === "ArrowDown";
+      if (!isHorizontal && !isVertical) return;
+
+      if (viewedIndex !== -1) {
+        if (!isHorizontal || randomItem) return;
+        e.preventDefault();
+        if (e.key === "ArrowLeft" && viewedIndex > 0) {
+          viewedIndex -= 1;
+          renderItemDisplay();
+        } else if (e.key === "ArrowRight" && viewedIndex < currentItems.length - 1) {
+          viewedIndex += 1;
+          renderItemDisplay();
+        }
+        return;
+      }
+
+      if (currentItems.length === 0) return;
+      e.preventDefault();
+      if (activeGridIndex === -1) {
+        setActiveGridIndex(0);
+        return;
+      }
+
+      if (isHorizontal) {
+        if (e.key === "ArrowRight" && activeGridIndex < currentItems.length - 1) {
+          setActiveGridIndex(activeGridIndex + 1);
+        } else if (e.key === "ArrowLeft" && activeGridIndex > 0) {
+          setActiveGridIndex(activeGridIndex - 1);
+        }
+        return;
+      }
+
+      const columns = getGridColumnCount();
+      if (columns <= 0) return;
+      const target = e.key === "ArrowDown" ? activeGridIndex + columns : activeGridIndex - columns;
+      if (target >= 0 && target < currentItems.length) {
+        setActiveGridIndex(target);
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && viewedIndex === -1 && activeGridIndex !== -1) {
+        const item = currentItems[activeGridIndex];
+        if (item) openItem(item.url);
+        return;
+      }
+      if (e.key === "Enter" && viewedIndex !== -1) {
+        closeItem();
+        return;
+      }
       if (e.key !== "Escape") return;
       if (viewedIndex !== -1) {
         closeItem();
