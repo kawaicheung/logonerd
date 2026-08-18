@@ -862,6 +862,7 @@
     }
 
     function setActiveGridIndex(index) {
+      if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
       const cards = grid.querySelectorAll(".card");
       cards.forEach((c) => c.classList.remove("active"));
       activeGridIndex = index;
@@ -965,19 +966,33 @@
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && viewedIndex === -1 && activeGridIndex !== -1) {
+        e.preventDefault();
+        if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
         const item = currentItems[activeGridIndex];
         if (item) openItem(item.url);
         return;
       }
       if (e.key === "Enter" && viewedIndex !== -1) {
+        e.preventDefault();
         closeItem();
         return;
       }
-      if (e.key !== "Escape") return;
-      if (viewedIndex !== -1) {
-        closeItem();
-      } else if (searchOptions.classList.contains("open")) {
-        setSearchOptionsOpen(false);
+      if (e.key === "Escape") {
+        if (viewedIndex !== -1) {
+          closeItem();
+        } else if (searchOptions.classList.contains("open")) {
+          setSearchOptionsOpen(false);
+        }
+        return;
+      }
+
+      const key = e.key.toLowerCase();
+      if (key === "f") {
+        favoritesToggle.click();
+      } else if (key === "s") {
+        searchToggle.click();
+      } else if (key === "d") {
+        randomizeBtn.click();
       }
     });
 
