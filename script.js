@@ -116,7 +116,6 @@
     }
 
     function updateFavoritesToggleState() {
-      favoritesToggle.classList.toggle("active", favoriteIdsFromLocal().length > 0);
       favoritesToggle.setAttribute("aria-pressed", String(showFavorites));
     }
 

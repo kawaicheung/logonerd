@@ -100,11 +100,6 @@ body {
   flex-direction: column;
   gap: 1rem;
   background-color: var(--color-bg);
-  border: solid 2px transparent;
-
-  #app:has(#item-favorite.visible.favorited) & {
-    border-color: var(--color-accent);
-  }
 
   &::after {
     content: "";
