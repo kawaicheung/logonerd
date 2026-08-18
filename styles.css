@@ -221,10 +221,6 @@ body {
   stroke-linejoin: round;
 }
 
-#favorites-toggle.bounce {
-  animation: favorites-toggle-bounce 0.32s;
-}
-
 #sort-order-btn {
   &.hidden {
     display: none;
@@ -999,20 +995,6 @@ main#grid {
   }
   40% {
     transform: translateY(-16px);
-    animation-timing-function: ease-out;
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-
-@keyframes favorites-toggle-bounce {
-  0% {
-    transform: translateY(0);
-    animation-timing-function: cubic-bezier(0.34, 2.6, 0.64, 1);
-  }
-  40% {
-    transform: translateY(-3px);
     animation-timing-function: ease-out;
   }
   100% {

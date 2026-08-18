@@ -140,12 +140,6 @@
     const STAR_ICON =
       '<svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.26 6.6.6-5 4.53 1.5 6.7L12 16.9l-6 3.7 1.5-6.7-5-4.53 6.6-.6z"/></svg>';
 
-    function bounceFavoritesToggle() {
-      favoritesToggle.classList.remove("bounce");
-      void favoritesToggle.offsetWidth;
-      favoritesToggle.classList.add("bounce");
-    }
-
     function popElement(el) {
       el.classList.remove("pop");
       void el.offsetWidth;
@@ -794,8 +788,6 @@
     });
 
     favoritesToggle.addEventListener("click", () => {
-      bounceFavoritesToggle();
-
       // A hand click always means "show MY favorites," not whatever list
       // (if any) was pinned by an incoming shared link.
       pinnedFavoriteIds = null;
