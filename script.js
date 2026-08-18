@@ -6,13 +6,13 @@
   // word is longer than the list.
   const LOGO_FONTS = [
     "'Bungee', sans-serif",
-    "'Permanent Marker', cursive",
+   /* "'Permanent Marker', cursive",
     "'Bangers', sans-serif",
     "'Righteous', sans-serif",
     "'Anton', sans-serif",
     "'Righteous', sans-serif",
     "'Luckiest Guy', cursive",
-    "'Righteous', sans-serif",
+    "'Righteous', sans-serif",*/
   ];
 
   function paintLogoWordmark(el) {
@@ -731,7 +731,7 @@
 
           let title;
           if (!viewingShared && !eventLabel && !placeLabel && selectedDecade === "all" && selectedYear === "all") {
-            title = "All major sporting event logos";
+            title = "Major sporting event logos over the past 100+ years";
           } else {
             const logoWord = items.length === 1 ? "logo" : "logos";
             title = capitalize(`${eventLabel ? eventLabel + " " : ""}${logoWord}`);
