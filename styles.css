@@ -7,8 +7,9 @@
   --places-width: 140px;
   --sidebar-width: calc(var(--years-width) + var(--decades-width) + var(--events-width) + var(--places-width));
   --horiz-edge-offset: 3rem;
-  --vert-edge-offset: 2.5rem;
-  --sidebar-list-max-height: 90%;
+  --vert-edge-offset: 1.5rem;
+  --search-options-max-height: min(80vh, 800px);
+  --sidebar-list-max-height: calc(var(--search-options-max-height) - 2rem);
   --item-img-max-size: 70%;
 
   --color-text: #1a1a1a;
@@ -92,7 +93,7 @@ body {
 
   position: relative;
   margin: var(--pc-margin);
-  margin-left: calc(var(--horiz-edge-offset) + var(--sidebar-width));
+  margin-left: var(--horiz-edge-offset);
   height: var(--pc-height);
   border-radius: 2px;
   display: flex;
@@ -170,7 +171,7 @@ body {
   position: fixed;
   top: var(--vert-edge-offset);
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -25%);
   display: flex;
   align-items: center;
   gap: 0.8rem;
@@ -339,20 +340,39 @@ body {
   }
 }
 
-/* ===== Sidebar ===== */
+/* ===== Search Options ===== */
 
-#sidebar {
-  flex: 1;
-  min-height: 0;
+#search-options {
+  position: fixed;
+  /* quick-actions sits at vert-edge-offset, lifted by translateY(-25%) of its
+     own height (icon + vertical padding); this lands search-options 1rem
+     below its actual bottom edge. */
+  top: calc(var(--vert-edge-offset) + 0.75 * (34px + 1rem) + 1rem);
+  left: 50%;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.3rem;
+  max-height: var(--search-options-max-height);
+  z-index: 15;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--color-bg);
+  box-shadow: var(--shadow-card);
   transition: all 0.15s ease-in;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(-12px);
 
-  &.disabled {
+  &.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%);
+  }
+
+  &.open.disabled {
     opacity: 0.25;
     cursor: pointer;
-    transform: translateX(10%) rotate(-2deg) scale(0.88);
+    transform: translateX(-50%) translateX(10%) rotate(-2deg) scale(0.88);
 
     & .year-item,
     & .decade-item,
@@ -370,7 +390,6 @@ body {
   scrollbar-width: none;
   -ms-overflow-style: none;
   scroll-behavior: smooth;
-  box-shadow: var(--shadow-card);
   border: var(--nav-item-border);
 
   &::-webkit-scrollbar {
@@ -382,7 +401,6 @@ body {
 
 #timeline-filters {
   width: calc(var(--years-width) + var(--decades-width));
-  rotate: -1deg;
 }
 
 #timeline-list {
@@ -468,7 +486,6 @@ body {
 
 #events-filter {
   width: var(--events-width);
-  rotate: 1deg;
 }
 
 #events-list {
@@ -479,14 +496,13 @@ body {
 /* ===== Places Nav ===== */
 
 #places-or {
-  font-family: var(--font-league-gothic);
-  font-size: var(--font-size-medium-label);
-  color: var(--color-text);
+  font-weight: 800;
+  font-size: 1rem;
+  margin-top: 0.2rem;
 }
 
 #places-filter {
   width: var(--places-width);
-  rotate: 0deg;
 }
 
 #places-list {
@@ -507,7 +523,6 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  border-bottom: var(--nav-item-border);
 
   &.active {
     background: var(--color-text);
@@ -533,7 +548,19 @@ body {
   &.event-group-label {
     padding-left: 0.3rem;
     font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.35rem;
   }
+}
+
+.event-group-icon {
+  height: 20px;
+  width: auto;
+  max-width: 36px;
+  object-fit: contain;
+  flex: 0 0 auto;
 }
 
 .all-nav-item {
@@ -730,9 +757,9 @@ main#grid {
 /* ===== Share ===== */
 
 #share-favorites {
+  position: relative;
   display: none;
   align-items: center;
-  gap: 0.5rem;
 
   &.visible {
     display: flex;
@@ -740,6 +767,10 @@ main#grid {
 }
 
 #share-feedback {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 0.3rem);
+  white-space: nowrap;
   font-size: 0.85rem;
   color: var(--color-muted);
   opacity: 0;

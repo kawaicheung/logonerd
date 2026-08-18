@@ -85,7 +85,8 @@
     const sortOrder = document.getElementById("sort-order-btn");
     const favoritesToggle = document.getElementById("favorites-toggle");
     const randomizeBtn = document.getElementById("randomize-btn");
-    const sidebar = document.getElementById("sidebar");
+    const searchToggle = document.getElementById("search-toggle");
+    const searchOptions = document.getElementById("search-options");
     const siteTitle = document.getElementById("site-title");
     const filterTitle = document.getElementById("filter-title");
     const itemMeta = document.getElementById("item-meta");
@@ -243,6 +244,14 @@
       WNBA: ["WNBA All-Star Game", "WNBA Finals"],
       Olympics: ["Summer Olympics", "Winter Olympics"],
     };
+    const LEAGUE_LOGOS = {
+      MLB: "logos/league/mlb.svg",
+      NFL: "logos/league/nfl.svg",
+      NHL: "logos/league/nhl.svg",
+      NBA: "logos/league/nba.svg",
+      WNBA: "logos/league/wnba.svg",
+      Olympics: "logos/league/olympics.svg",
+    };
     const GROUP_PREFIX = "group:";
     const OTHER_LABEL = "Other";
 
@@ -274,7 +283,7 @@
         leagueEvents.forEach((event) => remainingEvents.delete(event));
 
         eventsList.appendChild(
-          makeEventItem(GROUP_PREFIX + league, league, selectEvent, "event-group-label")
+          makeEventItem(GROUP_PREFIX + league, league, selectEvent, "event-group-label", LEAGUE_LOGOS[league])
         );
         leagueEvents.forEach((event) => {
           eventsList.appendChild(makeEventItem(event, event, selectEvent));
@@ -366,12 +375,24 @@
       return btn;
     }
 
-    function makeEventItem(value, label, onSelect, extraClass) {
+    function makeEventItem(value, label, onSelect, extraClass, iconSrc) {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = extraClass ? `event-item ${extraClass}` : "event-item";
       btn.dataset.value = value;
-      btn.textContent = label;
+      if (iconSrc) {
+        const span = document.createElement("span");
+        span.textContent = label;
+        btn.appendChild(span);
+        const img = document.createElement("img");
+        img.className = "event-group-icon";
+        img.src = iconSrc;
+        img.alt = "";
+        img.loading = "lazy";
+        btn.appendChild(img);
+      } else {
+        btn.textContent = label;
+      }
       btn.addEventListener("click", () => onSelect(value));
       return btn;
     }
@@ -524,7 +545,7 @@
           // This is someone else's shared set, not "my" favorites -- leave
           // the checkbox unchecked and the normal filters at their defaults.
           pinnedFavoriteIds = new Set(ids);
-          sidebar.classList.add("disabled");
+          searchOptions.classList.add("disabled");
           return;
         }
       }
@@ -576,7 +597,7 @@
 
     function renderItemDisplay() {
       const item = viewedIndex !== -1 ? currentItems[viewedIndex] : null;
-      sidebar.classList.toggle("disabled", showFavorites || !!item);
+      searchOptions.classList.toggle("disabled", showFavorites || !!item);
       if (!item) {
         grid.classList.remove("hidden");
         itemDisplay.classList.remove("visible");
@@ -747,11 +768,31 @@
 
       exitSpecialModes();
       randomItem = LOGO_DATA[Math.floor(Math.random() * LOGO_DATA.length)];
-      sidebar.classList.add("disabled");
+      searchOptions.classList.add("disabled");
       render();
     }
 
     randomizeBtn.addEventListener("click", () => rollDice(randomizeBtn));
+
+    function setSearchOptionsOpen(open) {
+      searchOptions.classList.toggle("open", open);
+    }
+
+    searchToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const opening = !searchOptions.classList.contains("open");
+      if (opening) {
+        exitSpecialModes();
+        render();
+      }
+      setSearchOptionsOpen(opening);
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!searchOptions.classList.contains("open")) return;
+      if (e.target.closest("#search-options") || e.target.closest("#search-toggle")) return;
+      setSearchOptionsOpen(false);
+    });
 
     favoritesToggle.addEventListener("click", () => {
       bounceFavoritesToggle();
@@ -860,7 +901,12 @@
     });
 
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && viewedIndex !== -1) closeItem();
+      if (e.key !== "Escape") return;
+      if (viewedIndex !== -1) {
+        closeItem();
+      } else if (searchOptions.classList.contains("open")) {
+        setSearchOptionsOpen(false);
+      }
     });
 
     shareFavoritesBtn.addEventListener("click", () => {
@@ -877,8 +923,8 @@
       }, 1200);
     });
 
-    sidebar.addEventListener("click", () => {
-      if (!sidebar.classList.contains("disabled")) return;
+    searchOptions.addEventListener("click", () => {
+      if (!searchOptions.classList.contains("disabled")) return;
       exitSpecialModes();
       render();
     });
