@@ -28,7 +28,6 @@
     });
   }
 
-  paintLogoWordmark(document.getElementById("site-title"));
   paintLogoWordmark(document.getElementById("mobile-brand-title"));
 
   function logoPath(filename, variant) {
@@ -87,7 +86,7 @@
     const randomizeBtn = document.getElementById("randomize-btn");
     const searchToggle = document.getElementById("search-toggle");
     const searchOptions = document.getElementById("search-options");
-    const siteTitle = document.getElementById("site-title");
+    const logo = document.getElementById("logo");
     const filterTitle = document.getElementById("filter-title");
     const itemMeta = document.getElementById("item-meta");
     const shareFavorites = document.getElementById("share-favorites");
@@ -728,7 +727,7 @@
 
           let title;
           if (!viewingShared && !eventLabel && !placeLabel && selectedDecade === "all" && selectedYear === "all") {
-            title = "Major sporting event logos over the past 100+ years";
+            title = "100+ years of major sporting event logos";
           } else {
             const logoWord = items.length === 1 ? "logo" : "logos";
             title = capitalize(`${eventLabel ? eventLabel + " " : ""}${logoWord}`);
@@ -1002,7 +1001,7 @@
       render();
     });
 
-    siteTitle.addEventListener("click", (e) => {
+    logo.addEventListener("click", (e) => {
       if (e.target.closest(".icon-shortcut")) return;
       exitSpecialModes();
       selectedEvent = "all";
