@@ -697,7 +697,7 @@
                 title += ` from ${selectedYear}`;
               }
               if (placeLabel) {
-                title += ` in ${placeLabel}`;
+                title += ` for events in ${placeLabel}`;
               }
             }
           }
