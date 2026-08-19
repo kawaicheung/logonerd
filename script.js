@@ -208,7 +208,7 @@
       const remainingEvents = new Set(events);
 
       eventsList.appendChild(
-        makeEventItem("all", "All events", selectEvent, "all-nav-item")
+        makeEventItem("all", "Anything", selectEvent, "all-nav-item")
       );
 
       Object.keys(LEAGUES).forEach((league) => {
@@ -252,7 +252,7 @@
       });
 
       placesList.appendChild(
-        makeEventItem("all", "All places", selectPlace, "all-nav-item")
+        makeEventItem("all", "Anywhere", selectPlace, "all-nav-item")
       );
 
       [...placesByCountry.keys()].sort().forEach((country) => {
@@ -273,7 +273,7 @@
         });
       });
 
-      timelineList.appendChild(makeScrollItem("all", "All-Time", selectYear, "all-nav-item"));
+      timelineList.appendChild(makeScrollItem("all", "Anytime", selectYear, "all-nav-item"));
 
       const earliestDecade = Math.floor(minYear / 10) * 10;
 

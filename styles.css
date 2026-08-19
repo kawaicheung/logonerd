@@ -1,7 +1,7 @@
 /* ===== Root & Reset ===== */
 
 :root {
-  --years-width: 56px;
+  --years-width: 50px;
   --decades-width: 46px;
   --events-width: 140px;
   --places-width: 180px;
@@ -420,7 +420,7 @@ body {
   font-size: 0.8rem;
   padding: 0.25rem 0.5rem;
   border: solid 1px transparent;
-  border-radius: 0.3rem;
+  border-radius: 0.25rem;
   background: var(--color-bg);
   color: var(--color-text);
   cursor: pointer;
@@ -493,6 +493,8 @@ body {
   margin: 0;
   font-size: 1.2rem;
   font-weight: 800;
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.08);
+  z-index: 2;
 
   &.active {
     background: var(--color-text);
@@ -599,11 +601,11 @@ body {
 .all-nav-item {
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 5;
   text-align: left;
   font-size: 0.9rem;
   font-weight: 800;
-  letter-spacing: -0.025rem;
+  letter-spacing: -0.04rem;
   padding-left: 0.25rem;
 
   &.active {
@@ -619,24 +621,26 @@ body {
    already maintains -- no click-time bookkeeping needed. */
 #search-options:has(#timeline-list .active:not(.all-nav-item)) #places-filter,
 #search-options:has(#events-list .active:not(.all-nav-item)) #places-filter {
-  transform: scale(0.98) rotate(0.6deg) translateX(-10%);
-  opacity: 0.89;
+  transform: scale(0.95) rotate(1deg) translateX(-10%);
+  opacity: 0.9;
   z-index: 0;
 }
 
 #search-options:has(#timeline-list .active:not(.all-nav-item)) #time-events-group,
 #search-options:has(#events-list .active:not(.all-nav-item)) #time-events-group {
+  transform: scale(1.03);
   border-color: var(--color-border);
   z-index: 1;
 }
 
 #search-options:has(#places-list .active:not(.all-nav-item)) #time-events-group {
-  transform: scale(0.98) rotate(-0.6deg) translateX(10%);
-  opacity: 0.89;
+  transform: scale(0.95) rotate(-1deg) translateX(10%);
+  opacity: 0.9;
   z-index: 0;
 }
 
 #search-options:has(#places-list .active:not(.all-nav-item)) #places-filter {
+  transform: scale(1.03);
   border-color: var(--color-border);
   z-index: 1;
 }
