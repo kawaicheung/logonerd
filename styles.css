@@ -250,7 +250,6 @@ body {
   position: fixed;
   top: var(--vert-edge-offset);
   right: var(--horiz-edge-offset);
-  background-color: var(--color-bg);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -898,5 +897,75 @@ main#grid {
   }
   100% {
     transform: scale(1);
+  }
+}
+
+/* ===== Mobile (Responsive) =====
+   Gated on pointer: coarse, not viewport width, so a narrow desktop
+   browser window still gets the desktop layout -- only true touch
+   devices get these overrides. */
+
+@media (pointer: coarse) {
+  :root {
+    /* every fixed vertical offset on mobile reuses this one value */
+    --vert-edge-offset: 1rem;
+
+    /* quick-actions' own top edge, measured from the viewport bottom:
+       its bottom offset plus its height (34px icon + 1rem vertical padding). */
+    --qa-top-from-bottom: calc(var(--vert-edge-offset) + 2.5rem + 34px + 1rem);
+    /* the menu's bottom edge sits 1rem above that */
+    --menu-bottom: calc(var(--qa-top-from-bottom) + 1rem);
+    /* and it's allowed to grow upward until it's 1rem from the viewport top */
+    --search-options-max-height: calc(100vh - var(--menu-bottom) - 1rem);
+  }
+
+  #app {
+    min-width: 0;
+  }
+
+  #logo {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  #filter-title-bar {
+    /* logo's rendered height, approximated as 1.2x its font-size, plus a
+       1rem gap before the title bar starts */
+    top: calc(var(--vert-edge-offset) + (1.2 * 1.4rem) + 1rem);
+    left: 50%;
+    right: auto;
+    width: 100%;
+    justify-content: center;
+    transform: translateX(-50%);
+  }
+
+  #quick-actions {
+    top: auto;
+    bottom: calc(var(--vert-edge-offset) + 2.5rem);
+    transform: translateX(-50%);
+  }
+
+  #attribution {
+    display: none;
+  }
+
+  #hotkey-legend {
+    display: none;
+  }
+
+  #search-options {
+    top: auto;
+    bottom: var(--menu-bottom);
+    max-width: 95vw;
+    transform-origin: bottom center;
+  }
+
+  #places-or,
+  #places-filter {
+    display: none;
+  }
+
+  .item-nav {
+    bottom: calc(var(--qa-top-from-bottom) + 1rem);
   }
 }
