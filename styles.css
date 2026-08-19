@@ -367,14 +367,10 @@ body {
   top: calc(var(--vert-edge-offset) + 0.75 * (34px + 1rem) + 1rem);
   left: 50%;
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 0.3rem;
   max-height: var(--search-options-max-height);
   z-index: 15;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  background-color: var(--color-bg);
-  box-shadow: var(--shadow-card);
   transition: opacity 0.15s ease-in, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-origin: top center;
   opacity: 0;
@@ -442,6 +438,10 @@ body {
   display: flex;
   align-items: flex-start;
   gap: 0.3rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--color-bg);
+  box-shadow: var(--shadow-card);
   transition: transform 0.2s ease;
 }
 
@@ -520,32 +520,13 @@ body {
 
 /* ===== Places Nav ===== */
 
-#places-or {
-  position: relative;
-  align-self: stretch;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 1rem;
-  margin-top: 0.2rem;
-  padding: 0 1rem;
-
-  &::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    width: 1px;
-    z-index: -1;
-    background: rgba(0, 0, 0, 0.12);
-    box-shadow: -2px 0 4px rgba(0, 0, 0, 0.2), 2px 0 4px rgba(0, 0, 0, 0.2);
-  }
-}
-
 #places-filter {
   width: var(--places-width);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--color-bg);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s ease;
 }
 
 #places-list {
@@ -636,11 +617,22 @@ body {
    already maintains -- no click-time bookkeeping needed. */
 #search-options:has(#timeline-list .active:not(.all-nav-item)) #places-filter,
 #search-options:has(#events-list .active:not(.all-nav-item)) #places-filter {
-  transform: scale(0.9);
+  transform: scale(0.97) rotate(1deg) translateX(-20%);
+  z-index: 0;
+}
+
+#search-options:has(#timeline-list .active:not(.all-nav-item)) #time-events-group,
+#search-options:has(#events-list .active:not(.all-nav-item)) #time-events-group {
+  z-index: 1;
 }
 
 #search-options:has(#places-list .active:not(.all-nav-item)) #time-events-group {
-  transform: scale(0.9);
+  transform: scale(0.97) rotate(-1deg) translateX(20%);
+  z-index: 0;
+}
+
+#search-options:has(#places-list .active:not(.all-nav-item)) #places-filter {
+  z-index: 1;
 }
 
 /* ===== Grid & Cards ===== */
@@ -1036,7 +1028,6 @@ main#grid {
     transform-origin: bottom center;
   }
 
-  #places-or,
   #places-filter {
     display: none;
   }
