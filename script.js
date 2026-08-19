@@ -9,7 +9,6 @@
     const grid = document.getElementById("grid");
     const eventsFilter = document.getElementById("events-filter");
     const eventsList = document.getElementById("events-list");
-    const placesFilter = document.getElementById("places-filter");
     const placesList = document.getElementById("places-list");
     const timelineFilters = document.getElementById("timeline-filters");
     const timelineList = document.getElementById("timeline-list");
@@ -379,7 +378,7 @@
     function clearPlace() {
       if (selectedPlace === "all") return;
       selectedPlace = "all";
-      placesFilter.scrollTop = 0;
+      placesList.scrollTop = 0;
     }
 
     function clearEventAndTimeline() {
@@ -408,9 +407,9 @@
       clearEventAndTimeline();
       selectedPlace = value;
       if (value === "all") {
-        placesFilter.scrollTop = 0;
+        placesList.scrollTop = 0;
       } else {
-        centerInScroll(placesFilter, placesList.querySelector(`.event-item[data-value="${value}"]`));
+        centerInScroll(placesList, placesList.querySelector(`.event-item[data-value="${value}"]`));
       }
       updateActiveButtons();
       render();
