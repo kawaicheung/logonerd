@@ -7,7 +7,7 @@
   --places-width: 140px;
   --horiz-edge-offset: 3rem;
   --vert-edge-offset: 1.5rem;
-  --search-options-max-height: min(80vh, 800px);
+  --search-options-max-height: 600px;
   --sidebar-list-max-height: calc(var(--search-options-max-height) - 2rem);
   --item-img-max-size: 70%;
 
@@ -421,8 +421,8 @@ body {
 .nav-item {
   flex: 0 0 auto;
   font-size: 0.8rem;
-  padding: 0.35rem 0.5rem;
-  border: none;
+  padding: 0.25rem 0.5rem;
+  border: solid 1px transparent;
   border-radius: 0.3rem;
   background: var(--color-bg);
   color: var(--color-text);
@@ -432,8 +432,8 @@ body {
   text-overflow: ellipsis;
 
   &.active {
-    background: var(--nav-active-bg);
-    color: var(--nav-active-fg);
+    background: var(--color-text);
+    color: var(--color-bg);   
   }
 
   &:disabled {
@@ -453,6 +453,7 @@ body {
 #timeline-list {
   display: flex;
   flex-direction: column;
+  gap: 0.1rem;
 }
 
 .decade-group {
@@ -460,8 +461,18 @@ body {
 
   &:has(.decade-item.active) .year-item {
     &:not(:disabled) {
-      background-color: var(--nav-active-bg);
-      color: var(--nav-active-fg);
+      background-color: var(--color-text);
+      color: var(--color-bg);
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+
+      &:not(:first-child) {
+        border-top-right-radius: 0;
+      }
+
+      &:not(:last-child) {
+        border-bottom-right-radius: 0;
+      }
     }
   }
 }
@@ -486,6 +497,8 @@ body {
   &.active {
     background: var(--color-text);
     color: var(--color-bg);
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
   }
 
   & .decade-label {
@@ -509,9 +522,27 @@ body {
 /* ===== Places Nav ===== */
 
 #places-or {
+  position: relative;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: 800;
   font-size: 1rem;
   margin-top: 0.2rem;
+  padding: 0 1rem;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    z-index: -1;
+    background: rgba(0, 0, 0, 0.12);
+    box-shadow: -2px 0 4px rgba(0, 0, 0, 0.2), 2px 0 4px rgba(0, 0, 0, 0.2);
+  }
 }
 
 #places-filter {
@@ -526,19 +557,49 @@ body {
 .event-item {
   text-align: left;
 
+  &.active:not(.event-group-label):not(.all-nav-item) {
+    &:has(+ .event-item.active) {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+
   &.event-group-label {
-    padding-left: 0.3rem;
     font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 0.35rem;
+    margin-top: 0.1rem;
+    padding-left: 0.25rem;
 
     &.active {
       background: var(--color-text);
       color: var(--color-bg);
+
+      &:has(+ .event-item.active) {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+      }
     }
   }
+}
+
+/* An active child that comes right after an active group-label or another
+   active child (i.e. it's not the first item in an active group) squares
+   off its top corners so the group reads as one continuous block. */
+.event-group-label.active + .event-item.active:not(.event-group-label):not(.all-nav-item),
+.event-item.active:not(.event-group-label):not(.all-nav-item) + .event-item.active:not(.event-group-label):not(.all-nav-item) {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+/* Same "part of an active group" check as above, but also requires no
+   active sibling after it -- i.e. this is the last child in the group.
+   Gets extra bottom padding to give the block some breathing room at its end. */
+.event-group-label.active + .event-item.active:not(.event-group-label):not(.all-nav-item):not(:has(+ .event-item.active)),
+.event-item.active:not(.event-group-label):not(.all-nav-item) + .event-item.active:not(.event-group-label):not(.all-nav-item):not(:has(+ .event-item.active)) {
+  padding-bottom: 0.45rem;
 }
 
 .event-group-icon {
@@ -561,6 +622,7 @@ body {
   font-size: 0.9rem;
   font-weight: 800;
   letter-spacing: -0.025rem;
+  padding-left: 0.25rem;
 
   &.active {
     background: var(--color-text);
@@ -724,7 +786,7 @@ main#grid {
   object-fit: contain;
 }
 
-.item-nav {
+.logo-detail-nav {
   position: absolute;
   bottom: var(--vert-edge-offset);
   display: flex;
@@ -802,11 +864,12 @@ main#grid {
   }
 
   .nav-item:hover {
-    background: var(--color-hover);
+    border: solid 1px var(--color-text);
   }
 
   .nav-item.active:hover {
-    background: var(--nav-active-hover-bg);
+    background: var(--color-text);
+    color: var(--color-bg);
   }
 
   .decade-item.active:hover,
@@ -815,7 +878,7 @@ main#grid {
     background: var(--color-text);
   }
 
-  .item-nav:hover:not(:disabled) {
+  .logo-detail-nav:hover:not(:disabled) {
     transform: scale(1.2);
   }
 
@@ -965,7 +1028,7 @@ main#grid {
     display: none;
   }
 
-  .item-nav {
+  .logo-detail-nav {
     bottom: calc(var(--qa-top-from-bottom) + 1rem);
   }
 
