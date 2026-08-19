@@ -930,7 +930,7 @@ main#grid {
 
   #filter-title-bar {
     /* logo's rendered height, approximated as 1.2x its font-size, plus a
-       1rem gap before the title bar starts */
+       gap before the title bar starts */
     top: calc(var(--vert-edge-offset) + (1.2 * 1.4rem) + 1rem);
     left: 50%;
     right: auto;
@@ -967,5 +967,47 @@ main#grid {
 
   .item-nav {
     bottom: calc(var(--qa-top-from-bottom) + 1rem);
+  }
+
+  #sort-order-btn {
+    display: none;
+  }
+
+  #filter-title {
+    font-size: 1.2rem;
+    text-align: center;
+    text-wrap: pretty;
+    padding: 0 2rem;
+  }
+
+  #item-meta,
+  #item-meta.visible {
+    display: none;
+  }
+
+  #item-prev,
+  #item-next {
+    right: auto;
+    left: 50%;
+  }
+
+  #item-prev {
+    transform: translateX(calc(-100% - 0.5rem));
+  }
+
+  #item-next {
+    transform: translateX(0.5rem);
+  }
+
+  #favorites-toggle,
+  .favorite-btn,
+  #item-favorite.visible,
+  #share-favorites {
+    display: none;
+  }
+
+  main#grid {
+    gap: 0;
+    padding-top: 4.8rem;
   }
 }
