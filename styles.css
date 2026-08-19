@@ -2,6 +2,7 @@
 
 :root {
   --years-width: 56px;
+  --decades-width: 46px;
   --events-width: 140px;
   --places-width: 140px;
   --horiz-edge-offset: 3rem;
@@ -459,21 +460,16 @@ body {
 /* ===== Timeline Nav ===== */
 
 #timeline-filters {
-  overflow-x: auto;
+  width: calc(var(--years-width) + var(--decades-width));
 }
 
 #timeline-list {
   display: flex;
-  flex-direction: row;
-  gap: 0.5rem;
-  align-items: flex-start;
+  flex-direction: column;
 }
 
 .decade-group {
-  width: var(--years-width);
-  flex: 0 0 auto;
   display: flex;
-  flex-direction: column;
 
   &:has(.decade-item.active) .year-item {
     &:not(:disabled) {
@@ -484,20 +480,31 @@ body {
 }
 
 .years-col {
+  width: var(--years-width);
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
 }
 
 .decade-item {
-  padding: 0.3rem 0.2rem;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.4rem;
   margin: 0;
-  font-size: 0.85rem;
+  font-size: 1.2rem;
   font-weight: 800;
-  text-align: center;
 
   &.active {
     background: var(--color-text);
     color: var(--color-bg);
+  }
+
+  & .decade-label {
+    display: inline-block;
+    transform: rotate(-90deg);
+    white-space: nowrap;
   }
 }
 
