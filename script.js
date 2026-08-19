@@ -129,6 +129,18 @@
     let selectedEvent = "all";
     let selectedPlace = "all";
 
+    // Decades before this collapse into a single "early years" bucket in the
+    // timeline nav, since data gets sparse pre-1950. Set by populateFilters
+    // once the data's actual earliest decade is known.
+    const CONSOLIDATED_DECADE_CUTOFF = 1950;
+    let consolidatedDecadeStart = null;
+
+    function decadeLabel(value) {
+      return value === String(consolidatedDecadeStart)
+        ? `${consolidatedDecadeStart}s-${CONSOLIDATED_DECADE_CUTOFF - 10}s`
+        : `${value}s`;
+    }
+
     const US_STATE_CODES = new Set([
       "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA",
       "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
@@ -264,29 +276,41 @@
 
       timelineList.appendChild(makeScrollItem("all", "All-Time", selectYear, "all-nav-item"));
 
-      for (
-        let decade = Math.floor(maxYear / 10) * 10;
-        decade >= Math.floor(minYear / 10) * 10;
-        decade -= 10
-      ) {
+      const earliestDecade = Math.floor(minYear / 10) * 10;
+
+      function appendDecadeGroup(value, label, startYear, endYear) {
         const group = document.createElement("div");
         group.className = "decade-group";
 
-        group.appendChild(
-          makeDecadeItem(String(decade), `${decade}s`, selectDecade)
-        );
+        group.appendChild(makeDecadeItem(value, label, selectDecade));
 
         const yearsCol = document.createElement("div");
         yearsCol.className = "years-col";
-        for (let year = decade + 9; year >= decade; year--) {
-          if (year > maxYear || year < minYear) continue;
-          const btn = makeScrollItem(String(year), String(year), selectYear);
-          if (!presentYears.has(year)) btn.disabled = true;
-          yearsCol.appendChild(btn);
+        for (let year = endYear; year >= startYear; year--) {
+          if (year > maxYear || year < minYear || !presentYears.has(year)) continue;
+          yearsCol.appendChild(makeScrollItem(String(year), String(year), selectYear));
         }
         group.appendChild(yearsCol);
 
         timelineList.appendChild(group);
+      }
+
+      for (
+        let decade = Math.floor(maxYear / 10) * 10;
+        decade >= Math.max(earliestDecade, CONSOLIDATED_DECADE_CUTOFF);
+        decade -= 10
+      ) {
+        appendDecadeGroup(String(decade), decadeLabel(String(decade)), decade, decade + 9);
+      }
+
+      if (earliestDecade < CONSOLIDATED_DECADE_CUTOFF) {
+        consolidatedDecadeStart = earliestDecade;
+        appendDecadeGroup(
+          String(earliestDecade),
+          decadeLabel(String(earliestDecade)),
+          earliestDecade,
+          CONSOLIDATED_DECADE_CUTOFF - 1
+        );
       }
     }
 
@@ -576,7 +600,11 @@
           let yearMatch;
           if (selectedDecade !== "all") {
             const decadeStart = Number(selectedDecade);
-            yearMatch = item.year >= decadeStart && item.year < decadeStart + 10;
+            const decadeEnd =
+              decadeStart === consolidatedDecadeStart
+                ? CONSOLIDATED_DECADE_CUTOFF
+                : decadeStart + 10;
+            yearMatch = item.year >= decadeStart && item.year < decadeEnd;
           } else {
             yearMatch = selectedYear === "all" || String(item.year) === selectedYear;
           }
@@ -665,7 +693,7 @@
             title = capitalize(`${eventLabel ? eventLabel + " " : ""}${logoWord}`);
             if (!viewingShared) {
               if (selectedDecade !== "all") {
-                title += ` from the ${selectedDecade}s`;
+                title += ` from the ${decadeLabel(selectedDecade)}`;
               } else if (selectedYear !== "all") {
                 title += ` from ${selectedYear}`;
               }

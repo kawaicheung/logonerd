@@ -433,14 +433,7 @@ body {
 
   &.active {
     background: var(--color-text);
-    color: var(--color-bg);   
-  }
-
-  &:disabled {
-    color: var(--color-border);
-    background: #fafafa;
-    cursor: not-allowed;
-    pointer-events: none;
+    color: var(--color-bg);
   }
 }
 
@@ -460,19 +453,17 @@ body {
   display: flex;
 
   &:has(.decade-item.active) .year-item {
-    &:not(:disabled) {
-      background-color: var(--color-text);
-      color: var(--color-bg);
-      border-top-left-radius: 0;
-      border-bottom-left-radius: 0;
+    background-color: var(--color-text);
+    color: var(--color-bg);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 
-      &:not(:first-child) {
-        border-top-right-radius: 0;
-      }
+    &:not(:first-child) {
+      border-top-right-radius: 0;
+    }
 
-      &:not(:last-child) {
-        border-bottom-right-radius: 0;
-      }
+    &:not(:last-child) {
+      border-bottom-right-radius: 0;
     }
   }
 }
@@ -599,7 +590,7 @@ body {
    Gets extra bottom padding to give the block some breathing room at its end. */
 .event-group-label.active + .event-item.active:not(.event-group-label):not(.all-nav-item):not(:has(+ .event-item.active)),
 .event-item.active:not(.event-group-label):not(.all-nav-item) + .event-item.active:not(.event-group-label):not(.all-nav-item):not(:has(+ .event-item.active)) {
-  padding-bottom: 0.45rem;
+  padding-bottom: 0.5rem;
 }
 
 .event-group-icon {
