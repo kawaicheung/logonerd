@@ -129,14 +129,14 @@ body {
     content: "";
     position: absolute;
     top: 50%;
-    left: 0%;
+    left: 50%;
     width: 65%;
     height: 70%;
     border-radius: 50%;
     border-style: solid;
     border-color: var(--color-text);
     border-width: 0 4px;
-    transform: translate(0%, -50%) rotate(-20deg);
+    transform: translate(-50%, -50%) rotate(-20deg);
     z-index: -1;
     pointer-events: none;
   }
