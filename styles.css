@@ -44,6 +44,8 @@ a {
 
 button {
   outline: none;
+  user-select: none;
+  touch-action: manipulation;
 }
 
 h1,
@@ -80,7 +82,7 @@ body {
 
 #app {
   position: relative;
-  height: 100vh;
+  height: 100dvh;
   min-width: 1200px;
   margin: 0 auto;
   transform: translateZ(0);
@@ -88,7 +90,7 @@ body {
 
 #page-content {
   --pc-margin: 1rem;
-  --pc-height: calc(100vh - (2 * var(--vert-edge-offset)));
+  --pc-height: calc(100dvh - (2 * var(--vert-edge-offset)));
 
   position: relative;
   margin: var(--pc-margin);
@@ -995,11 +997,17 @@ main#grid {
     /* the menu's bottom edge sits 1rem above that */
     --menu-bottom: calc(var(--qa-top-from-bottom) + 1rem);
     /* and it's allowed to grow upward until it's 1rem from the viewport top */
-    --search-options-max-height: calc(100vh - var(--menu-bottom) - 1rem);
+    --search-options-max-height: calc(100dvh - var(--menu-bottom) - 1rem);
   }
 
   #app {
     min-width: 0;
+    /* #app is the containing block for every position: fixed descendant
+       (its own transform: translateZ(0) makes it so), so padding it with
+       the safe-area insets keeps the logo/quick-actions/search-options
+       etc. clear of a notch or the home-indicator in one edit. */
+    padding: env(safe-area-inset-top) env(safe-area-inset-right)
+      env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
 
   #logo {
@@ -1040,6 +1048,17 @@ main#grid {
     max-width: 95vw;
     transform-origin: bottom center;
     transform: translateX(-50%) scale(0.85);
+    /* places doesn't fit alongside time/events at 95vw on a phone, so let
+       the whole panel scroll horizontally between the two cards instead
+       of hiding places outright. */
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
 
     &.open {
       transform: translateX(-50%) scale(1);
@@ -1050,8 +1069,10 @@ main#grid {
     }
   }
 
+  #time-events-group,
   #places-filter {
-    display: none;
+    flex-shrink: 0;
+    scroll-snap-align: start;
   }
 
   .logo-detail-nav {
