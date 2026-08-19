@@ -361,7 +361,7 @@
     function makeScrollItem(value, label, onSelect, extraClass) {
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = extraClass ? `year-item ${extraClass}` : "year-item";
+      btn.className = extraClass ? `nav-item year-item ${extraClass}` : "nav-item year-item";
       btn.dataset.value = value;
       btn.textContent = label;
       btn.addEventListener("click", () => onSelect(value));
@@ -371,7 +371,7 @@
     function makeEventItem(value, label, onSelect, extraClass, iconSrc) {
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = extraClass ? `event-item ${extraClass}` : "event-item";
+      btn.className = extraClass ? `nav-item event-item ${extraClass}` : "nav-item event-item";
       btn.dataset.value = value;
       if (iconSrc) {
         const span = document.createElement("span");
@@ -393,7 +393,7 @@
     function makeDecadeItem(value, label, onSelect) {
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "decade-item";
+      btn.className = "nav-item decade-item";
       btn.dataset.value = value;
       const span = document.createElement("span");
       span.className = "decade-label";
