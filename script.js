@@ -248,6 +248,10 @@
     const GROUP_PREFIX = "group:";
     const OTHER_LABEL = "Other";
 
+    // Decades below this are lumped into one trailing "& earlier" column
+    // instead of standing alone (see populateFilters).
+    const LUMP_BELOW = 1950;
+
     // Event types that don't belong to any league in LEAGUES, filled in by
     // populateFilters once the data's actual event types are known.
     let otherEvents = [];
@@ -330,31 +334,45 @@
         });
       });
 
-      timelineList.appendChild(makeScrollItem("all", "All-Time", selectYear, "all-nav-item"));
+      const allTimeGroup = document.createElement("div");
+      allTimeGroup.className = "decade-group";
+      allTimeGroup.appendChild(makeScrollItem("all", "All", selectYear, "all-nav-item"));
+      timelineList.appendChild(allTimeGroup);
 
-      for (
-        let decade = Math.floor(maxYear / 10) * 10;
-        decade >= Math.floor(minYear / 10) * 10;
-        decade -= 10
-      ) {
+      function appendDecadeColumn(label, value, years) {
         const group = document.createElement("div");
         group.className = "decade-group";
-
-        group.appendChild(
-          makeDecadeItem(String(decade), `${decade}s`, selectDecade)
-        );
+        group.appendChild(makeDecadeItem(value, label, selectDecade));
 
         const yearsCol = document.createElement("div");
         yearsCol.className = "years-col";
-        for (let year = decade + 9; year >= decade; year--) {
-          if (year > maxYear || year < minYear) continue;
-          const btn = makeScrollItem(String(year), String(year), selectYear);
-          if (!presentYears.has(year)) btn.disabled = true;
-          yearsCol.appendChild(btn);
-        }
+        years.forEach((year) => {
+          if (!presentYears.has(year)) return;
+          yearsCol.appendChild(makeScrollItem(String(year), String(year), selectYear));
+        });
         group.appendChild(yearsCol);
 
         timelineList.appendChild(group);
+      }
+
+      for (
+        let decade = Math.floor(maxYear / 10) * 10;
+        decade >= LUMP_BELOW;
+        decade -= 10
+      ) {
+        const years = [];
+        for (let year = decade + 9; year >= decade; year--) {
+          if (year <= maxYear && year >= minYear) years.push(year);
+        }
+        appendDecadeColumn(`${decade}s`, String(decade), years);
+      }
+
+      if (minYear < LUMP_BELOW) {
+        const years = [];
+        for (let year = Math.min(maxYear, LUMP_BELOW - 1); year >= minYear; year--) {
+          years.push(year);
+        }
+        appendDecadeColumn(`${LUMP_BELOW - 10}s & earlier`, "lump", years);
       }
     }
 
@@ -395,10 +413,7 @@
       btn.type = "button";
       btn.className = "nav-item decade-item";
       btn.dataset.value = value;
-      const span = document.createElement("span");
-      span.className = "decade-label";
-      span.textContent = label;
-      btn.appendChild(span);
+      btn.textContent = label;
       btn.addEventListener("click", () => onSelect(value));
       return btn;
     }
@@ -642,7 +657,9 @@
             eventMatch = item.event_type === selectedEvent;
           }
           let yearMatch;
-          if (selectedDecade !== "all") {
+          if (selectedDecade === "lump") {
+            yearMatch = item.year < LUMP_BELOW;
+          } else if (selectedDecade !== "all") {
             const decadeStart = Number(selectedDecade);
             yearMatch = item.year >= decadeStart && item.year < decadeStart + 10;
           } else {
@@ -732,7 +749,9 @@
             const logoWord = items.length === 1 ? "logo" : "logos";
             title = capitalize(`${eventLabel ? eventLabel + " " : ""}${logoWord}`);
             if (!viewingShared) {
-              if (selectedDecade !== "all") {
+              if (selectedDecade === "lump") {
+                title += ` from before ${LUMP_BELOW}`;
+              } else if (selectedDecade !== "all") {
                 title += ` from the ${selectedDecade}s`;
               } else if (selectedYear !== "all") {
                 title += ` from ${selectedYear}`;
@@ -921,6 +940,8 @@
         itemFavorite.classList.toggle("favorited", nowFavorited);
       }
     });
+
+    filterTitle.addEventListener("click", () => itemFavorite.click());
 
     document.addEventListener("keydown", (e) => {
       const isHorizontal = e.key === "ArrowLeft" || e.key === "ArrowRight";

@@ -2,7 +2,6 @@
 
 :root {
   --years-width: 56px;
-  --decades-width: 46px;
   --events-width: 140px;
   --places-width: 140px;
   --horiz-edge-offset: 3rem;
@@ -280,6 +279,10 @@ body {
   margin: 0;
 }
 
+#filter-title-bar:has(#item-favorite.visible) #filter-title {
+  cursor: pointer;
+}
+
 #item-meta {
   position: absolute;
   top: calc(100% + 0.3rem);
@@ -456,16 +459,21 @@ body {
 /* ===== Timeline Nav ===== */
 
 #timeline-filters {
-  width: calc(var(--years-width) + var(--decades-width));
+  overflow-x: auto;
 }
 
 #timeline-list {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  gap: 0.5rem;
+  align-items: flex-start;
 }
 
 .decade-group {
+  width: var(--years-width);
+  flex: 0 0 auto;
   display: flex;
+  flex-direction: column;
 
   &:has(.decade-item.active) .year-item {
     &:not(:disabled) {
@@ -476,31 +484,20 @@ body {
 }
 
 .years-col {
-  width: var(--years-width);
-  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
 }
 
 .decade-item {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 0.4rem;
+  padding: 0.3rem 0.2rem;
   margin: 0;
-  font-size: 1.2rem;
+  font-size: 0.85rem;
   font-weight: 800;
+  text-align: center;
 
   &.active {
     background: var(--color-text);
     color: var(--color-bg);
-  }
-
-  & .decade-label {
-    display: inline-block;
-    transform: rotate(-90deg);
-    white-space: nowrap;
   }
 }
 
@@ -829,6 +826,11 @@ main#grid {
   }
 
   .favorite-btn:hover {
+    transform: scale(1.2);
+    color: var(--color-accent);
+  }
+
+  #filter-title-bar:has(#filter-title:hover) #item-favorite {
     transform: scale(1.2);
     color: var(--color-accent);
   }
