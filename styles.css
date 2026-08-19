@@ -406,6 +406,7 @@ body {
   scrollbar-width: none;
   -ms-overflow-style: none;
   scroll-behavior: smooth;
+  transition: transform 0.2s ease;
 
   &::-webkit-scrollbar {
     display: none;
@@ -435,6 +436,13 @@ body {
     background: var(--color-text);
     color: var(--color-bg);
   }
+}
+
+#time-events-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.3rem;
+  transition: transform 0.2s ease;
 }
 
 /* ===== Timeline Nav ===== */
@@ -619,6 +627,20 @@ body {
     background: var(--color-text);
     color: var(--color-bg);
   }
+}
+
+/* Time and events are treated as one linked pair against places: filtering
+   by either one recesses the places column, and filtering by a place
+   recesses time and events instead. With everything at "All", nothing
+   recesses. Pure state re-eval off the .active class updateActiveButtons()
+   already maintains -- no click-time bookkeeping needed. */
+#search-options:has(#timeline-list .active:not(.all-nav-item)) #places-filter,
+#search-options:has(#events-list .active:not(.all-nav-item)) #places-filter {
+  transform: scale(0.9);
+}
+
+#search-options:has(#places-list .active:not(.all-nav-item)) #time-events-group {
+  transform: scale(0.9);
 }
 
 /* ===== Grid & Cards ===== */
