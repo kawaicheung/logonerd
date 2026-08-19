@@ -24,11 +24,9 @@
   --nav-active-fg: var(--color-text);
   --nav-active-hover-bg: var(--color-border);
 
-  --font-league-gothic: "League Gothic", sans-serif;
   --font-family-sans-serif: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   --font-size-big-label: 2.1rem;
-  --font-size-medium-label: 1.4rem;
 
   --shadow-card: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
@@ -141,16 +139,6 @@ body {
     z-index: -1;
     pointer-events: none;
   }
-}
-
-.logo-letter {
-  display: inline-block;
-  text-transform: uppercase;
-}
-
-.logo-letter-invert {
-  background: var(--color-text);
-  color: var(--color-bg);
 }
 
 /* ===== Quick Actions (favorite + randomize) ===== */
@@ -860,144 +848,6 @@ main#grid {
   }
 }
 
-/* ===== Mobile (completely separate from desktop above) ===== */
-
-#app-mobile {
-  display: none;
-  position: relative;
-  height: 100vh;
-  height: 100dvh;
-  user-select: none;
-}
-
-@media (pointer: coarse) {
-  #app {
-    display: none;
-  }
-
-  #app-mobile {
-    display: block;
-  }
-}
-
-#mobile-item-display {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-#mobile-item-img {
-  max-width: 80%;
-  max-height: 40vh;
-  object-fit: contain;
-  transform: translateY(-4vh);
-  display: none;
-
-  &.visible {
-    display: block;
-  }
-}
-
-#mobile-title-bar {
-  position: fixed;
-  top: calc(2.5rem + env(safe-area-inset-top));
-  left: 50%;
-  transform: translateX(-50%);
-  line-height: 1;
-  display: none;
-
-  &.visible {
-    display: flex;
-  }
-}
-
-#mobile-filter-title {
-  font-family: var(--font-league-gothic);
-  font-size: var(--font-size-big-label);
-  margin: 0;
-  text-align: center;
-}
-
-#mobile-brand {
-  position: fixed;
-  bottom: calc(2.5rem + env(safe-area-inset-bottom));
-  right: 1.5rem;
-  text-align: right;
-}
-
-#mobile-brand-title {
-  position: relative;
-  font-size: 2.4rem;
-  letter-spacing: -0.05rem;
-  font-family: var(--font-league-gothic);
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 125%;
-    height: 70%;
-    border-radius: 50%;
-    border-style: solid;
-    border-color: var(--color-text);
-    border-width: 0 4px;
-    transform: translate(-50%, -50%) rotate(-20deg);
-    z-index: -1;
-    pointer-events: none;
-  }
-}
-
-#mobile-randomize-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  bottom: calc(50% - 56px);
-  left: 50%;
-  transform: translateX(-50%) rotate(-8deg);
-  background: transparent;
-  border: none;
-  color: var(--color-text);
-  cursor: pointer;
-  padding: 0;
-  transition: bottom 0.4s cubic-bezier(0.11, 0, 0.5, 0) 0.12s;
-  touch-action: manipulation;
-  z-index: 10;
-
-  & svg {
-    width: 112px;
-    height: 112px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.5;
-  }
-
-  &.rolling {
-    animation: dice-roll-mobile 0.52s ease-out;
-  }
-
-  &.rolling-repeat {
-    animation: dice-roll-mobile-repeat 0.45s ease-out;
-  }
-
-  body:not(.mobile-rolled) & {
-    animation: dice-idle 1.8s ease-in-out infinite;
-  }
-
-  body.mobile-rolled & {
-    bottom: calc(2.5rem + env(safe-area-inset-bottom));
-
-    & svg {
-      width: 56px;
-      height: 56px;
-    }
-  }
-}
-
 /* ===== Animations ===== */
 
 @keyframes dice-roll {
@@ -1048,39 +898,5 @@ main#grid {
   }
   100% {
     transform: scale(1);
-  }
-}
-
-@keyframes dice-roll-mobile {
-  0% {
-    transform: translateX(-50%) translateY(0) rotate(-8deg);
-  }
-  23% {
-    transform: translateX(-50%) translateY(-90px) rotate(420deg);
-  }
-  100% {
-    transform: translateX(-50%) translateY(0) rotate(1440deg);
-  }
-}
-
-@keyframes dice-roll-mobile-repeat {
-  0% {
-    transform: translateX(-50%) translateY(0) rotate(-8deg);
-  }
-  40% {
-    transform: translateX(-50%) translateY(-90px) rotate(420deg);
-  }
-  100% {
-    transform: translateX(-50%) translateY(0) rotate(712deg);
-  }
-}
-
-@keyframes dice-idle {
-  0%,
-  100% {
-    transform: translateX(-50%) rotate(-8deg);
-  }
-  50% {
-    transform: translateX(-50%) rotate(8deg);
   }
 }

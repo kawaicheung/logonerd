@@ -1,77 +1,9 @@
 (function () {
-  const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
-
-  // Google Fonts for the LogoNerd wordmark, one per letter (loaded in index.html's
-  // Google Fonts link). Edit/reorder this list to change the look; it cycles if the
-  // word is longer than the list.
-  const LOGO_FONTS = [
-    "'Bungee', sans-serif",
-   /* "'Permanent Marker', cursive",
-    "'Bangers', sans-serif",
-    "'Righteous', sans-serif",
-    "'Anton', sans-serif",
-    "'Righteous', sans-serif",
-    "'Luckiest Guy', cursive",
-    "'Righteous', sans-serif",*/
-  ];
-
-  function paintLogoWordmark(el) {
-    if (!el) return;
-    const letters = el.textContent.split("");
-    el.textContent = "";
-    letters.forEach((ch, i) => {
-      const span = document.createElement("span");
-      span.className = "logo-letter";
-      span.style.fontFamily = LOGO_FONTS[i % LOGO_FONTS.length];
-      span.textContent = ch;
-      el.appendChild(span);
-    });
-  }
-
-  paintLogoWordmark(document.getElementById("mobile-brand-title"));
-
   function logoPath(filename, variant) {
     return `logos/${variant}/${filename}`;
   }
 
-  if (isTouchDevice) {
-    initMobile();
-  } else {
-    initDesktop();
-  }
-
-  function initMobile() {
-    const titleBar = document.getElementById("mobile-title-bar");
-    const filterTitle = document.getElementById("mobile-filter-title");
-    const itemImg = document.getElementById("mobile-item-img");
-    const randomizeBtn = document.getElementById("mobile-randomize-btn");
-
-    function rollDice() {
-      const isFirstRoll = !document.body.classList.contains("mobile-rolled");
-      const animClass = isFirstRoll ? "rolling" : "rolling-repeat";
-
-      randomizeBtn.classList.remove("rolling", "rolling-repeat");
-      void randomizeBtn.offsetWidth;
-      randomizeBtn.classList.add(animClass);
-      document.body.classList.add("mobile-rolled");
-
-      const item = LOGO_DATA[Math.floor(Math.random() * LOGO_DATA.length)];
-      setTimeout(() => {
-        itemImg.src = logoPath(item.url, "hi-res");
-        itemImg.alt = item.label;
-        itemImg.classList.add("visible");
-        filterTitle.textContent = `${item.year} ${item.event_type}`;
-        titleBar.classList.add("visible");
-      }, isFirstRoll ? 260 : 225);
-    }
-
-    const autoRollTimeout = setTimeout(rollDice, 2000);
-
-    randomizeBtn.addEventListener("click", () => {
-      clearTimeout(autoRollTimeout);
-      rollDice();
-    });
-  }
+  initDesktop();
 
   function initDesktop() {
     const grid = document.getElementById("grid");
