@@ -446,6 +446,7 @@ body {
   border-radius: 0.5rem;
   background-color: var(--color-bg);
   box-shadow: var(--shadow-card);
+  transform: scale(0.98);
   transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.15s ease, border-color 0.15s ease;
 }
 
@@ -533,6 +534,7 @@ body {
   border-radius: 0.5rem;
   background-color: var(--color-bg);
   box-shadow: var(--shadow-card);
+  transform: scale(0.98);
   transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.15s ease, border-color 0.15s ease;
 }
 
@@ -631,7 +633,7 @@ body {
 
 #search-options:has(#timeline-list .active:not(.all-nav-item)) #time-events-group,
 #search-options:has(#events-list .active:not(.all-nav-item)) #time-events-group {
-  transform: scale(1.03);
+  transform: scale(1);
   border-color: var(--color-border);
   z-index: 1;
 }
@@ -643,7 +645,7 @@ body {
 }
 
 #search-options:has(#places-list .active:not(.all-nav-item)) #places-filter {
-  transform: scale(1.03);
+  transform: scale(1);
   border-color: var(--color-border);
   z-index: 1;
 }
@@ -987,137 +989,4 @@ main#grid {
    devices get these overrides. */
 
 @media (pointer: coarse) {
-  :root {
-    /* every fixed vertical offset on mobile reuses this one value */
-    --vert-edge-offset: 1rem;
-
-    /* quick-actions' own top edge, measured from the viewport bottom:
-       its bottom offset plus its height (34px icon + 1rem vertical padding). */
-    --qa-top-from-bottom: calc(var(--vert-edge-offset) + 2.5rem + 34px + 1rem);
-    /* the menu's bottom edge sits 1rem above that */
-    --menu-bottom: calc(var(--qa-top-from-bottom) + 1rem);
-    /* and it's allowed to grow upward until it's 1rem from the viewport top */
-    --search-options-max-height: calc(100dvh - var(--menu-bottom) - 1rem);
-  }
-
-  #app {
-    min-width: 0;
-    /* #app is the containing block for every position: fixed descendant
-       (its own transform: translateZ(0) makes it so), so padding it with
-       the safe-area insets keeps the logo/quick-actions/search-options
-       etc. clear of a notch or the home-indicator in one edit. */
-    padding: env(safe-area-inset-top) env(safe-area-inset-right)
-      env(safe-area-inset-bottom) env(safe-area-inset-left);
-  }
-
-  #logo {
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  #filter-title-bar {
-    /* logo's rendered height, approximated as 1.2x its font-size, plus a
-       gap before the title bar starts */
-    top: calc(var(--vert-edge-offset) + (1.2 * 1.4rem) + 1rem);
-    left: 50%;
-    right: auto;
-    width: 100%;
-    justify-content: center;
-    transform: translateX(-50%);
-  }
-
-  #quick-actions {
-    top: auto;
-    left: 50%;
-    bottom: calc(var(--vert-edge-offset) + 2.5rem);
-    transform: translateX(-50%);
-  }
-
-  #attribution {
-    display: none;
-  }
-
-  #hotkey-legend {
-    display: none;
-  }
-
-  #search-options {
-    top: auto;
-    left: 50%;
-    bottom: var(--menu-bottom);
-    max-width: 95vw;
-    transform-origin: bottom center;
-    transform: translateX(-50%) scale(0.85);
-    /* places doesn't fit alongside time/events at 95vw on a phone, so let
-       the whole panel scroll horizontally between the two cards instead
-       of hiding places outright. */
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
-    &.open {
-      transform: translateX(-50%) scale(1);
-    }
-
-    &.open.disabled {
-      transform: translateX(-50%) translateX(10%) rotate(-2deg) scale(0.88);
-    }
-  }
-
-  #time-events-group,
-  #places-filter {
-    flex-shrink: 0;
-    scroll-snap-align: start;
-  }
-
-  .logo-detail-nav {
-    bottom: calc(var(--qa-top-from-bottom) + 1rem);
-  }
-
-  #sort-order-btn {
-    display: none;
-  }
-
-  #filter-title {
-    font-size: 1.2rem;
-    text-align: center;
-    text-wrap: pretty;
-    padding: 0 2rem;
-  }
-
-  #item-meta,
-  #item-meta.visible {
-    display: none;
-  }
-
-  #item-prev,
-  #item-next {
-    right: auto;
-    left: 50%;
-  }
-
-  #item-prev {
-    transform: translateX(calc(-100% - 0.5rem));
-  }
-
-  #item-next {
-    transform: translateX(0.5rem);
-  }
-
-  #favorites-toggle,
-  .favorite-btn,
-  #item-favorite.visible,
-  #share-favorites {
-    display: none;
-  }
-
-  main#grid {
-    gap: 0;
-    padding-top: 4.8rem;
-  }
 }
