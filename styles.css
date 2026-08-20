@@ -989,4 +989,32 @@ main#grid {
    devices get these overrides. */
 
 @media (pointer: coarse) {
+  #app {
+    min-width: 0;
+    width: 100dvw;
+    height: 100dvh;
+  }
+
+  #quick-actions {
+    top: auto;
+    left: 50%;
+    bottom: calc(var(--vert-edge-offset) + env(safe-area-inset-bottom) + 3.25rem);
+    transform: translateX(-50%);
+  }
+
+  #hotkey-legend {
+    display: none;
+  }
+
+  #attribution {
+    left: 0;
+    right: 0;
+    width: 100%;
+    bottom: 0;
+    transform: none;
+    box-sizing: border-box;
+    text-align: center;
+    padding: 2rem 1.5rem calc(var(--vert-edge-offset) + env(safe-area-inset-bottom));
+    background: linear-gradient(to top, var(--color-bg), transparent);
+  }
 }
