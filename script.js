@@ -32,6 +32,7 @@
     const randomizeBtn = document.getElementById("randomize-btn");
     const searchToggle = document.getElementById("search-toggle");
     const searchOptions = document.getElementById("search-options");
+    const searchClose = document.getElementById("search-close");
     const logo = document.getElementById("logo");
     const filterTitle = document.getElementById("filter-title");
     const itemMeta = document.getElementById("item-meta");
@@ -770,6 +771,11 @@
     document.addEventListener("click", (e) => {
       if (!searchOptions.classList.contains("open")) return;
       if (e.target.closest("#search-options") || e.target.closest("#search-toggle")) return;
+      setSearchOptionsOpen(false);
+    });
+
+    searchClose.addEventListener("click", (e) => {
+      e.stopPropagation();
       setSearchOptionsOpen(false);
     });
 
