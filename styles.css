@@ -998,6 +998,9 @@ main#grid {
     min-width: 0;
     width: 100dvw;
     height: 100dvh;
+    /* Shared by #filter-title-bar's position and main#grid's padding-top
+       below, so the two stay in lockstep. */
+    --mobile-title-top: calc(var(--vert-edge-offset) + 2.4rem);
   }
 
   /* Grid becomes a fixed-tile, 10-column-wide sheet that tiles new rows
@@ -1011,6 +1014,50 @@ main#grid {
     height: 100dvh;
   }
 
+  /* Filter title moves out from desktop's top-right corner to sit
+     centered directly under the logo, since mobile has no room to spare
+     on the sides. Centered via a plain left offset (95vw wide, so 2.5vw
+     of margin on each side) rather than transform: translateX(-50%) --
+     a transform here would make this the containing block for its
+     position: fixed descendants (#item-favorite, #sort-order-btn),
+     pinning them to this box instead of the viewport. */
+  #filter-title-bar {
+    top: var(--mobile-title-top);
+    left: 2.5vw;
+    right: auto;
+    width: 95vw;
+    justify-content: center;
+  }
+
+  /* Sort + item-favorite move out of the centered title bar into their
+     own fixed spot in the top-right corner -- the corner the whole title
+     bar occupied on desktop before it recentered under the logo. They
+     never show at the same time, so both land in the exact same spot.
+     --horiz-edge-offset (3rem) was sized for desktop's 1200px layout and
+     reads as a lopsided, oversized inset here against the 1.5rem
+     vert-edge-offset -- use a smaller, symmetric inset instead. */
+  #sort-order-btn,
+  #item-favorite {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.25rem;
+    z-index: 10;
+  }
+
+  #filter-title {
+    font-size: 1.05rem;
+  }
+
+  /* #item-meta only ever shows in the detail/lightbox view, right-aligned
+     under the title bar to match its desktop corner position -- now that
+     the title bar is centered on mobile, center the meta text under it
+     too instead of hugging a right edge that no longer means anything. */
+  #item-meta {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+
   main#grid {
     --mobile-grid-gap: 0.3rem;
     --mobile-card-width: calc((100dvw - 2 * var(--mobile-grid-gap)) / 3);
@@ -1018,6 +1065,12 @@ main#grid {
     flex: 0 0 auto;
     width: max-content;
     padding: 0;
+    /* Enough room above the first row of cards for the logo, the filter
+       title bar sitting just under it, and a bit of breathing room below
+       the title before items start -- even once the grid has a ton of
+       items to pan through. The room below the title (was 2.2rem +
+       2rem) is trimmed 30% so the gap doesn't read as oversized. */
+    padding-top: calc(var(--mobile-title-top) + 2.94rem);
     gap: var(--mobile-grid-gap);
     grid-template-columns: repeat(var(--mobile-grid-cols, 8), var(--mobile-card-width));
     grid-auto-flow: row;
@@ -1036,10 +1089,21 @@ main#grid {
     display: none;
   }
 
+  /* The empty-state message lives inside a grid item, but on mobile the
+     grid's column tracks are always card-width regardless of column count
+     -- with zero items that's a single ~33vw track, cramming the text.
+     Pull it out to a fixed width centered on the grid's own position. */
+  .empty-state {
+    position: relative;
+    left: 50%;
+    width: 95vw;
+    transform: translateX(-50%);
+  }
+
   #quick-actions {
     top: auto;
     left: 50%;
-    bottom: calc(var(--vert-edge-offset) + env(safe-area-inset-bottom) + 3.25rem);
+    bottom: calc(var(--vert-edge-offset) + env(safe-area-inset-bottom) + 2rem);
     transform: translateX(-50%);
     transition: opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
@@ -1053,7 +1117,7 @@ main#grid {
     justify-content: center;
     position: fixed;
     left: 50%;
-    bottom: calc(var(--vert-edge-offset) + env(safe-area-inset-bottom) + 3.25rem);
+    bottom: calc(var(--vert-edge-offset) + env(safe-area-inset-bottom) + 2rem);
     width: 3.5rem;
     height: 3.5rem;
     border: none;
