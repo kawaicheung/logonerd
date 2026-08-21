@@ -1001,6 +1001,10 @@ main#grid {
     /* Shared by #filter-title-bar's position and main#grid's padding-top
        below, so the two stay in lockstep. */
     --mobile-title-top: calc(var(--vert-edge-offset) + 2.4rem);
+    /* Shared by #quick-actions/#search-close's own bottom offset and the
+       detail nav arrows below, which stack above that pill. */
+    --mobile-quick-actions-bottom: calc(var(--vert-edge-offset) + env(safe-area-inset-bottom) + 2rem);
+    --mobile-quick-actions-height: 3.125rem;
   }
 
   /* Grid becomes a fixed-tile, 10-column-wide sheet that tiles new rows
@@ -1103,7 +1107,7 @@ main#grid {
   #quick-actions {
     top: auto;
     left: 50%;
-    bottom: calc(var(--vert-edge-offset) + env(safe-area-inset-bottom) + 2rem);
+    bottom: var(--mobile-quick-actions-bottom);
     transform: translateX(-50%);
     transition: opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
@@ -1117,7 +1121,7 @@ main#grid {
     justify-content: center;
     position: fixed;
     left: 50%;
-    bottom: calc(var(--vert-edge-offset) + env(safe-area-inset-bottom) + 2rem);
+    bottom: var(--mobile-quick-actions-bottom);
     width: 3.5rem;
     height: 3.5rem;
     border: none;
@@ -1207,6 +1211,26 @@ main#grid {
 
   #search-options:has(#places-list .active:not(.all-nav-item)) #time-events-group {
     transform: scale(0.95) translateX(10%);
+  }
+
+  /* Detail prev/next shrink down from desktop's large corner arrows and
+     move up to sit right-aligned above the quick-actions pill instead,
+     which would otherwise crowd right into it. */
+  .logo-detail-nav {
+    bottom: calc(var(--mobile-quick-actions-bottom) + var(--mobile-quick-actions-height) + 0.75rem);
+
+    & svg {
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+  #item-prev {
+    right: calc(1.25rem + 40px + 0.5rem);
+  }
+
+  #item-next {
+    right: 1.25rem;
   }
 
   #hotkey-legend {
