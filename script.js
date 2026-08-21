@@ -3,6 +3,21 @@
     return `logos/${variant}/${filename}`;
   }
 
+  // Holds at 3 columns (wrapping into however many rows that takes) up
+  // through 21 items -- avoids e.g. 8 items rendering as one short,
+  // overly wide row -- then steps up one column per 10 additional items,
+  // capped at 8 across.
+  function mobileGridColumnCount(itemCount) {
+    if (itemCount <= 1) return 1;
+    if (itemCount <= 2) return 2;
+    if (itemCount <= 21) return 3;
+    if (itemCount <= 31) return 4;
+    if (itemCount <= 41) return 5;
+    if (itemCount <= 51) return 6;
+    if (itemCount <= 61) return 7;
+    return 8;
+  }
+
   initDesktop();
 
   function initDesktop() {
@@ -658,12 +673,13 @@
           });
         }
 
-        // Mobile's grid caps at 10 fixed-width columns, but an explicit
-        // repeat(10, ...) track list reserves that width even when far
-        // fewer cards exist. Sizing it to the actual item count instead
-        // lets initGridPan's bounds see a genuinely narrower/shorter grid
-        // and center it, rather than always reserving the full 10-wide span.
-        grid.style.setProperty("--mobile-grid-cols", Math.max(1, Math.min(10, items.length)));
+        // Mobile's grid column count adapts to how many items there are,
+        // instead of always reserving 10 fixed-width tracks or matching
+        // the item count 1:1 (which would render e.g. 8 items as one
+        // short, overly wide row). It holds at 3 -- wrapping into however
+        // many rows that takes -- until there's enough content to justify
+        // widening the grid and letting it pan horizontally instead.
+        grid.style.setProperty("--mobile-grid-cols", mobileGridColumnCount(items.length));
         if (gridPan) gridPan.refresh();
 
         const isOwnFavorites = showFavorites && !viewingShared;
