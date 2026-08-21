@@ -36,6 +36,7 @@
     let currentItems = [];
     let viewedIndex = -1;
     let activeGridIndex = -1;
+    let gridPan = null;
 
     function setSortDirection(value) {
       sortDirection = value;
@@ -657,6 +658,14 @@
           });
         }
 
+        // Mobile's grid caps at 10 fixed-width columns, but an explicit
+        // repeat(10, ...) track list reserves that width even when far
+        // fewer cards exist. Sizing it to the actual item count instead
+        // lets initGridPan's bounds see a genuinely narrower/shorter grid
+        // and center it, rather than always reserving the full 10-wide span.
+        grid.style.setProperty("--mobile-grid-cols", Math.max(1, Math.min(10, items.length)));
+        if (gridPan) gridPan.refresh();
+
         const isOwnFavorites = showFavorites && !viewingShared;
 
         if (isOwnFavorites) {
@@ -992,11 +1001,11 @@
     applyFiltersFromURL();
     updateFavoritesToggleState();
     render();
-    initGridPan(grid);
+    gridPan = initGridPan(grid);
   }
 
   function initGridPan(grid) {
-    if (!window.matchMedia("(pointer: coarse)").matches) return;
+    if (!window.matchMedia("(pointer: coarse)").matches) return null;
 
     const container = grid.parentElement; // #page-content -- clips the grid
 
@@ -1015,19 +1024,35 @@
     const pointers = new Map();
 
     function computeBounds() {
-      // tx/ty of 0 is the grid's natural top-left position. Panning left/up
-      // (negative tx/ty) reveals content further right/down, bottomed out
-      // once the grid's trailing edge reaches the container's edge.
+      // Each axis is negotiated independently: once the grid overflows the
+      // container along that axis, tx/ty of 0 is its natural top-left
+      // position and panning (negative tx/ty) reveals the rest, bottomed
+      // out once the trailing edge reaches the container's edge -- same as
+      // before. But when there isn't enough content to overflow an axis,
+      // min and max collapse to the same centered offset, so that axis is
+      // pinned centered instead of stuck at the top-left.
+      const overflowX = grid.offsetWidth - container.clientWidth;
+      const overflowY = grid.offsetHeight - container.clientHeight;
+      const centeredTx = overflowX > 0 ? 0 : -overflowX / 2;
+      const centeredTy = overflowY > 0 ? 0 : -overflowY / 2;
+
       return {
-        minTx: Math.min(0, container.clientWidth - grid.offsetWidth),
-        maxTx: 0,
-        minTy: Math.min(0, container.clientHeight - grid.offsetHeight),
-        maxTy: 0,
+        minTx: overflowX > 0 ? -overflowX : centeredTx,
+        maxTx: centeredTx,
+        minTy: overflowY > 0 ? -overflowY : centeredTy,
+        maxTy: centeredTy,
       };
     }
 
     function applyTransform() {
       grid.style.transform = `translate(${tx}px, ${ty}px)`;
+    }
+
+    function clampToBounds() {
+      const { minTx, maxTx, minTy, maxTy } = computeBounds();
+      tx = Math.min(maxTx, Math.max(minTx, tx));
+      ty = Math.min(maxTy, Math.max(minTy, ty));
+      applyTransform();
     }
 
     function stopMomentum() {
@@ -1178,5 +1203,18 @@
     grid.addEventListener("pointerup", release);
     grid.addEventListener("pointercancel", release);
     grid.addEventListener("pointerleave", release);
+
+    clampToBounds();
+
+    return {
+      // Re-negotiates centered-vs-anchored per axis after the item count
+      // (and so the grid's actual size) changes, e.g. from a filter change.
+      refresh() {
+        stopMomentum();
+        gestureBounds = null;
+        grid.style.transition = `transform ${snapDuration}ms ${snapEasing}`;
+        clampToBounds();
+      },
+    };
   }
 })();
