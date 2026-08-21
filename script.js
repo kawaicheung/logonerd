@@ -1025,11 +1025,11 @@
 
     const container = grid.parentElement; // #page-content -- clips the grid
 
-    const friction = 0.95; // velocity decay per ~16ms frame while gliding
+    const friction = 0.97; // velocity decay per ~16ms frame while gliding
     const minVelocity = 0.02; // px/ms -- below this the glide/drag stops
-    const overscrollResistance = 0.35; // how much a beyond-edge drag actually moves the grid
-    const snapEasing = "cubic-bezier(0.22, 1, 0.36, 1)";
-    const snapDuration = 320; // ms
+    const overscrollResistance = 0.55; // how much a beyond-edge drag actually moves the grid
+    const snapEasing = "cubic-bezier(0.34, 1.56, 0.64, 1)"; // overshoots then settles, for a springy bounce
+    const snapDuration = 380; // ms
 
     let tx = 0;
     let ty = 0;
