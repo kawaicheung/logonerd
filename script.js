@@ -992,5 +992,116 @@
     applyFiltersFromURL();
     updateFavoritesToggleState();
     render();
+    initGridPanZoom(grid);
+  }
+
+  function initGridPanZoom(grid) {
+    if (!window.matchMedia("(pointer: coarse)").matches) return;
+
+    const minScale = 0.5;
+    const maxScale = 3;
+    const zoomInDamping = 0.35;
+    const pressScale = 1.3;
+    const pressEasing = "cubic-bezier(0.34, 1.56, 0.64, 1)";
+    let scale = 1;
+    let tx = 0;
+    let ty = 0;
+    let pressed = false;
+    const pointers = new Map();
+    let prevDist = 0;
+    let prevAnchor = { x: 0, y: 0 };
+
+    function applyTransform() {
+      const displayScale = scale * (pressed ? pressScale : 1);
+      grid.style.transform = `translate(${tx}px, ${ty}px) scale(${displayScale})`;
+    }
+
+    // The "holding" finger anchors the zoom: whichever pointer went down
+    // first stays visually still under that finger while the other one
+    // controls scale, instead of the zoom drifting toward the midpoint.
+    function anchorPoint() {
+      return [...pointers.values()][0];
+    }
+
+    function distance() {
+      const [a, b] = [...pointers.values()];
+      return Math.hypot(a.x - b.x, a.y - b.y);
+    }
+
+    grid.addEventListener("pointerdown", (e) => {
+      grid.setPointerCapture(e.pointerId);
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+      if (pointers.size === 1) {
+        pressed = true;
+        grid.style.transition = `transform 0.25s ${pressEasing}`;
+        applyTransform();
+      }
+
+      if (pointers.size === 2) {
+        prevDist = distance();
+        prevAnchor = anchorPoint();
+      }
+    });
+
+    grid.addEventListener("pointermove", (e) => {
+      if (!pointers.has(e.pointerId)) return;
+      const prev = pointers.get(e.pointerId);
+      const dx = e.clientX - prev.x;
+      const dy = e.clientY - prev.y;
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      grid.style.transition = "none";
+
+      if (pointers.size === 1) {
+        tx += dx;
+        ty += dy;
+        applyTransform();
+        return;
+      }
+
+      if (pointers.size === 2) {
+        const dist = distance();
+        const anchor = anchorPoint();
+        let factor = prevDist ? dist / prevDist : 1;
+        if (factor > 1) {
+          // Zooming in: damp the raw pinch-spread ratio so it takes more
+          // finger travel to reach the same scale increase. Zooming out is
+          // left at full speed.
+          factor = 1 + (factor - 1) * zoomInDamping;
+        }
+        const newScale = Math.min(maxScale, Math.max(minScale, scale * factor));
+
+        // Keep the content point under the holding finger anchored as scale changes.
+        const contentX = (prevAnchor.x - tx) / scale;
+        const contentY = (prevAnchor.y - ty) / scale;
+        tx = anchor.x - contentX * newScale;
+        ty = anchor.y - contentY * newScale;
+        scale = newScale;
+
+        prevDist = dist;
+        prevAnchor = anchor;
+        applyTransform();
+      }
+    });
+
+    function release(e) {
+      if (!pointers.has(e.pointerId)) return;
+      pointers.delete(e.pointerId);
+
+      if (pointers.size === 0) {
+        pressed = false;
+        grid.style.transition = `transform 0.25s ${pressEasing}`;
+        applyTransform();
+      }
+
+      if (pointers.size === 2) {
+        prevDist = distance();
+        prevAnchor = anchorPoint();
+      }
+    }
+
+    grid.addEventListener("pointerup", release);
+    grid.addEventListener("pointercancel", release);
+    grid.addEventListener("pointerleave", release);
   }
 })();

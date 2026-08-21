@@ -995,6 +995,35 @@ main#grid {
     height: 100dvh;
   }
 
+  /* Grid becomes a fixed-tile, 4-row-tall sheet that tiles new columns to
+     the right instead of reflowing -- #page-content clips it, and JS pans
+     it via transform: translate()/scale() from raw pointer input, so it
+     behaves like a flat canvas you drag and pinch-zoom rather than a page
+     that scrolls and reflows. */
+  #page-content {
+    overflow: hidden;
+    margin: 0;
+    height: 100dvh;
+  }
+
+  main#grid {
+    flex: 0 0 auto;
+    width: max-content;
+    padding: 0;
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(4, min-content);
+    grid-auto-columns: calc((100dvw - 1rem) / 3);
+    overflow: visible;
+    touch-action: none;
+    transform-origin: 0 0;
+    will-change: transform;
+  }
+
+  .card .meta {
+    display: none;
+  }
+
   #quick-actions {
     top: auto;
     left: 50%;
