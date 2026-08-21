@@ -1102,6 +1102,12 @@ main#grid {
        the full viewport -- so the cap tracks where the panel actually
        starts instead of assuming it starts at the very top. */
     max-height: calc((100dvh - var(--search-options-top)) * 0.8);
+    overflow: hidden;
+    /* .nav-filter's own scroll cap is desktop's fixed 600px otherwise --
+       shorter phones can end up with a panel cap well under that, and
+       without overflow:hidden above, the list just renders past the
+       panel's box instead of clipping/scrolling within it. */
+    --sidebar-list-max-height: calc((100dvh - var(--search-options-top)) * 0.8 - 2rem);
   }
 
   #time-events-group {
