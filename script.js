@@ -992,95 +992,174 @@
     applyFiltersFromURL();
     updateFavoritesToggleState();
     render();
-    initGridPanZoom(grid);
+    initGridPan(grid);
   }
 
-  function initGridPanZoom(grid) {
+  function initGridPan(grid) {
     if (!window.matchMedia("(pointer: coarse)").matches) return;
 
-    const minScale = 0.5;
-    const maxScale = 3;
-    const zoomInDamping = 0.35;
-    const pressScale = 1.3;
-    const pressEasing = "cubic-bezier(0.34, 1.56, 0.64, 1)";
-    let scale = 1;
+    const container = grid.parentElement; // #page-content -- clips the grid
+
+    const friction = 0.95; // velocity decay per ~16ms frame while gliding
+    const minVelocity = 0.02; // px/ms -- below this the glide/drag stops
+    const overscrollResistance = 0.35; // how much a beyond-edge drag actually moves the grid
+    const snapEasing = "cubic-bezier(0.22, 1, 0.36, 1)";
+    const snapDuration = 320; // ms
+
     let tx = 0;
     let ty = 0;
-    let pressed = false;
+    let vx = 0;
+    let vy = 0;
+    let momentumFrame = null;
+    let gestureBounds = null;
     const pointers = new Map();
-    let prevDist = 0;
-    let prevAnchor = { x: 0, y: 0 };
+
+    function computeBounds() {
+      // tx/ty of 0 is the grid's natural top-left position. Panning left/up
+      // (negative tx/ty) reveals content further right/down, bottomed out
+      // once the grid's trailing edge reaches the container's edge.
+      return {
+        minTx: Math.min(0, container.clientWidth - grid.offsetWidth),
+        maxTx: 0,
+        minTy: Math.min(0, container.clientHeight - grid.offsetHeight),
+        maxTy: 0,
+      };
+    }
 
     function applyTransform() {
-      const displayScale = scale * (pressed ? pressScale : 1);
-      grid.style.transform = `translate(${tx}px, ${ty}px) scale(${displayScale})`;
+      grid.style.transform = `translate(${tx}px, ${ty}px)`;
     }
 
-    // The "holding" finger anchors the zoom: whichever pointer went down
-    // first stays visually still under that finger while the other one
-    // controls scale, instead of the zoom drifting toward the midpoint.
-    function anchorPoint() {
-      return [...pointers.values()][0];
+    function stopMomentum() {
+      if (momentumFrame !== null) {
+        cancelAnimationFrame(momentumFrame);
+        momentumFrame = null;
+      }
     }
 
-    function distance() {
-      const [a, b] = [...pointers.values()];
-      return Math.hypot(a.x - b.x, a.y - b.y);
+    // If a finger grabs the grid mid-glide or mid-snap, read back the
+    // actually-rendered position (not just our tracked tx/ty) so the drag
+    // picks up from where it visually is instead of jumping.
+    function syncFromRenderedTransform() {
+      const matrix = new DOMMatrixReadOnly(getComputedStyle(grid).transform);
+      tx = matrix.m41;
+      ty = matrix.m42;
+    }
+
+    // Beyond the edge, a raw drag delta only partially moves the grid, so
+    // it feels like stretching a rubber band rather than free panning.
+    function applyDelta(current, delta, min, max) {
+      const next = current + delta;
+      if (next > max) return max + (next - max) * overscrollResistance;
+      if (next < min) return min + (next - min) * overscrollResistance;
+      return next;
+    }
+
+    // Elastically pins the grid back within bounds if a drag left it
+    // overscrolled. Returns true if a snap-back was needed.
+    function snapWithinBounds() {
+      const { minTx, maxTx, minTy, maxTy } = gestureBounds || computeBounds();
+      const clampedTx = Math.min(maxTx, Math.max(minTx, tx));
+      const clampedTy = Math.min(maxTy, Math.max(minTy, ty));
+
+      if (clampedTx !== tx || clampedTy !== ty) {
+        tx = clampedTx;
+        ty = clampedTy;
+        vx = 0;
+        vy = 0;
+        grid.style.transition = `transform ${snapDuration}ms ${snapEasing}`;
+        applyTransform();
+        return true;
+      }
+      return false;
+    }
+
+    // After release, the grid keeps gliding on its last velocity and
+    // decays it toward zero, instead of stopping dead when the finger
+    // lifts -- gives the drag an "oiled," momentum-scroll feel. Momentum
+    // is clamped to the edges so a fling can't carry it past them.
+    function runMomentum(prevTime) {
+      momentumFrame = requestAnimationFrame((now) => {
+        const dt = Math.min(now - prevTime, 48);
+        const decay = Math.pow(friction, dt / 16);
+        vx *= decay;
+        vy *= decay;
+
+        const { minTx, maxTx, minTy, maxTy } = gestureBounds || computeBounds();
+        let nextTx = tx + vx * dt;
+        let nextTy = ty + vy * dt;
+        let hitBound = false;
+
+        if (nextTx > maxTx) {
+          nextTx = maxTx;
+          hitBound = true;
+        } else if (nextTx < minTx) {
+          nextTx = minTx;
+          hitBound = true;
+        }
+        if (nextTy > maxTy) {
+          nextTy = maxTy;
+          hitBound = true;
+        } else if (nextTy < minTy) {
+          nextTy = minTy;
+          hitBound = true;
+        }
+
+        tx = nextTx;
+        ty = nextTy;
+        applyTransform();
+
+        if (hitBound) {
+          momentumFrame = null;
+          return;
+        }
+
+        if (Math.hypot(vx, vy) > minVelocity) {
+          runMomentum(now);
+        } else {
+          momentumFrame = null;
+        }
+      });
     }
 
     grid.addEventListener("pointerdown", (e) => {
+      if (pointers.size === 0) {
+        if (momentumFrame !== null || grid.style.transition !== "none") {
+          syncFromRenderedTransform();
+        }
+        stopMomentum();
+        grid.style.transition = "none";
+        gestureBounds = computeBounds();
+      }
       grid.setPointerCapture(e.pointerId);
-      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-
-      if (pointers.size === 1) {
-        pressed = true;
-        grid.style.transition = `transform 0.25s ${pressEasing}`;
-        applyTransform();
-      }
-
-      if (pointers.size === 2) {
-        prevDist = distance();
-        prevAnchor = anchorPoint();
-      }
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY, t: performance.now() });
+      vx = 0;
+      vy = 0;
     });
 
     grid.addEventListener("pointermove", (e) => {
       if (!pointers.has(e.pointerId)) return;
       const prev = pointers.get(e.pointerId);
+      const now = performance.now();
       const dx = e.clientX - prev.x;
       const dy = e.clientY - prev.y;
-      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-      grid.style.transition = "none";
+      const dt = Math.max(now - prev.t, 1);
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY, t: now });
 
       if (pointers.size === 1) {
-        tx += dx;
-        ty += dy;
+        const { minTx, maxTx, minTy, maxTy } = gestureBounds;
+        const prevTx = tx;
+        const prevTy = ty;
+        tx = applyDelta(tx, dx, minTx, maxTx);
+        ty = applyDelta(ty, dy, minTy, maxTy);
         applyTransform();
-        return;
-      }
 
-      if (pointers.size === 2) {
-        const dist = distance();
-        const anchor = anchorPoint();
-        let factor = prevDist ? dist / prevDist : 1;
-        if (factor > 1) {
-          // Zooming in: damp the raw pinch-spread ratio so it takes more
-          // finger travel to reach the same scale increase. Zooming out is
-          // left at full speed.
-          factor = 1 + (factor - 1) * zoomInDamping;
-        }
-        const newScale = Math.min(maxScale, Math.max(minScale, scale * factor));
-
-        // Keep the content point under the holding finger anchored as scale changes.
-        const contentX = (prevAnchor.x - tx) / scale;
-        const contentY = (prevAnchor.y - ty) / scale;
-        tx = anchor.x - contentX * newScale;
-        ty = anchor.y - contentY * newScale;
-        scale = newScale;
-
-        prevDist = dist;
-        prevAnchor = anchor;
-        applyTransform();
+        // Smooth the instantaneous velocity so one jittery event doesn't
+        // dominate the momentum used on release.
+        const ivx = (tx - prevTx) / dt;
+        const ivy = (ty - prevTy) / dt;
+        vx = vx * 0.7 + ivx * 0.3;
+        vy = vy * 0.7 + ivy * 0.3;
       }
     });
 
@@ -1089,14 +1168,10 @@
       pointers.delete(e.pointerId);
 
       if (pointers.size === 0) {
-        pressed = false;
-        grid.style.transition = `transform 0.25s ${pressEasing}`;
-        applyTransform();
-      }
-
-      if (pointers.size === 2) {
-        prevDist = distance();
-        prevAnchor = anchorPoint();
+        const snapped = snapWithinBounds();
+        if (!snapped && (Math.abs(vx) > minVelocity || Math.abs(vy) > minVelocity)) {
+          runMomentum(performance.now());
+        }
       }
     }
 
