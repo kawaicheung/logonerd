@@ -1038,6 +1038,51 @@ main#grid {
     transform: translateX(-50%);
   }
 
+  /* Search panel spans the viewport instead of the desktop's fixed
+     column widths. #time-events-group and #places-filter get flex-grow
+     ratios of 2:1 off a shared flex-basis of 0 -- flexbox distributes
+     only the leftover width *after* the gap between them, so the 2/3 |
+     1/3 split naturally compensates for it without any manual calc. */
+  #search-options {
+    left: 1vw;
+    width: 98vw;
+  }
+
+  #time-events-group {
+    flex: 2 1 0;
+    width: auto;
+    min-width: 0;
+  }
+
+  #places-filter {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+  }
+
+  #timeline-filters {
+    width: auto;
+    flex: 2 1 0;
+    min-width: 0;
+  }
+
+  #events-filter {
+    width: auto;
+    flex: 3 1 0;
+    min-width: 0;
+  }
+
+  /* Recessing an inactive column still scales it back and slides it
+     behind the active one, just without the desktop's added tilt. */
+  #search-options:has(#timeline-list .active:not(.all-nav-item)) #places-filter,
+  #search-options:has(#events-list .active:not(.all-nav-item)) #places-filter {
+    transform: scale(0.95) translateX(-10%);
+  }
+
+  #search-options:has(#places-list .active:not(.all-nav-item)) #time-events-group {
+    transform: scale(0.95) translateX(10%);
+  }
+
   #hotkey-legend {
     display: none;
   }
