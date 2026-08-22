@@ -1066,8 +1066,18 @@ main#grid {
        the title before items start. The room below the title (was 2.2rem +
        2rem) is trimmed 30% so the gap doesn't read as oversized. */
     padding-top: calc(var(--mobile-title-top) + 2.94rem);
+    /* Balances padding-top so align-content: safe center (below) centers
+       within the actual chrome-free area -- from under the title bar down
+       to above the quick-actions pill -- instead of skewing toward the
+       bottom when there's too little content to fill the screen. */
+    padding-bottom: calc(var(--mobile-quick-actions-bottom) + var(--mobile-quick-actions-height) + 0.75rem);
     gap: var(--mobile-grid-gap);
-    grid-template-columns: repeat(3, var(--mobile-card-width));
+    /* auto-fit (not a plain repeat(3, ...)) so that with fewer than 3
+       items the unused trailing track(s) collapse to 0 width -- letting
+       justify-content: safe center (inherited from the base rule) center
+       the actual row instead of it hugging the left edge of 3 full-width
+       tracks. --mobile-card-width is sized so exactly 3 tracks ever fit. */
+    grid-template-columns: repeat(auto-fit, var(--mobile-card-width));
   }
 
   .card {
