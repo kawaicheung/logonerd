@@ -3,21 +3,6 @@
     return `logos/${variant}/${filename}`;
   }
 
-  // Holds at 3 columns (wrapping into however many rows that takes) up
-  // through 21 items -- avoids e.g. 8 items rendering as one short,
-  // overly wide row -- then steps up one column per 10 additional items,
-  // capped at 8 across.
-  function mobileGridColumnCount(itemCount) {
-    if (itemCount <= 1) return 1;
-    if (itemCount <= 2) return 2;
-    if (itemCount <= 21) return 3;
-    if (itemCount <= 31) return 4;
-    if (itemCount <= 41) return 5;
-    if (itemCount <= 51) return 6;
-    if (itemCount <= 61) return 7;
-    return 8;
-  }
-
   initDesktop();
 
   function initDesktop() {
@@ -52,7 +37,6 @@
     let currentItems = [];
     let viewedIndex = -1;
     let activeGridIndex = -1;
-    let gridPan = null;
 
     function setSortDirection(value) {
       sortDirection = value;
@@ -674,15 +658,6 @@
           });
         }
 
-        // Mobile's grid column count adapts to how many items there are,
-        // instead of always reserving 10 fixed-width tracks or matching
-        // the item count 1:1 (which would render e.g. 8 items as one
-        // short, overly wide row). It holds at 3 -- wrapping into however
-        // many rows that takes -- until there's enough content to justify
-        // widening the grid and letting it pan horizontally instead.
-        grid.style.setProperty("--mobile-grid-cols", mobileGridColumnCount(items.length));
-        if (gridPan) gridPan.refresh();
-
         const isOwnFavorites = showFavorites && !viewingShared;
 
         if (isOwnFavorites) {
@@ -1023,220 +998,6 @@
     applyFiltersFromURL();
     updateFavoritesToggleState();
     render();
-    gridPan = initGridPan(grid);
   }
 
-  function initGridPan(grid) {
-    if (!window.matchMedia("(pointer: coarse)").matches) return null;
-
-    const container = grid.parentElement; // #page-content -- clips the grid
-
-    const friction = 0.97; // velocity decay per ~16ms frame while gliding
-    const minVelocity = 0.02; // px/ms -- below this the glide/drag stops
-    const overscrollResistance = 0.55; // how much a beyond-edge drag actually moves the grid
-    const snapEasing = "cubic-bezier(0.34, 1.56, 0.64, 1)"; // overshoots then settles, for a springy bounce
-    const snapDuration = 380; // ms
-
-    let tx = 0;
-    let ty = 0;
-    let vx = 0;
-    let vy = 0;
-    let momentumFrame = null;
-    let gestureBounds = null;
-    const pointers = new Map();
-
-    function computeBounds() {
-      // Each axis is negotiated independently: once the grid overflows the
-      // container along that axis, tx/ty of 0 is its natural top-left
-      // position and panning (negative tx/ty) reveals the rest, bottomed
-      // out once the trailing edge reaches the container's edge -- same as
-      // before. But when there isn't enough content to overflow an axis,
-      // min and max collapse to the same centered offset, so that axis is
-      // pinned centered instead of stuck at the top-left.
-      const overflowX = grid.offsetWidth - container.clientWidth;
-      const overflowY = grid.offsetHeight - container.clientHeight;
-      const centeredTx = overflowX > 0 ? 0 : -overflowX / 2;
-      const centeredTy = overflowY > 0 ? 0 : -overflowY / 2;
-
-      return {
-        minTx: overflowX > 0 ? -overflowX : centeredTx,
-        maxTx: centeredTx,
-        minTy: overflowY > 0 ? -overflowY : centeredTy,
-        maxTy: centeredTy,
-      };
-    }
-
-    function applyTransform() {
-      grid.style.transform = `translate(${tx}px, ${ty}px)`;
-    }
-
-    function clampToBounds() {
-      const { minTx, maxTx, minTy, maxTy } = computeBounds();
-      tx = Math.min(maxTx, Math.max(minTx, tx));
-      ty = Math.min(maxTy, Math.max(minTy, ty));
-      applyTransform();
-    }
-
-    function stopMomentum() {
-      if (momentumFrame !== null) {
-        cancelAnimationFrame(momentumFrame);
-        momentumFrame = null;
-      }
-    }
-
-    // If a finger grabs the grid mid-glide or mid-snap, read back the
-    // actually-rendered position (not just our tracked tx/ty) so the drag
-    // picks up from where it visually is instead of jumping.
-    function syncFromRenderedTransform() {
-      const matrix = new DOMMatrixReadOnly(getComputedStyle(grid).transform);
-      tx = matrix.m41;
-      ty = matrix.m42;
-    }
-
-    // Beyond the edge, a raw drag delta only partially moves the grid, so
-    // it feels like stretching a rubber band rather than free panning.
-    function applyDelta(current, delta, min, max) {
-      const next = current + delta;
-      if (next > max) return max + (next - max) * overscrollResistance;
-      if (next < min) return min + (next - min) * overscrollResistance;
-      return next;
-    }
-
-    // Elastically pins the grid back within bounds if a drag left it
-    // overscrolled. Returns true if a snap-back was needed.
-    function snapWithinBounds() {
-      const { minTx, maxTx, minTy, maxTy } = gestureBounds || computeBounds();
-      const clampedTx = Math.min(maxTx, Math.max(minTx, tx));
-      const clampedTy = Math.min(maxTy, Math.max(minTy, ty));
-
-      if (clampedTx !== tx || clampedTy !== ty) {
-        tx = clampedTx;
-        ty = clampedTy;
-        vx = 0;
-        vy = 0;
-        grid.style.transition = `transform ${snapDuration}ms ${snapEasing}`;
-        applyTransform();
-        return true;
-      }
-      return false;
-    }
-
-    // After release, the grid keeps gliding on its last velocity and
-    // decays it toward zero, instead of stopping dead when the finger
-    // lifts -- gives the drag an "oiled," momentum-scroll feel. Momentum
-    // is clamped to the edges so a fling can't carry it past them.
-    function runMomentum(prevTime) {
-      momentumFrame = requestAnimationFrame((now) => {
-        const dt = Math.min(now - prevTime, 48);
-        const decay = Math.pow(friction, dt / 16);
-        vx *= decay;
-        vy *= decay;
-
-        const { minTx, maxTx, minTy, maxTy } = gestureBounds || computeBounds();
-        let nextTx = tx + vx * dt;
-        let nextTy = ty + vy * dt;
-        let hitBound = false;
-
-        if (nextTx > maxTx) {
-          nextTx = maxTx;
-          hitBound = true;
-        } else if (nextTx < minTx) {
-          nextTx = minTx;
-          hitBound = true;
-        }
-        if (nextTy > maxTy) {
-          nextTy = maxTy;
-          hitBound = true;
-        } else if (nextTy < minTy) {
-          nextTy = minTy;
-          hitBound = true;
-        }
-
-        tx = nextTx;
-        ty = nextTy;
-        applyTransform();
-
-        if (hitBound) {
-          momentumFrame = null;
-          return;
-        }
-
-        if (Math.hypot(vx, vy) > minVelocity) {
-          runMomentum(now);
-        } else {
-          momentumFrame = null;
-        }
-      });
-    }
-
-    grid.addEventListener("pointerdown", (e) => {
-      if (pointers.size === 0) {
-        if (momentumFrame !== null || grid.style.transition !== "none") {
-          syncFromRenderedTransform();
-        }
-        stopMomentum();
-        grid.style.transition = "none";
-        gestureBounds = computeBounds();
-      }
-      grid.setPointerCapture(e.pointerId);
-      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY, t: performance.now() });
-      vx = 0;
-      vy = 0;
-    });
-
-    grid.addEventListener("pointermove", (e) => {
-      if (!pointers.has(e.pointerId)) return;
-      const prev = pointers.get(e.pointerId);
-      const now = performance.now();
-      const dx = e.clientX - prev.x;
-      const dy = e.clientY - prev.y;
-      const dt = Math.max(now - prev.t, 1);
-      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY, t: now });
-
-      if (pointers.size === 1) {
-        const { minTx, maxTx, minTy, maxTy } = gestureBounds;
-        const prevTx = tx;
-        const prevTy = ty;
-        tx = applyDelta(tx, dx, minTx, maxTx);
-        ty = applyDelta(ty, dy, minTy, maxTy);
-        applyTransform();
-
-        // Smooth the instantaneous velocity so one jittery event doesn't
-        // dominate the momentum used on release.
-        const ivx = (tx - prevTx) / dt;
-        const ivy = (ty - prevTy) / dt;
-        vx = vx * 0.7 + ivx * 0.3;
-        vy = vy * 0.7 + ivy * 0.3;
-      }
-    });
-
-    function release(e) {
-      if (!pointers.has(e.pointerId)) return;
-      pointers.delete(e.pointerId);
-
-      if (pointers.size === 0) {
-        const snapped = snapWithinBounds();
-        if (!snapped && (Math.abs(vx) > minVelocity || Math.abs(vy) > minVelocity)) {
-          runMomentum(performance.now());
-        }
-      }
-    }
-
-    grid.addEventListener("pointerup", release);
-    grid.addEventListener("pointercancel", release);
-    grid.addEventListener("pointerleave", release);
-
-    clampToBounds();
-
-    return {
-      // Re-negotiates centered-vs-anchored per axis after the item count
-      // (and so the grid's actual size) changes, e.g. from a filter change.
-      refresh() {
-        stopMomentum();
-        gestureBounds = null;
-        grid.style.transition = `transform ${snapDuration}ms ${snapEasing}`;
-        clampToBounds();
-      },
-    };
-  }
 })();

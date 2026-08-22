@@ -1007,13 +1007,7 @@ main#grid {
     --mobile-quick-actions-height: 3.125rem;
   }
 
-  /* Grid becomes a fixed-tile, 10-column-wide sheet that tiles new rows
-     downward instead of reflowing -- #page-content clips it, and JS pans
-     it via transform: translate() from raw pointer input, so it behaves
-     like a flat canvas you drag around rather than a page that scrolls
-     and reflows. */
   #page-content {
-    overflow: hidden;
     margin: 0;
     height: 100dvh;
   }
@@ -1066,23 +1060,14 @@ main#grid {
     --mobile-grid-gap: 0.3rem;
     --mobile-card-width: calc((100dvw - 2 * var(--mobile-grid-gap)) / 3);
 
-    flex: 0 0 auto;
-    width: max-content;
     padding: 0;
     /* Enough room above the first row of cards for the logo, the filter
        title bar sitting just under it, and a bit of breathing room below
-       the title before items start -- even once the grid has a ton of
-       items to pan through. The room below the title (was 2.2rem +
+       the title before items start. The room below the title (was 2.2rem +
        2rem) is trimmed 30% so the gap doesn't read as oversized. */
     padding-top: calc(var(--mobile-title-top) + 2.94rem);
     gap: var(--mobile-grid-gap);
-    grid-template-columns: repeat(var(--mobile-grid-cols, 8), var(--mobile-card-width));
-    grid-auto-flow: row;
-    grid-auto-rows: min-content;
-    overflow: visible;
-    touch-action: pinch-zoom;
-    transform-origin: 0 0;
-    will-change: transform;
+    grid-template-columns: repeat(3, var(--mobile-card-width));
   }
 
   .card {
